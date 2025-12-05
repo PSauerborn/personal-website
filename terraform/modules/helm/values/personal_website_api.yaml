@@ -1,0 +1,19 @@
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+
+livenessProbe:
+  httpGet:
+    path: /api/v1/public/version
+    port: 8080
+
+readinessProbe:
+  httpGet:
+    path: /api/v1/public/version
+    port: 8080
+
+replicaCount: 1
+
+autoscaling:
+  enabled: false

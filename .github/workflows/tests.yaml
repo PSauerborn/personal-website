@@ -1,0 +1,39 @@
+name: Unit & Integration Tests
+on:
+  pull_request:
+    branches:
+      - dev
+      - master
+
+jobs:
+  unittests:
+    runs-on: ubuntu-latest
+    name: API Unittests
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Docker
+        uses: docker/setup-docker-action@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update && \
+            sudo apt-get install -y make
+
+      - name: Run API Unittest
+        working-directory: ./api
+        run: make run-tests
+
+  tf-plan:
+    needs: unittests
+    uses: ./.github/workflows/tf.yaml
+    name: Terraform Plan Only
+    with:
+      environment: ${{ github.event.pull_request.base.ref == 'master' && 'prod' || 'dev' }}
+      aws_region: eu-west-2
+      plan_only: true
+    secrets:
+      kubeconfig: ${{ secrets.KUBE_CONFIG_DATA }}
+      aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
