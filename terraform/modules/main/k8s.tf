@@ -37,7 +37,7 @@ resource "kubernetes_secret" "ecr" {
 
 # Job for running Alembic migrations
 resource "kubernetes_job" "alembic_migrations" {
-  depends_on = [helm_release.pg_cluster, aws_ecr_repository.main, kubernetes_secret.ecr]
+  depends_on = [helm_release.pg_cluster, kubernetes_secret.ecr]
   metadata {
     name      = "${local.base_name}-alembic-migrations"
     namespace = kubernetes_namespace.main.metadata[0].name
@@ -54,7 +54,7 @@ resource "kubernetes_job" "alembic_migrations" {
       spec {
         container {
           name  = "alembic-migrations"
-          image = "${aws_ecr_repository.main["alembic-migrations"].repository_url}:${local.images_tags.alembic_migrations}"
+          image = "215268073545.dkr.ecr.eu-west-2.amazonaws.com/personal-website-alembic-migrations:${local.images_tags.alembic_migrations}"
 
           image_pull_policy = local.is_prod ? "IfNotPresent" : "Always"
 
