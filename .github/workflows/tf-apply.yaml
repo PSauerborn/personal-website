@@ -19,7 +19,6 @@ on:
 
 jobs:
   tf-apply:
-    needs: tf-plan
     name: Terraform Apply
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
