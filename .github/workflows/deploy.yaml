@@ -10,7 +10,7 @@ jobs:
     uses: ./.github/workflows/tf.yaml
     name: Terraform Plan Only
     with:
-      environment: ${{ github.event.pull_request.base.ref == 'master' && 'prod' || 'dev' }}
+      environment: ${{ github.ref_name == 'master' && 'prod' || 'dev' }}
       aws_region: eu-west-2
       plan_only: false
     secrets:
