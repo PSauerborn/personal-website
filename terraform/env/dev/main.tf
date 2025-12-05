@@ -1,10 +1,6 @@
 module "main" {
   source = "../../modules/main"
 
-  providers = {
-    aws.acm = aws.acm
-  }
-
   environment = "dev"
 
   dns_config = {
@@ -15,6 +11,4 @@ module "main" {
     ]
     forward_ip = "46.62.205.122"
   }
-
-  deploy_ingress_controller = false
 }

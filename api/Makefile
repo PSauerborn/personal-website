@@ -1,17 +1,10 @@
 include .build.env
 
-environment ?= dev
-# make sure environment is either dev or prod
-ifeq ($(environment),prod)
-else ifeq ($(environment),dev)
-else
-$(error environment must be one of: dev, prod)
-endif
 
 version ?= latest
 
 image_name := api
-repository_name := personal-website-${environment}-api
+repository_name := personal-website-api
 
 .PHONY: run-tests
 run-tests:

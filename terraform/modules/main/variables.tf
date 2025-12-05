@@ -18,12 +18,6 @@ variable "dns_config" {
   description = "DNS configuration for the personal website."
 }
 
-variable "deploy_ingress_controller" {
-  type        = bool
-  description = ""
-  default     = true
-}
-
 variable "ingress_controller_annotations" {
   type        = map(string)
   description = ""
