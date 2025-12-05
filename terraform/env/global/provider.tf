@@ -10,7 +10,7 @@ terraform {
 
   backend "s3" {
     bucket = "alpn-software.terraform-state"
-    key    = "state/app=personal_website/env=dev/state.tfstate"
+    key    = "state/app=personal_website/env=global/state.tfstate"
     region = "eu-west-2"
     assume_role = {
       role_arn = "arn:aws:iam::215268073545:role/TerraformCIRole"

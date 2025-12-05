@@ -10,31 +10,7 @@ locals {
   api_subdomain = local.is_prod ? "api.alpn-software.com" : "api-dev.alpn-software.com"
 }
 
-resource "helm_release" "nginx_ingress" {
-  count      = var.deploy_ingress_controller ? 1 : 0
-  name       = "${local.base_name}-ingress"
-  repository = "https://kubernetes.github.io/ingress-nginx"
-  chart      = "ingress-nginx"
-  namespace  = kubernetes_namespace.main.metadata[0].name
-
-  values = [
-    file("../../modules/helm/values/nginx_ingress.yaml")
-  ]
-}
-
-resource "helm_release" "pg_operator" {
-  name       = "${local.base_name}-pg-operator"
-  repository = "https://cloudnative-pg.github.io/charts"
-  chart      = "cloudnative-pg"
-  namespace  = kubernetes_namespace.main.metadata[0].name
-
-  values = [
-    file("../../modules/helm/values/pg_operator.yaml")
-  ]
-}
-
 resource "helm_release" "pg_cluster" {
-  depends_on = [helm_release.pg_operator]
   name       = "${local.base_name}-db"
   repository = "https://cloudnative-pg.github.io/charts"
   chart      = "cluster"
@@ -46,7 +22,7 @@ resource "helm_release" "pg_cluster" {
 }
 
 resource "helm_release" "api" {
-  depends_on = [kubernetes_secret.ecr, helm_release.pg_cluster, aws_ecr_repository.main]
+  depends_on = [kubernetes_secret.ecr, helm_release.pg_cluster]
   name       = "${local.base_name}-api"
   chart      = "../../modules/helm/charts/personal-website-api"
   namespace  = kubernetes_namespace.main.metadata[0].name
@@ -61,7 +37,6 @@ resource "helm_release" "api" {
     # directly as YAML, which Helm can then parse correctly.
     yamlencode({
       image = {
-        repository = aws_ecr_repository.main["api"].repository_url
         tag        = local.images_tags["api"]
         pullPolicy = local.is_prod ? "IfNotPresent" : "Always"
       }

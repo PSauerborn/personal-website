@@ -27,15 +27,6 @@ provider "aws" {
   }
 }
 
-provider "aws" {
-  region = "us-east-1"
-  alias  = "acm"
-
-  assume_role {
-    role_arn = "arn:aws:iam::215268073545:role/TerraformCIRole"
-  }
-}
-
 provider "kubernetes" {
   config_path    = "~/.kube/config"
   config_context = "alpn-software"

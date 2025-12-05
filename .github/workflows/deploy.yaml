@@ -6,13 +6,23 @@ on:
       - master
 
 jobs:
-  deploy:
-    uses: ./.github/workflows/tf.yaml
-    name: Terraform Plan Only
+  deploy-global:
+    uses: ./.github/workflows/tf-apply.yaml
+    name: Terraform Global (Apply)
+    with:
+      environment: global
+      aws_region: eu-west-2
+    secrets:
+      kubeconfig: ${{ secrets.KUBE_CONFIG_DATA }}
+      aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+  deploy-environment:
+    uses: ./.github/workflows/tf-apply.yaml
+    name: Terraform Environment (Apply)
     with:
       environment: ${{ github.ref_name == 'master' && 'prod' || 'dev' }}
       aws_region: eu-west-2
-      plan_only: false
     secrets:
       kubeconfig: ${{ secrets.KUBE_CONFIG_DATA }}
       aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}

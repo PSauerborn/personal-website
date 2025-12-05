@@ -25,14 +25,25 @@ jobs:
         working-directory: ./api
         run: make run-tests
 
-  tf-plan:
+  tf-plan-global:
     needs: unittests
-    uses: ./.github/workflows/tf.yaml
-    name: Terraform Plan Only
+    uses: ./.github/workflows/tf-plan.yaml
+    name: Terraform Global (Plan Only)
+    with:
+      environment: global
+      aws_region: eu-west-2
+    secrets:
+      kubeconfig: ${{ secrets.KUBE_CONFIG_DATA }}
+      aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+  tf-plan-environment:
+    needs: unittests
+    uses: ./.github/workflows/tf-plan.yaml
+    name: Terraform Environment (Plan Only)
     with:
       environment: ${{ github.event.pull_request.base.ref == 'master' && 'prod' || 'dev' }}
       aws_region: eu-west-2
-      plan_only: true
     secrets:
       kubeconfig: ${{ secrets.KUBE_CONFIG_DATA }}
       aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}

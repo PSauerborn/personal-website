@@ -1,3 +1,6 @@
+image:
+  repository: 215268073545.dkr.ecr.eu-west-2.amazonaws.com/personal-website-api
+
 service:
   type: ClusterIP
   port: 80
