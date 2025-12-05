@@ -7,7 +7,6 @@ on:
 
 jobs:
   deploy:
-    needs: unittests
     uses: ./.github/workflows/tf.yaml
     name: Terraform Plan Only
     with:
