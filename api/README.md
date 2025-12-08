@@ -4,6 +4,7 @@
 
 1. [Overview](#overview)
 2. [Endpoints](#endpoints)
+    - [Subdomains](#subdomains)
 3. [Configuration](#configuration)
 4. [Local Development](#local-development)
 5. [Unittests](#unittests)
@@ -22,6 +23,8 @@ The API is designed to be ran in a containerized environment using the provided 
 `make` is used to automate common sets of commands, including commands to run a local server, run unittests and push to ECR. See [Make Commands](#make-commands) section below for a complete set of available commands.
 
 ## Endpoints
+
+### Subdomains
 
 ### Public Endpoints
 
