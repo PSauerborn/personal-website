@@ -8,6 +8,7 @@ module "main" {
     subdomains = [
       "dev.alpn-software.com",
       "api-dev.alpn-software.com",
+      "www-dev.alpn-software.com",
     ]
     forward_ip = "46.62.205.122"
   }

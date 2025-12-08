@@ -49,3 +49,12 @@ repos:
     language: system
     pass_filenames: false
     files: ^alembic/
+
+- repo: local
+  hooks:
+  - id: lint
+    name: Run Web Formatting & Linting
+    entry: make -C web lint
+    language: system
+    pass_filenames: false
+    files: ^web/

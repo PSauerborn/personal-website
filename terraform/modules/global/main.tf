@@ -3,7 +3,8 @@ locals {
 
   container_images = [
     "api",
-    "alembic-migrations"
+    "alembic-migrations",
+    "web"
   ]
 }
 

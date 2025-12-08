@@ -1,0 +1,64 @@
+<template>
+  <div class="wrapper">
+    <Transition name="slide-up">
+      <div class="container" v-if="selector === 1">
+        <p class="text-h6">Is deployed using Terraform</p>
+        <q-img fit="contain" class="q-ml-md image" src="terraform-svgrepo-com.svg"></q-img>
+      </div>
+
+      <div class="container" v-else-if="selector === 2">
+        <p class="text-h6">Deploys automatically using GH Actions</p>
+        <q-img fit="contain" class="q-ml-md image" src="github-color-svgrepo-com.svg"></q-img>
+      </div>
+      <div class="container" v-else-if="selector === 3">
+        <p class="text-h6">Features a DEV and PROD environment</p>
+        <q-img fit="contain" class="q-ml-md image" src="env-logo-svgrepo-com.svg"></q-img>
+      </div>
+    </Transition>
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue'
+
+const selector = ref(1)
+
+setInterval(() => {
+  selector.value = (selector.value % 3) + 1
+}, 3000)
+</script>
+
+<style scoped>
+.wrapper {
+  position: relative;
+  height: 60px;
+}
+
+.image {
+  width: 60px;
+  height: 60px;
+  white-space: nowrap;
+}
+
+.container {
+  position: absolute;
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.slide-up-enter-active,
+.slide-up-leave-active {
+  transition: all 0.25s ease-out;
+}
+
+.slide-up-enter-from {
+  opacity: 0;
+  transform: translateX(30px);
+}
+
+.slide-up-leave-to {
+  opacity: 0;
+  transform: translateX(-30px);
+}
+</style>

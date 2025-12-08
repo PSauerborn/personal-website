@@ -1,0 +1,9 @@
+// app global css in SCSS form
+body,
+.q-typography {
+  font-family: $font-family;
+  color: #bdbdbd; // white text everywhere
+}
+
+@import 'https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap';
+@import 'https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100..900;1,100..900&display=swap';
