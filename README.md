@@ -11,6 +11,8 @@
     - [web](#web)
 3. [Deployments](#deployments)
     - [Pipeline Triggers](#pipeline-triggers)
+4. [Makefiles](#makefiles)
+5. [Precommit Checks](#precommit-checks)
 
 
 ## Overview
@@ -82,3 +84,24 @@ Deployments are managed via Github Actions/Workflows, which can be found in the 
 * Merge `dev` into `master` - trigger release to `PROD` and `GLOBAL` environment
 
 All releases to the `PROD` environment require manual approval by admins.
+
+
+### Makefiles
+
+`make` is used extensively in all components to automate key functions, such as unittests, linting and image building. It is recommended to use the provided `Makefile` where possible to run pre-configured actions. See the README for each respective component for a full list of available `make` commands.
+
+### Precommit Checks
+
+The repository implements a set of pre-commit checks, which can be installed with
+
+```bash
+$ pre-commit install
+```
+
+Note that `pre-commit` typically does not work well with monorepos by default, mainly because `pre-commit` hooks cannot be scoped to a given set of files. To get around this, a `local` repo is implemented for each component of the monorepo, which only runs if files in that component have changed. Moreover, `pre-commit` is configured to run a given `make` command within the component directory using
+
+```bash
+$ make -C <COMPONENT> lint
+```
+
+This ensures that the command(s) being executed only run on the component, not on the repository as a whole.

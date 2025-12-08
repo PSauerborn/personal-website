@@ -15,7 +15,8 @@ type Config struct {
 	PostgresUser     string `validate:"required"`
 	PostgresPassword string `validate:"required"`
 	APIVersion       string `validate:"required"`
-	ResumePath       string `validate:"omitempty,file"`
+	ResumePathPDF    string `validate:"omitempty,file"`
+	ResumePathJSON   string `validate:"required,file"`
 }
 
 // Validate checks the Config struct for required fields
@@ -35,7 +36,8 @@ func LoadConfig() *Config {
 	viper.SetDefault("API_VERSION", "v1")
 	viper.SetDefault("LOG_LEVEL", "info")
 	viper.SetDefault("PORT", 8080)
-	viper.SetDefault("RESUME_PATH", "etc/resume.pdf")
+	viper.SetDefault("RESUME_PATH_PDF", "etc/resume.pdf")
+	viper.SetDefault("RESUME_PATH_JSON", "etc/resume.json")
 
 	cfg := &Config{
 		PostgresHost:     viper.GetString("POSTGRES_HOST"),
@@ -46,7 +48,8 @@ func LoadConfig() *Config {
 		APIVersion:       viper.GetString("API_VERSION"),
 		LogLevel:         viper.GetString("LOG_LEVEL"),
 		Port:             viper.GetInt("PORT"),
-		ResumePath:       viper.GetString("RESUME_PATH"),
+		ResumePathPDF:    viper.GetString("RESUME_PATH_PDF"),
+		ResumePathJSON:   viper.GetString("RESUME_PATH_JSON"),
 	}
 
 	if err := cfg.Validate(); err != nil {
