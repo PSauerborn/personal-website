@@ -1,6 +1,6 @@
 locals {
   base_name = "personal-website-${var.environment}"
-  is_prod   = var.environment == "production"
+  is_prod   = var.environment == "prod"
 
   images_tags = {
     api                = "latest"
@@ -37,8 +37,9 @@ resource "helm_release" "api" {
     # directly as YAML, which Helm can then parse correctly.
     yamlencode({
       image = {
+        repository = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${data.aws_region.current.name}.amazonaws.com/personal-website-api"
         tag        = local.images_tags["api"]
-        pullPolicy = local.is_prod ? "IfNotPresent" : "Always"
+        pullPolicy = "Always"
       }
 
       imagePullSecrets = [
