@@ -54,9 +54,9 @@ resource "kubernetes_job" "alembic_migrations" {
       spec {
         container {
           name  = "alembic-migrations"
-          image = "215268073545.dkr.ecr.eu-west-2.amazonaws.com/personal-website-alembic-migrations:${local.images_tags.alembic_migrations}"
+          image = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${data.aws_region.current.name}.amazonaws.com/personal-website-alembic-migrations:${local.images_tags.alembic_migrations}"
 
-          image_pull_policy = local.is_prod ? "IfNotPresent" : "Always"
+          image_pull_policy = "Always"
 
           env {
             name  = "POSTGRES_HOST"

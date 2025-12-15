@@ -23,3 +23,9 @@ variable "ingress_controller_annotations" {
   description = ""
   default     = {}
 }
+
+variable "image_tag_overrides" {
+  type        = map(string)
+  description = "Override image tags for specific services."
+  default     = {}
+}

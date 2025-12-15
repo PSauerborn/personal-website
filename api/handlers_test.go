@@ -60,26 +60,102 @@ func TestVersionHandler(t *testing.T) {
 }
 
 func TestResumeHandler(t *testing.T) {
-	t.Run("Valid Resume Path", func(t *testing.T) {
-		config := &Config{
-			ResumePath: "etc/resume.pdf",
+	config := &Config{
+		ResumePathPDF:  "etc/resume.pdf",
+		ResumePathJSON: "etc/resume.json",
+	}
+
+	t.Run("PDF Format", func(t *testing.T) {
+		writer := httptest.NewRecorder()
+		ctx, _ := gin.CreateTestContext(writer)
+		// set query parameter
+		ctx.Request = httptest.NewRequest(
+			"GET", "/api/resume?format=pdf", nil)
+
+		response := ResumeHandler(ctx, config)
+		if response.Code != 200 {
+			t.Errorf("Expected status code 200, got %d", response.Code)
 		}
-		data, err := ResumeHandler(nil, config)
-		if err != nil {
-			t.Errorf("Expected no error, got %v", err)
+
+		payload, ok := response.Payload.(gin.H)
+		if !ok {
+			t.Fatalf("Expected payload to be of type gin.H")
 		}
-		if len(data) == 0 {
-			t.Errorf("Expected non-empty resume data")
+
+		data, exists := payload["data"]
+		if !exists {
+			t.Fatalf("Expected 'data' key in payload")
+		}
+
+		if _, ok := data.(string); !ok {
+			t.Errorf("Expected data to be a base64 string")
 		}
 	})
 
-	t.Run("Invalid Resume Path", func(t *testing.T) {
-		config := &Config{
-			ResumePath: "invalid/path/to/resume.pdf",
+	t.Run("JSON Format", func(t *testing.T) {
+		writer := httptest.NewRecorder()
+		ctx, _ := gin.CreateTestContext(writer)
+		// set query parameter
+		ctx.Request = httptest.NewRequest(
+			"GET", "/api/resume?format=json", nil)
+
+		response := ResumeHandler(ctx, config)
+		if response.Code != 200 {
+			t.Errorf("Expected status code 200, got %d", response.Code)
 		}
-		_, err := ResumeHandler(nil, config)
-		if err == nil {
-			t.Errorf("Expected error for invalid resume path, got nil")
+
+		payload, ok := response.Payload.(gin.H)
+		if !ok {
+			t.Fatalf("Expected payload to be of type gin.H")
+		}
+
+		data, exists := payload["data"]
+		if !exists {
+			t.Fatalf("Expected 'data' key in payload")
+		}
+
+		if _, ok := data.(map[string]any); !ok {
+			t.Errorf("Expected data to be a JSON object")
+		}
+	})
+
+	t.Run("Invalid Format", func(t *testing.T) {
+		writer := httptest.NewRecorder()
+		ctx, _ := gin.CreateTestContext(writer)
+		// set query parameter
+		ctx.Request = httptest.NewRequest(
+			"GET", "/api/resume?format=xml", nil)
+
+		response := ResumeHandler(ctx, config)
+		if response.Code != 400 {
+			t.Errorf("Expected status code 400, got %d", response.Code)
+		}
+	})
+
+	t.Run("JSON default Format", func(t *testing.T) {
+		writer := httptest.NewRecorder()
+		ctx, _ := gin.CreateTestContext(writer)
+		// set query parameter
+		ctx.Request = httptest.NewRequest(
+			"GET", "/api/resume", nil)
+
+		response := ResumeHandler(ctx, config)
+		if response.Code != 200 {
+			t.Errorf("Expected status code 200, got %d", response.Code)
+		}
+
+		payload, ok := response.Payload.(gin.H)
+		if !ok {
+			t.Fatalf("Expected payload to be of type gin.H")
+		}
+
+		data, exists := payload["data"]
+		if !exists {
+			t.Fatalf("Expected 'data' key in payload")
+		}
+
+		if _, ok := data.(map[string]any); !ok {
+			t.Errorf("Expected data to be a JSON object")
 		}
 	})
 }

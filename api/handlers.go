@@ -1,9 +1,12 @@
 package main
 
 import (
+	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
+	"slices"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -40,14 +43,65 @@ func VersionHandler(c *gin.Context, config *Config) RESTResponse {
 }
 
 // ResumeHandler serves the resume file located at the configured path.
-func ResumeHandler(c *gin.Context, config *Config) ([]byte, error) {
-	log.Info(fmt.Sprintf("serving resume from path: %s", config.ResumePath))
-	file, err := os.ReadFile(config.ResumePath)
+func ResumeHandler(c *gin.Context, config *Config) RESTResponse {
+	formatString := c.Query("format")
+	if len(formatString) == 0 {
+		formatString = "json"
+	}
+	// parse format into ResumeFileFormat
+	format := ResumeFileFormat(strings.ToLower(formatString))
+	// validate format
+	validModes := []string{"json", "pdf"}
+	if !slices.Contains(validModes, string(format)) {
+		log.Error(fmt.Sprintf("invalid resume format requested: %s", format))
+		return BadRequestResponse
+	}
+
+	// determine file path based on format
+	var filePath string
+	switch format {
+	case ResumeFormatPDF:
+		filePath = config.ResumePathPDF
+	case ResumeFormatJSON:
+		filePath = config.ResumePathJSON
+	}
+
+	log.Info(fmt.Sprintf("serving resume file: %s", filePath))
+	// read file contents
+	contents, err := os.ReadFile(filePath)
 	if err != nil {
 		log.Error(fmt.Sprintf("failed to read resume file: %v", err))
-		return nil, err
+		return InternalServerErrorResponse
 	}
-	return file, nil
+
+	switch format {
+	case ResumeFormatPDF:
+		// encode file contents to base64
+		encoded := base64.StdEncoding.EncodeToString(contents)
+		return RESTResponse{
+			Code: 200,
+			Payload: gin.H{
+				"data": encoded,
+			},
+		}
+
+	case ResumeFormatJSON:
+		// unmarshal JSON contents
+		var data map[string]any
+		if err := json.Unmarshal(contents, &data); err != nil {
+			log.Error(fmt.Sprintf("failed to unmarshal JSON resume file: %v", err))
+			return InternalServerErrorResponse
+		}
+
+		return RESTResponse{
+			Code: 200,
+			Payload: gin.H{
+				"data": data,
+			},
+		}
+	default:
+		return NotImplementedResponse
+	}
 }
 
 type ContactRequestBody struct {

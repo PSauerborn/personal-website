@@ -4,6 +4,7 @@
 
 1. [Overview](#overview)
 2. [Endpoints](#endpoints)
+    - [Subdomains](#subdomains)
 3. [Configuration](#configuration)
 4. [Local Development](#local-development)
 5. [Unittests](#unittests)
@@ -23,6 +24,13 @@ The API is designed to be ran in a containerized environment using the provided 
 
 ## Endpoints
 
+### Subdomains
+
+A copies of the API is deployed in the `DEV` and `PROD` environments, each with a dedicated subdomain:
+
+* `api-dev.alpn-software.com` - serves `DEV` API
+* `api.alpn-softare.com` - servers `PROD` API
+
 ### Public Endpoints
 
 The following endpoints are public, and do not require authentication. However, all requests made to public endpoints is logged in the PostgreSQL database for monitoring.
@@ -37,7 +45,11 @@ Returns APi version. Used for Kubernetes liveliness and readiness probes. Exempt
 
 #### GET - `/api/{version}/public/resume`
 
-Returns PDF file containing resume. The resume is retrieved from the local filesystem. The filepath can be set using the `RESUME_PATH` environment variable, and defaults to `etc/resume.pdf`.
+Returns CV data. CV data can be served in JSON or PDF format. JSON is the default, and is used by the UI when rendering CV data in the web. PDF data is returned as a Base64 encoded JSON payload.
+
+#### Query Parameters
+
+* `format` - on of `(json|pdf)`. Determines the output type.
 
 #### POST - `/api/{version}/public/contacts`
 

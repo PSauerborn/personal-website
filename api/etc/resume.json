@@ -1,0 +1,82 @@
+{
+    "skills": [
+        {
+            "name": "Core Languages",
+            "items": ["Python", "Golang"]
+        },
+        {
+            "name": "Cloud and Infrastructure",
+            "items": ["AWS", "Azure", "Terraform", "Kubernetes", "Docker", "Ansible"]
+        },
+        {
+            "name": "Database Technologies",
+            "items": ["DynamoDB (single table design)", "PostgreSQL", "Apache Cassandra"]
+        },
+        {
+            "name": "CI/CD and Automation",
+            "items": ["Gitlab CI", "GitHub Actions", "Azure DevOps"]
+        },
+        {
+            "name": "Other",
+            "items": ["GraphQL", "REST APIs", "Microservices", "ETL Pipelines", "Data Lakes", "gRPC", "Graphana", "Prometheus"]
+        }
+    ],
+    "experience": [{
+        "title": "Senior Software Engineer",
+        "company": "Omnigen Biodata",
+        "dateRange": "Oct 2022 - Present",
+        "location": "Cambridge, UK",
+        "description": "Sole backend engineer responsible for architecture, development, and operation of backend systems for the DiscoverMe Study, providing 3M+ health records and ancestry to 200k+ users across the UK and South Africa.",
+        "stack": [
+            "Python", "Golang", "Gitlab", "Terraform", "Docker", "PostgreSQL", "AWS DynamoDB", "S3", "Lambda", "ECS",
+            "Appsync", "API Gateway", "Stepfunctions", "SNS", "SQS", "Athena", "Glue"
+        ],
+        "achievements": [
+            "Designed and implemented GraphQL and REST APIs (Python, Go) for participant consent, access to EHR (3M+ records), dispatch & storage of biological sample kits (100k+ samples processed), and linking of sequenced genomic data via ancestry inference pipeline.",
+            "Developed ETL pipelines processing 4TB+ of health and ancestry data from multiple 3rd party data providers.",
+            "Built and maintained GDPR-compliant data storage in DynamoDB (single table design) and PostgreSQL.",
+            "Delivered CI/CD pipelines deploying containerised applications via Terraform to AWS.",
+            "Delivered a datalake for unified reporting and analytics across applications via AWSS3, Glue and Athena."
+        ]
+    }, {
+        "title": "Senior MLOps Engineer",
+        "company": "Zenith AI",
+        "dateRange": "Feb 2022 - Oct 2022",
+        "location": "Belfast, UK",
+        "description": "Delivered infrastructure and tooling to accelerate ML model deployment across AWS environments.",
+        "stack": [
+            "Python", "Terraform", "Docker", "AWS DynamoDB", "S3", "Lambda", "API Gateway", "Security Hub",
+            "GitHub Actions"
+        ],
+        "achievements": [
+            "Built a Python web framework converting trained ML models into deployable web apps, cutting delivery time from days to hours.",
+            "Delivered a self-service AWS portal for ML researchers and external collaborators to publish and share applications securely.",
+            "Automated provisioning of cloud resources using Terraform and integrated CI/CD via GitHub Actions."
+        ]
+    }, {
+        "title": "Uniper Technologies",
+        "company": "Technical Lead",
+        "dateRange": "June 2019 - Feb 2022",
+        "location": "Nottingham, UK",
+        "description": "Led the core backend team delivering Enerlytics, a global data analytics platform for power generation sites.",
+        "stack": [
+            "Python", "Golang", "Docker", "Kubernetes", "Apache Cassandra", "Azure AKS", "RabbitMQ", "Grafana",
+            "Prometheus", "Azure DevOps"
+        ],
+        "achievements": [
+            "Architected and implemented a Python microservice mesh for ingestion, analysis, and visualization of plant data.",
+            "Migrated platform from Docker Swarm to Azure Kubernetes. improving scalability and reliability.",
+            "Delivered on-premise deployments for clients under strict data-governance requirements.",
+            "Managed CI/CD, Kubernetes clusters, and Apache Cassandra clusters."
+        ]
+    }],
+    "education": [
+        {
+            "degree": "Bsc in Theoretical Physics & Mathematics",
+            "institution": "University of Nottingham",
+            "dateRange": "Sep 2016 - Jun 2019",
+            "location": "Nottingham, UK",
+            "description": "Graduated with First Class Honours."
+        }
+    ]
+}

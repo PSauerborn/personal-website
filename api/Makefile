@@ -1,6 +1,5 @@
 include .build.env
 
-
 version ?= latest
 
 image_name := api
