@@ -18,9 +18,8 @@ $accent: #cddc39;
 $dark: #1a1a1a;
 $error: #f44336;
 
-// Apple-style system font stack
-$font-family: 'Montserrat', sans-serif;
-$font-family-header: 'Tanker';
+$font-family: 'Avenir';
+$font-family-header: 'Crimson Pro';
 $font-color: #f9f6ee;
 
 .text-h1 {
@@ -50,5 +49,9 @@ $font-color: #f9f6ee;
 
 .text-h6 {
   font-family: $font-family-header;
+  color: $font-color;
+}
+
+.text-body1 {
   color: $font-color;
 }

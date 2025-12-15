@@ -1,6 +1,7 @@
 <template>
   <div class="column q-pa-lg">
     <p class="text-h4">Portfolio</p>
+    <q-separator class="q-my-md"></q-separator>
     <p class="text-body1">
       This website is designed to be a showcase of what and how I deliver. The app itself is written
       using <span class="stack-title">VueJS</span>
@@ -32,6 +33,7 @@
         icon="fa-brands fa-github"
         target="_blank"
         href="https://github.com/psauerborn/personal-website"
+        no-caps
       ></q-btn>
     </div>
   </div>
@@ -48,6 +50,8 @@
 }
 
 .stack-title {
-  font-family: 'Tanker';
+  font-family: 'Avenir', serif;
+  font-weight: 400;
+  text-decoration: underline;
 }
 </style>
