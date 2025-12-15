@@ -38,7 +38,10 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          version=$(sudo curl -L -s https://dl.k8s.io/release/stable.txt)
+          echo "Installing kubectl version $version"
+
+          sudo curl -LO "https://dl.k8s.io/release/$version/bin/linux/amd64/kubectl"
           sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 
           mkdir -p $HOME/.kube

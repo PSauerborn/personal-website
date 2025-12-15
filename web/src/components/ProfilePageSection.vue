@@ -18,34 +18,32 @@
       <div class="row">
         <p class="text-h3">Pascal Sauerborn</p>
       </div>
+
       <div class="wrapper">
-        <p class="text-body1">I am a</p>
         <transition name="slide-right">
           <div class="container" v-if="currentTitleIndex === 0">
-            <p class="text-body1 text-weight-bold">
-              {{ jobTitles[currentTitleIndex] }}
-            </p>
+            <p class="text-body1 text-weight-bold">{{ jobTitles[currentTitleIndex] }}.</p>
           </div>
           <div class="container" v-else-if="currentTitleIndex === 1">
-            <p class="text-body1 text-weight-bold">
-              {{ jobTitles[currentTitleIndex] }}
-            </p>
+            <p class="text-body1 text-weight-bold">{{ jobTitles[currentTitleIndex] }}.</p>
           </div>
           <div class="container" v-else-if="currentTitleIndex === 2">
-            <p class="text-body1 text-weight-bold">
-              {{ jobTitles[currentTitleIndex] }}
-            </p>
+            <p class="text-body1 text-weight-bold">{{ jobTitles[currentTitleIndex] }}.</p>
           </div>
         </transition>
       </div>
-      <div class="row">
+      <q-separator class="q-my-md"></q-separator>
+      <div class="row dense">
         <p class="text-body1">Outside IR35 Contractor | UK & US Based</p>
       </div>
-      <div class="row q-mt-md">
+      <div class="row dense">
+        <p class="text-body1">7+ years industry experience working with Python, Go and Terraform</p>
+      </div>
+      <div class="row dense q-mt-md">
         <q-icon name="fa-solid fa-mobile" size="xs"></q-icon>
         <p class="text-body1 q-mx-lg">+44 (755) 535-9275</p>
       </div>
-      <div class="row">
+      <div class="row dense">
         <q-icon name="fa-solid fa-at" size="xs"></q-icon>
         <p class="text-body1 q-mx-lg">pascal.sauerborn@gmail.com</p>
       </div>
@@ -66,22 +64,35 @@
           class="q-mr-sm gt-xs"
           label="View CV"
           @click="cvDialog = true"
-          color="primary"
+          color="grey-5"
+          no-caps
         ></q-btn>
-        <q-btn label="Contact" class="gt-xs" @click="contactDialog = true" color="grey-7"></q-btn>
+        <q-btn
+          label="Contact"
+          class="gt-xs"
+          @click="contactDialog = true"
+          color="grey-7"
+          no-caps
+        ></q-btn>
       </div>
       <div class="row q-mt-xl lt-sm">
         <q-btn
           class="full-width q-mb-md"
           label="View CV"
           @click="cvDialog = true"
-          color="primary"
+          color="grey-5"
+          rounded
+          size="large"
+          no-caps
         ></q-btn>
         <q-btn
           label="Contact"
           class="full-width"
           @click="contactDialog = true"
           color="grey-7"
+          size="large"
+          rounded
+          no-caps
         ></q-btn>
       </div>
     </div>
@@ -123,8 +134,6 @@ onMounted(() => {
   align-items: flex-end;
   gap: 8px;
   height: 40px;
-  margin-left: 60px;
-  font-family: 'Tanker', cursive;
 }
 
 .slide-right-enter-active,
