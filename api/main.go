@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 )
@@ -11,6 +12,7 @@ import (
 // based on the provided configuration.
 func NewRouter(config *Config) *gin.Engine {
 	r := gin.Default()
+	r.Use(cors.Default())
 
 	// GET /api/v1/public/version is used by k8s cluster
 	// liveness and readiness probes. do not log to db.
@@ -63,16 +65,8 @@ func NewRouter(config *Config) *gin.Engine {
 		log.Info("processing resume request")
 		// NOTE: /resume returns a file as attachment
 		// not a JSON RESTResponse
-		buffer, err := ResumeHandler(c, config)
-		if err != nil {
-			c.JSON(500, gin.H{
-				"error": "Internal server error",
-			})
-			return
-		}
-
-		c.Header("Content-Disposition", "attachment; filename=resume.pdf")
-		c.Data(200, "application/pdf", buffer)
+		response := ResumeHandler(c, config)
+		response.Send(c)
 	})
 
 	// POST /contacts endpoint to submit a new contact request

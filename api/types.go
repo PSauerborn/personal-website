@@ -58,3 +58,10 @@ type RequestStats struct {
 	PathCounts    map[string]int `json:"path_counts"`
 	StatusCounts  map[int]int    `json:"status_counts"`
 }
+
+type ResumeFileFormat string
+
+const (
+	ResumeFormatPDF  ResumeFileFormat = "pdf"
+	ResumeFormatJSON ResumeFileFormat = "json"
+)
