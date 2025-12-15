@@ -1,9 +1,8 @@
 <template>
   <q-page class="flex justify-center" @wheel.passive="onWheel" v-touch-swipe.mouse="onSwipe">
-    <terminal-header @typing-finished="typingFinished = true"></terminal-header>
     <div class="row container">
       <transition name="fade">
-        <div class="section-container" v-if="typingFinished">
+        <div class="section-container" v-if="true">
           <transition name="slide-up" mode="out-in">
             <component :is="activeComponent"></component>
           </transition>
@@ -16,12 +15,10 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useMeta } from 'quasar'
-import TerminalHeader from 'src/components/TerminalHeader.vue'
 import ProfilePageSection from 'src/components/ProfilePageSection.vue'
 import StackPageSection from 'src/components/StackPageSection.vue'
 import SamplesPageSection from 'src/components/SamplesPageSection.vue'
 
-const typingFinished = ref(false)
 const currentPageIndex = ref(0)
 const scrollingPaused = ref(false)
 const swipeInfo = ref(null)
@@ -40,8 +37,6 @@ const activeComponent = computed(() => {
 })
 
 const onWheel = (event) => {
-  if (!typingFinished.value) return
-
   if (scrollingPaused.value) return
 
   const delta = event.deltaY
@@ -104,13 +99,7 @@ useMeta({
 }
 
 .container {
-  margin-top: 100px;
-}
-
-@media (max-width: 600px) {
-  .container {
-    margin-top: 100px;
-  }
+  margin-top: 50px;
 }
 
 /* Vue Transition: Fade In Content */
