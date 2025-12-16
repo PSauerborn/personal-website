@@ -12,46 +12,54 @@
 // to match your app's branding.
 // Tip: Use the "Theme Builder" on Quasar's documentation website.
 
-$primary: #4caf50;
-$secondary: #8bc34a;
-$accent: #cddc39;
-$dark: #1a1a1a;
-$error: #f44336;
+$primary: #c65a1e;
+$secondary: #2f343b;
+$accent: #e07a2f;
+$dark: #141516;
+$positive: #2e7d5a;
+$negative: #b42318;
+$info: #2563eb;
+$warning: #d97706;
 
 $font-family: 'Avenir';
 $font-family-header: 'Crimson Pro';
-$font-color: #f9f6ee;
+// $font-color: #f9f6ee;
+
+$body-bg: #f6f2ea;
+$dark-page: #0f1113;
+
+// Typography + feel (optional)
+$typography-font-family:
+  ui-sans-serif,
+  system-ui,
+  -apple-system,
+  'Segoe UI',
+  Roboto,
+  'Helvetica Neue',
+  Arial;
+$generic-border-radius: 14px;
+$button-border-radius: 8px;
 
 .text-h1 {
   font-family: $font-family-header;
-  color: $font-color;
 }
 
 .text-h2 {
   font-family: $font-family-header;
-  color: $font-color;
 }
 
 .text-h3 {
   font-family: $font-family-header;
-  color: $font-color;
 }
 
 .text-h4 {
   font-family: $font-family-header;
-  color: $font-color;
 }
 
 .text-h5 {
   font-family: $font-family-header;
-  color: $font-color;
 }
 
 .text-h6 {
   font-family: $font-family-header;
-  color: $font-color;
-}
-
-.text-body1 {
-  color: $font-color;
 }

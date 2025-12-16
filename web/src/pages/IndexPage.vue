@@ -1,84 +1,23 @@
 <template>
-  <q-page class="flex justify-center" @wheel.passive="onWheel" v-touch-swipe.mouse="onSwipe">
-    <div class="row container">
-      <transition name="fade">
-        <div class="section-container" v-if="true">
-          <transition name="slide-up" mode="out-in">
-            <component :is="activeComponent"></component>
-          </transition>
-        </div>
-      </transition>
+  <q-page class="flex flex-center">
+    <div class="column flex flex-center">
+      <profile-page-section id="profile"></profile-page-section>
+      <about-me-page-section id="about-me"></about-me-page-section>
+      <experience-section id="experience"></experience-section>
+      <portfolio-page-section id="portfolio"></portfolio-page-section>
     </div>
   </q-page>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
 import { useMeta } from 'quasar'
+import { onMounted, nextTick, watch } from 'vue'
+import { useRoute } from 'vue-router'
+import { scroll } from 'quasar'
 import ProfilePageSection from 'src/components/ProfilePageSection.vue'
-import StackPageSection from 'src/components/StackPageSection.vue'
-import SamplesPageSection from 'src/components/SamplesPageSection.vue'
-
-const currentPageIndex = ref(0)
-const scrollingPaused = ref(false)
-const swipeInfo = ref(null)
-
-const activeComponent = computed(() => {
-  switch (currentPageIndex.value) {
-    case 0:
-      return ProfilePageSection
-    case 1:
-      return StackPageSection
-    case 2:
-      return SamplesPageSection
-    default:
-      return ProfilePageSection
-  }
-})
-
-const onWheel = (event) => {
-  if (scrollingPaused.value) return
-
-  const delta = event.deltaY
-  const sensitivityThreshold = 15
-  if (Math.abs(delta) < sensitivityThreshold) return
-
-  scrollingPaused.value = true
-
-  if (delta > 0) {
-    // Scroll down
-    if (currentPageIndex.value < 2) {
-      currentPageIndex.value++
-    }
-  } else {
-    // Scroll up
-    if (currentPageIndex.value > 0) {
-      currentPageIndex.value--
-    }
-  }
-
-  setTimeout(() => {
-    scrollingPaused.value = false
-  }, 500)
-}
-
-// swipe scroll for mobile
-const onSwipe = (event, ...newInfo) => {
-  swipeInfo.value = newInfo
-  const direction = event['direction']
-  switch (direction) {
-    case 'up':
-      if (currentPageIndex.value < 2) {
-        currentPageIndex.value++
-      }
-      break
-    case 'down':
-      if (currentPageIndex.value > 0) {
-        currentPageIndex.value--
-      }
-      break
-  }
-}
+import AboutMePageSection from 'src/components/AboutMePageSection.vue'
+import ExperienceSection from 'src/components/ExperienceSection.vue'
+import PortfolioPageSection from 'src/components/PortfolioPageSection.vue'
 
 useMeta({
   title: 'Pascal Sauerborn | Profile',
@@ -90,41 +29,38 @@ useMeta({
     },
   ],
 })
+
+const route = useRoute()
+const { getScrollTarget, setVerticalScrollPosition } = scroll
+
+function scrollToHash(hash) {
+  if (!hash) return
+  const id = hash.replace('#', '')
+  const el = document.getElementById(id)
+
+  if (!el) return
+
+  const target = getScrollTarget(el)
+  const offset = el.offsetTop
+
+  // Adjust for fixed header height (tune this)
+  const headerOffset = 64
+
+  setVerticalScrollPosition(target, offset - headerOffset, 200)
+}
+
+onMounted(async () => {
+  await nextTick()
+  scrollToHash(route.hash)
+})
+
+watch(
+  () => route.hash,
+  async (h) => {
+    await nextTick()
+    scrollToHash(h)
+  },
+)
 </script>
 
-<style scoped>
-.section-container {
-  max-width: 600px;
-  height: 400px;
-}
-
-.container {
-  margin-top: 50px;
-}
-
-/* Vue Transition: Fade In Content */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 1.5s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-
-.slide-up-enter-active,
-.slide-up-leave-active {
-  transition: all 0.25s ease-out;
-}
-
-.slide-up-enter-from {
-  opacity: 0;
-  transform: translateY(30px);
-}
-
-.slide-up-leave-to {
-  opacity: 0;
-  transform: translateY(-30px);
-}
-</style>
+<style scoped></style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="row flex-center">
+  <div class="row flex-center q-mt-xl container">
     <q-dialog v-model="cvDialog">
       <cv-modal></cv-modal>
     </q-dialog>
@@ -8,44 +8,22 @@
       <contact-modal></contact-modal>
     </q-dialog>
 
-    <div class="col-2-md col-2-lg col-2-sm col-12-xs q-mb-xl">
-      <q-avatar size="80px" class="q-mr-md">
-        <img src="profile.png" alt="Pascal Sauerborn Avatar" />
-      </q-avatar>
+    <div class="col-xs-12 col-sm-12 col-lg-4 col-md-4 flex flex-center q-mx-xl image-container">
+      <q-img fit="contain" src="profile.png" alt="Pascal Sauerborn Avatar" class="profile-img" />
     </div>
-
-    <div class="col-8-md col-8-lg col-8-sm col-12-xs q-mx-lg">
-      <div class="row">
-        <p class="text-h3">Pascal Sauerborn</p>
+    <div class="col flex flex-column q-mx-xl">
+      <div class="row dense">
+        <p class="text-h3">Hi, I'm <span class="highlight">Pascal.</span></p>
       </div>
-
-      <div class="wrapper">
-        <transition name="slide-right">
-          <div class="container" v-if="currentTitleIndex === 0">
-            <p class="text-body1 text-weight-bold">{{ jobTitles[currentTitleIndex] }}.</p>
-          </div>
-          <div class="container" v-else-if="currentTitleIndex === 1">
-            <p class="text-body1 text-weight-bold">{{ jobTitles[currentTitleIndex] }}.</p>
-          </div>
-          <div class="container" v-else-if="currentTitleIndex === 2">
-            <p class="text-body1 text-weight-bold">{{ jobTitles[currentTitleIndex] }}.</p>
-          </div>
-        </transition>
+      <div class="row dense">
+        <p class="text-body1">
+          Backend Software Engineer, Infrastructure Specialist & Founder. I have over 7+ years
+          industry experience working with Python, Go and Terraform, working in everything from
+          large energy corporations to protein-folding startups.
+        </p>
       </div>
-      <q-separator class="q-my-md"></q-separator>
       <div class="row dense">
         <p class="text-body1">Outside IR35 Contractor | UK & US Based</p>
-      </div>
-      <div class="row dense">
-        <p class="text-body1">7+ years industry experience working with Python, Go and Terraform</p>
-      </div>
-      <div class="row dense q-mt-md">
-        <q-icon name="fa-solid fa-mobile" size="xs"></q-icon>
-        <p class="text-body1 q-mx-lg">+44 (755) 535-9275</p>
-      </div>
-      <div class="row dense">
-        <q-icon name="fa-solid fa-at" size="xs"></q-icon>
-        <p class="text-body1 q-mx-lg">pascal.sauerborn@gmail.com</p>
       </div>
       <div class="row q-mt-md">
         <q-icon
@@ -61,38 +39,38 @@
           @click="openLink('https://www.linkedin.com/in/pascal-sauerborn-130452175/')"
         ></q-icon>
         <q-btn
-          class="q-mr-sm gt-xs"
+          class="q-mr-sm gt-sm q-px-xl tonal-button"
           label="View CV"
           @click="cvDialog = true"
-          color="grey-5"
+          color="primary"
+          outline
           no-caps
         ></q-btn>
         <q-btn
-          label="Contact"
-          class="gt-xs"
+          label="Get In Touch"
+          class="gt-sm q-px-xl"
           @click="contactDialog = true"
-          color="grey-7"
+          color="secondary"
           no-caps
         ></q-btn>
       </div>
-      <div class="row q-mt-xl lt-sm">
+      <div class="row full-width lt-md">
         <q-btn
-          class="full-width q-mb-md"
+          class="q-mt-md full-width"
           label="View CV"
           @click="cvDialog = true"
-          color="grey-5"
-          rounded
-          size="large"
+          color="primary"
+          outline
           no-caps
+          full-width
         ></q-btn>
         <q-btn
-          label="Contact"
-          class="full-width"
+          label="Get In Touch"
+          class="q-mt-md q-mb-lg full-width"
           @click="contactDialog = true"
-          color="grey-7"
-          size="large"
-          rounded
+          color="secondary"
           no-caps
+          full-width
         ></q-btn>
       </div>
     </div>
@@ -122,36 +100,33 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.wrapper {
-  position: relative;
-  height: 40px;
-  display: flex;
+.profile-img {
+  width: 250px;
+  height: 250px;
+  border-radius: 10px;
+}
+
+@media screen and (max-width: 600px) {
+  .profile-img {
+    width: 200px;
+    height: 200px;
+    margin-bottom: 50px;
+  }
 }
 
 .container {
-  position: absolute;
-  display: inline-flex;
-  align-items: flex-end;
-  gap: 8px;
-  height: 40px;
-}
-
-.slide-right-enter-active,
-.slide-right-leave-active {
-  transition: all 0.25s ease-out;
-}
-
-.slide-right-enter-from {
-  opacity: 0;
-  transform: translateX(30px);
-}
-
-.slide-right-leave-to {
-  opacity: 0;
-  transform: translateX(-30px);
+  max-width: 1000px;
 }
 
 .icon-btn {
   cursor: pointer;
+}
+
+.icon-btn:hover {
+  color: var(--q-primary);
+}
+
+.highlight {
+  color: var(--q-primary);
 }
 </style>

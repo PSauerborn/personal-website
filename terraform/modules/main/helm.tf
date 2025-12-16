@@ -5,7 +5,7 @@ locals {
   default_images_tags = {
     api                = "1.0.0"
     alembic_migrations = "1.0.0"
-    web                = "1.0.1"
+    web                = "1.1.0"
   }
   # Override image tags if provided via variable
   images_tags = merge(local.default_images_tags, var.image_tag_overrides)

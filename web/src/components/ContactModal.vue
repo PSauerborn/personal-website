@@ -36,6 +36,7 @@
             color="primary"
             :loading="loading"
             :disable="!formValid"
+            class="full-width"
             label="Send Message"
             @click="submitForm"
           ></q-btn>
