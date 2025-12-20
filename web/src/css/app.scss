@@ -6,11 +6,41 @@
   font-display: swap;
 }
 
-// app global css in SCSS form
+@import 'https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,200..900;1,200..900&display=swap';
+
+:root {
+  --claude-paper: #f6f2ea;
+  --claude-surface: #fffcf6;
+  --claude-border: #e7dfd3;
+  --claude-text: #1d1f23;
+  --claude-muted: #5b6068;
+}
+
 body,
 .q-typography {
   font-family: $font-family;
-  color: $font-color; // white text everywhere
 }
 
-@import 'https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,200..900;1,200..900&display=swap';
+body.body--light {
+  background: var(--claude-paper);
+  color: var(--claude-text);
+}
+
+.q-card,
+.q-menu,
+.q-dialog__inner > div {
+  background: var(--claude-surface);
+  border: 1px solid var(--claude-border);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+  border-radius: 16px;
+}
+
+.q-field--outlined .q-field__control {
+  background: var(--claude-surface);
+  border-color: var(--claude-border);
+  border-radius: 14px;
+}
+
+.text-muted {
+  color: var(--claude-muted) !important;
+}
