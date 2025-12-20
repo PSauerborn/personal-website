@@ -9,7 +9,7 @@
   </q-card>
   <q-card class="card" v-else>
     <q-card-section>
-      <p class="text-h6">Technical Skills</p>
+      <p class="text-h6"><span class="highlight">Tech</span><span>nical Skills</span></p>
       <div v-for="(skill, i) in cv.skills" :key="i">
         <p class="text-body2">
           <span class="title">{{ skill.name }}:</span> {{ skill.items.join(', ') }}
@@ -18,7 +18,9 @@
     </q-card-section>
     <q-separator></q-separator>
     <q-card-section>
-      <p class="text-h6">Experience</p>
+      <p class="text-h6">
+        <span class="highlight">Exp</span><span class="anti-highlight">erience</span>
+      </p>
       <div class="row q-mb-lg full-width" v-for="(entry, i) in cv.experience" :key="i">
         <ExperienceEntry
           :title="entry.title"
@@ -33,7 +35,9 @@
     </q-card-section>
     <q-separator></q-separator>
     <q-card-section>
-      <p class="text-h6">Education</p>
+      <p class="text-h6">
+        <span class="highlight">Edu</span><span class="anti-highlight">cation</span>
+      </p>
       <div class="row q-mb-lg full-width" v-for="(edu, i) in cv.education" :key="i">
         <EducationEntry
           :degree="edu.degree"
@@ -45,7 +49,7 @@
       </div>
     </q-card-section>
     <q-card-actions align="right">
-      <q-btn flat label="Download PDF" @click="downloadCV" />
+      <q-btn flat color="primary" label="Download PDF" @click="downloadCV" />
     </q-card-actions>
   </q-card>
 </template>
@@ -99,10 +103,14 @@ onMounted(async () => {
 
 <style scoped>
 .card {
-  width: 600px;
+  width: 100%;
 }
 
 .title {
   font-weight: bold;
+}
+
+.highlight {
+  color: var(--q-primary);
 }
 </style>
