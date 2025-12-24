@@ -16,6 +16,15 @@ on:
         required: false
         type: string
         default: eu-west-2
+      aws_assume_role_arn:
+        required: true
+        type: string
+      aws_dynamodb_statelock_table:
+        required: true
+        type: string
+      aws_s3_backend_bucket:
+        required: true
+        type: string
 
 jobs:
   tf-apply:
@@ -54,4 +63,10 @@ jobs:
         working-directory: ./terraform/env/${{ inputs.environment }}
         run: |
           echo "Applying Terraform changes..."
-          terraform init && terraform apply -auto-approve
+          terraform init -backend-config="bucket=${{ inputs.aws_s3_backend_bucket }}" \
+            -backend-config="region=${{ inputs.aws_region }}" \
+            -backend-config="dynamodb_table=${{ inputs.aws_dynamodb_statelock_table }}" \
+            -backend-config="assume_role={ role_arn = \"${{ inputs.aws_assume_role_arn }}\" }"
+
+          terraform apply -auto-approve -var="aws_region=${{ inputs.aws_region }}" \
+            -var="aws_assume_role_arn=${{ inputs.aws_assume_role_arn }}"

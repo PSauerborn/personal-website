@@ -32,10 +32,14 @@ jobs:
     with:
       environment: global
       aws_region: eu-west-2
+      aws_assume_role_arn: ${{ vars.AWS_ASSUME_ROLE_ARN }}
+      aws_dynamodb_statelock_table: ${{ vars.AWS_DYNAMODB_STATELOCK_TABLE }}
+      aws_s3_backend_bucket: ${{ vars.AWS_S3_BACKEND_BUCKET }}
     secrets:
       kubeconfig: ${{ secrets.KUBE_CONFIG_DATA }}
       aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
       aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
 
   tf-plan-environment:
     needs: unittests
@@ -44,6 +48,9 @@ jobs:
     with:
       environment: ${{ github.event.pull_request.base.ref == 'master' && 'prod' || 'dev' }}
       aws_region: eu-west-2
+      aws_assume_role_arn: ${{ vars.AWS_ASSUME_ROLE_ARN }}
+      aws_dynamodb_statelock_table: ${{ vars.AWS_DYNAMODB_STATELOCK_TABLE }}
+      aws_s3_backend_bucket: ${{ vars.AWS_S3_BACKEND_BUCKET }}
     secrets:
       kubeconfig: ${{ secrets.KUBE_CONFIG_DATA }}
       aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
