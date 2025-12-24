@@ -63,3 +63,10 @@ jobs:
       kubeconfig: ${{ secrets.KUBE_CONFIG_DATA }}
       aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
       aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+  integration-tests:
+    uses: ./.github/workflows/integration-tests.yaml
+    needs: deploy-environment
+    name: Integration Tests
+    secrets:
+      kubeconfig: ${{ secrets.KUBE_CONFIG_DATA }}
