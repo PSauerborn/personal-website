@@ -1,14 +1,14 @@
-name: Seed Environment Data
+name: Integration Tests
 on:
-  pull_request:
-    branches:
-      - dev
+  workflow_call:
+    secrets:
+      kubeconfig:
+        required: true
 
 jobs:
   load-seed-data:
-    name: Load Seed Data
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
+    name: Load Seed Data
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -27,8 +27,19 @@ jobs:
         env:
           KUBE_CONFIG: ${{ secrets.kubeconfig }}
 
-      - name: Run Kubernetes Seed Data Job
+      - name: Seed Test Environment
+        working-directory: ./manifests
         run: |
-          kubectl apply -f templates/k8s_seed_data.yaml
-        env:
-          KUBE_CONFIG: ${{ secrets.kubeconfig }}
+          kubectl apply -f load_seed_data.yaml
+
+  run-integration-tests:
+    runs-on: ubuntu-latest
+    needs: load-seed-data
+    name: Run Integration Tests
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Run Integration Tests
+        run: |
+          echo "Running integration tests..."
