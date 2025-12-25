@@ -3,7 +3,7 @@ locals {
   is_prod   = var.environment == "prod"
 
   default_images_tags = {
-    api                = "1.0.0"
+    api                = "1.0.1"
     alembic_migrations = "1.0.0"
     web                = "1.1.0"
   }

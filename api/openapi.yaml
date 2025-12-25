@@ -1,0 +1,224 @@
+openapi: 3.0.0
+info:
+  title: Personal Website API
+  description: API for personal website backend
+  version: 1.0.0
+servers:
+  - url: /api/v1
+    description: V1 API
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+  schemas:
+    Contact:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+    ContactRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        contact_id:
+          type: string
+          format: uuid
+        email:
+          type: string
+        message:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+    RequestStats:
+      type: object
+      properties:
+        total_requests:
+          type: integer
+        unique_ip_count:
+          type: integer
+        path_counts:
+          type: object
+          additionalProperties:
+            type: integer
+        status_counts:
+          type: object
+          additionalProperties:
+            type: integer
+paths:
+  /public/health:
+    get:
+      summary: Health Check
+      description: Returns the health status of the API
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+        '500':
+          description: Internal Server Error
+  /public/version:
+    get:
+      summary: API Version
+      description: Returns the current API version
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  version:
+                    type: string
+                    example: v1
+  /public/resume:
+    get:
+      summary: Get Resume
+      description: Retrieve the resume in specified format
+      parameters:
+        - in: query
+          name: format
+          schema:
+            type: string
+            enum: [json, pdf]
+            default: json
+          description: Format of the resume file
+      responses:
+        '200':
+          description: Resume content
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    oneOf:
+                      - type: string
+                        description: Base64 encoded PDF content
+                      - type: object
+                        description: JSON resume data
+        '400':
+          description: Bad Request (Invalid format)
+        '500':
+            description: Internal Server Error
+  /public/contacts:
+    post:
+      summary: Submit Contact Request
+      description: Create a new contact request and contact if not exists
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - email
+                - message
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                message:
+                  type: string
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+                    format: uuid
+                    description: The ID of the created contact request
+        '400':
+          description: Bad Request
+        '500':
+          description: Internal Server Error
+  /admin/stats:
+    get:
+      summary: Get Request Stats
+      description: Retrieve statistics about API usage
+      security:
+        - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/RequestStats'
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+  /admin/contacts:
+    get:
+      summary: List Contacts
+      description: Retrieve all contacts
+      security:
+        - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Contact'
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+  /admin/contacts/requests:
+    get:
+      summary: List Contact Requests
+      description: Retrieve all contact requests
+      security:
+        - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ContactRequest'
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error

@@ -14,7 +14,7 @@ repos:
   rev: v1.4.0
   hooks:
   - id: detect-secrets
-    args: ['--baseline', '.secrets.baseline']
+    args: ['--baseline', '.secrets.baseline' ,'--exclude-files', '^scripts/load_seed_data/data/*.sql$']
 
 - repo: local
   hooks:
@@ -58,3 +58,21 @@ repos:
     language: system
     pass_filenames: false
     files: ^web/
+
+- repo: local
+  hooks:
+  - id: lint
+    name: Run Scripts Formatting & Linting
+    entry: make -C scripts lint
+    language: system
+    pass_filenames: false
+    files: ^scripts/
+
+- repo: local
+  hooks:
+  - id: lint
+    name: Run Acceptance Formatting & Linting
+    entry: make -C acceptance lint
+    language: system
+    pass_filenames: false
+    files: ^acceptance/

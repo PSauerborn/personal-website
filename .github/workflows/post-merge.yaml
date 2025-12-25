@@ -12,6 +12,9 @@ jobs:
     with:
       environment: global
       aws_region: eu-west-2
+      aws_assume_role_arn: ${{ vars.AWS_ASSUME_ROLE_ARN }}
+      aws_dynamodb_statelock_table: ${{ vars.AWS_DYNAMODB_STATELOCK_TABLE }}
+      aws_s3_backend_bucket: ${{ vars.AWS_S3_BACKEND_BUCKET }}
     secrets:
       kubeconfig: ${{ secrets.KUBE_CONFIG_DATA }}
       aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -24,6 +27,9 @@ jobs:
     with:
       environment: global
       aws_region: eu-west-2
+      aws_assume_role_arn: ${{ vars.AWS_ASSUME_ROLE_ARN }}
+      aws_dynamodb_statelock_table: ${{ vars.AWS_DYNAMODB_STATELOCK_TABLE }}
+      aws_s3_backend_bucket: ${{ vars.AWS_S3_BACKEND_BUCKET }}
     secrets:
       kubeconfig: ${{ secrets.KUBE_CONFIG_DATA }}
       aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -35,6 +41,9 @@ jobs:
     with:
       environment: ${{ github.ref_name == 'master' && 'prod' || 'dev' }}
       aws_region: eu-west-2
+      aws_assume_role_arn: ${{ vars.AWS_ASSUME_ROLE_ARN }}
+      aws_dynamodb_statelock_table: ${{ vars.AWS_DYNAMODB_STATELOCK_TABLE }}
+      aws_s3_backend_bucket: ${{ vars.AWS_S3_BACKEND_BUCKET }}
     secrets:
       kubeconfig: ${{ secrets.KUBE_CONFIG_DATA }}
       aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -47,7 +56,19 @@ jobs:
     with:
       environment: ${{ github.ref_name == 'master' && 'prod' || 'dev' }}
       aws_region: eu-west-2
+      aws_assume_role_arn: ${{ vars.AWS_ASSUME_ROLE_ARN }}
+      aws_dynamodb_statelock_table: ${{ vars.AWS_DYNAMODB_STATELOCK_TABLE }}
+      aws_s3_backend_bucket: ${{ vars.AWS_S3_BACKEND_BUCKET }}
     secrets:
       kubeconfig: ${{ secrets.KUBE_CONFIG_DATA }}
       aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
       aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+  integration-tests:
+    uses: ./.github/workflows/integration-tests.yaml
+    needs: deploy-environment
+    if: github.ref == 'refs/heads/dev'
+    name: Integration Tests
+    secrets:
+      kubeconfig: ${{ secrets.KUBE_CONFIG_DATA }}
+      api_key: ${{ secrets.API_KEY }}

@@ -4,7 +4,8 @@ locals {
   container_images = [
     "api",
     "alembic-migrations",
-    "web"
+    "web",
+    "load-seed-data"
   ]
 }
 

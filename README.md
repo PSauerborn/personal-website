@@ -5,8 +5,11 @@
 1. [Overview](#overview)
 2. [Components](#components)
     - [.github/workflows](#.github%2Fworkflows)
+    - [acceptance](#acceptance)
     - [alembic](#alembic)
     - [api](#api)
+    - [manifests](#manifests)
+    - [scripts](#scripts)
     - [terraform](#terraform)
     - [web](#web)
 3. [Deployments](#deployments)
@@ -23,8 +26,11 @@ The following repository contains source code, IAC and CI/CD pipelines to manage
 .
 ├── .github
 │   └── workflows # CICD pipelines
+├── acceptance # End-to-end acceptance tests
 ├── alembic # PostgreSQL table definition and migration scripts
 ├── api # source code for API layer
+├── manifests # Kubernetes manifests
+├── scripts # Helper scripts for development and deployment
 ├── terraform
 │   └── env
 │       ├── dev # tf for DEV environment
@@ -52,6 +58,11 @@ The monorepo contains several key components, each of which has its own dedicate
 
 CI/CD workflows and shared actions used for deployments. `tests.yaml` runs on pull requests to `dev` and `master` to perform pre-merge checks, and `deploy.yaml` runs on merges to `dev` and `master` to release.
 
+
+#### `acceptance`
+
+Gherkin feature files and Golang step definitions for end-to-end acceptance tests written in Golang using the Godog BDD framework. These tests run against the deployed environment to verify system functionality.
+
 #### `alembic`
 
 Database table definitions and migrations managed via `alembic`. The included `Dockerfile` builds a container that is ran as a Kubernetes job to provision the PostgreSQL database when a new revision is released.
@@ -59,6 +70,14 @@ Database table definitions and migrations managed via `alembic`. The included `D
 #### `api`
 
 Golang source code for the REST API that serves the main application and manages internal data.
+
+#### `manifests`
+
+Kubernetes manifests used for deployment.
+
+#### `scripts`
+
+Collection of shell scripts used for CI/CD, local development, and other utility tasks, including generation and loading of test data for acceptance tests.
 
 #### `terraform`
 

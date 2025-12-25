@@ -9,21 +9,15 @@ terraform {
   }
 
   backend "s3" {
-    bucket = "alpn-software.terraform-state"
-    key    = "state/app=personal_website/env=prod/state.tfstate"
-    region = "eu-west-2"
-    assume_role = {
-      role_arn = "arn:aws:iam::215268073545:role/TerraformCIRole"
-    }
-    dynamodb_table = "alpn-software.terraform-state-locks"
+    key = "state/app=personal_website/env=prod/state.tfstate"
   }
 }
 
 provider "aws" {
-  region = "eu-west-2"
+  region = var.aws_region
 
   assume_role {
-    role_arn = "arn:aws:iam::215268073545:role/TerraformCIRole"
+    role_arn = var.aws_assume_role_arn
   }
 }
 

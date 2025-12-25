@@ -1,0 +1,36 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: load-seed-data
+  namespace: dev
+spec:
+  backoffLimit: 3
+  template:
+    metadata:
+      labels:
+        app: load-seed-data
+    spec:
+      restartPolicy: Never
+      imagePullSecrets:
+        - name: dev-ecr-creds
+      containers:
+        - name: load-seed-data
+          image: 215268073545.dkr.ecr.eu-west-2.amazonaws.com/personal-website-load-seed-data
+          imagePullPolicy: Always
+          env:
+            - name: DB_HOST
+              value: personal-website-dev-db-cluster-rw
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_DATABASE
+              value: postgres
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: personal-website-dev-db-cluster-superuser
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: personal-website-dev-db-cluster-superuser
+                  key: password
