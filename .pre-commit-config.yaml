@@ -67,3 +67,12 @@ repos:
     language: system
     pass_filenames: false
     files: ^scripts/
+
+- repo: local
+  hooks:
+  - id: lint
+    name: Run Acceptance Formatting & Linting
+    entry: make -C acceptance lint
+    language: system
+    pass_filenames: false
+    files: ^acceptance/

@@ -26,6 +26,7 @@ type Contact struct {
 type ContactRequest struct {
 	Id        string    `json:"id"`
 	ContactId string    `json:"contact_id"`
+	Email     string    `json:"email"`
 	Message   string    `json:"message"`
 	CreatedAt time.Time `json:"created_at"`
 }

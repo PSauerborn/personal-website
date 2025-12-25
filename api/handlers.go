@@ -139,7 +139,7 @@ func ContactHandler(c *gin.Context, db Persistence) RESTResponse {
 		log.Info(fmt.Sprintf("creating new contact for email: %s", body.Email))
 		newContact := Contact{
 			Name:  body.Name,
-			Email: body.Email,
+			Email: email,
 		}
 
 		contactId, err = db.CreateContact(newContact)
