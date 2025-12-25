@@ -100,7 +100,18 @@ func (db *PGPersistence) CreateContactRequest(entry ContactRequest) (string, err
 // ListContactRequests retrieves all contact requests from the database
 func (db *PGPersistence) ListContactRequests() ([]ContactRequest, error) {
 	var requests []ContactRequest
-	query := `SELECT id, contact_id, message, created_at FROM base.contact_requests;`
+	// inner join to contacts to get email
+	query := `SELECT
+		cr.id,
+		c.contact_id,
+		c.email,
+		cr.message,
+		cr.created_at
+	FROM
+		base.contact_requests cr
+	INNER JOIN
+		base.contacts c ON cr.contact_id = c.id;`
+
 	rows, err := db.Conn.Query(context.TODO(), query)
 	if err != nil {
 		return nil, err
@@ -109,7 +120,7 @@ func (db *PGPersistence) ListContactRequests() ([]ContactRequest, error) {
 
 	for rows.Next() {
 		var request ContactRequest
-		if err := rows.Scan(&request.Id, &request.ContactId, &request.Message, &request.CreatedAt); err != nil {
+		if err := rows.Scan(&request.Id, &request.ContactId, &request.Email, &request.Message, &request.CreatedAt); err != nil {
 			return nil, err
 		}
 		requests = append(requests, request)
