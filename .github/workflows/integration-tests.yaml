@@ -32,7 +32,7 @@ jobs:
       - name: Seed Test Environment
         working-directory: ./manifests
         run: |
-          kubectl apply -f load_seed_data.yaml
+          kubectl replace --force -f load_seed_data.yaml
 
   run-integration-tests:
     runs-on: ubuntu-latest
