@@ -56,4 +56,4 @@ jobs:
           echo "Running integration tests..."
           make run-tests
         env:
-          API_KEY: ${{ secrets.api_key }}
+          ADMIN_API_KEY: ${{ secrets.api_key }}
