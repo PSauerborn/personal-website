@@ -10,7 +10,7 @@ import (
 
 // NewRouter creates a new Gin router with all routes and middleware configured
 // based on the provided configuration.
-func NewRouter(config *Config) *gin.Engine {
+func NewRouter(controller *Controller) *gin.Engine {
 	r := gin.Default()
 	r.Use(cors.Default())
 
@@ -18,127 +18,71 @@ func NewRouter(config *Config) *gin.Engine {
 	// liveness and readiness probes. do not log to db.
 	loggingExemptions := []LoggingExemption{
 		{
-			PathRegex: "^/api/" + config.APIVersion + "/public/version$",
+			PathRegex: "^/" + controller.config.APIVersion + "/public/version$",
+			Method:    "GET",
+		},
+		{
+			PathRegex: "^/" + controller.config.APIVersion + "/public/health$",
 			Method:    "GET",
 		},
 	}
 	// router group for public routes. public routes
 	// do not require authentication but are logged
 	// for tracing purposes
-	public := r.Group(fmt.Sprintf("/api/%s/public", config.APIVersion))
-	public.Use(RouteLoggingMiddleware(config, loggingExemptions))
+	public := r.Group(fmt.Sprintf("/%s/public", controller.config.APIVersion))
+	public.Use(RouteLoggingMiddleware(controller, loggingExemptions))
 
 	// router group for private routes that require
 	// authentication
-	admin := r.Group(fmt.Sprintf("/api/%s/admin", config.APIVersion))
-	admin.Use(AdminAuthMiddleware(config))
-
-	pgDsn := PostgresDSNFromConfig(config)
+	admin := r.Group(fmt.Sprintf("/%s/admin", controller.config.APIVersion))
+	admin.Use(AdminAuthMiddleware(controller))
 
 	// health check endpoint
 	public.GET("/health", func(c *gin.Context) {
-		// Create a new database connection
-		db, err := NewPGPersistence(pgDsn)
-		if err != nil {
-			log.Error(fmt.Sprintf("failed to connect to database: %v", err))
-			c.JSON(500, gin.H{
-				"error": "Internal server error",
-			})
-			return
-		}
-		defer db.Conn.Close()
-
 		log.Info("processing health check request")
-		response := HealthCheckHandler(c, db)
+		response := controller.HealthCheckHandler(c)
 		response.Send(c)
 	})
 
-	// version endpoint
+	// version endpoint1
 	public.GET("/version", func(c *gin.Context) {
 		log.Info("processing version request")
-		response := VersionHandler(c, config)
+		response := controller.VersionHandler(c)
 		response.Send(c)
 	})
 
 	// GET /resume endpoint to return resume PDF
 	public.GET("/resume", func(c *gin.Context) {
 		log.Info("processing resume request")
-		// NOTE: /resume returns a file as attachment
-		// not a JSON RESTResponse
-		response := ResumeHandler(c, config)
+		response := controller.ResumeHandler(c)
 		response.Send(c)
 	})
 
 	// POST /contacts endpoint to submit a new contact request
 	public.POST("/contacts", func(c *gin.Context) {
-		// Create a new database connection
-		db, err := NewPGPersistence(pgDsn)
-		if err != nil {
-			log.Error(fmt.Sprintf("failed to connect to database: %v", err))
-			c.JSON(500, gin.H{
-				"error": "Internal server error",
-			})
-			return
-		}
-		defer db.Conn.Close()
-
 		log.Info("processing contact request")
-
-		response := ContactHandler(c, db)
+		response := controller.ContactHandler(c)
 		response.Send(c)
 	})
 
 	// GET /stats endpoint to return site statistics
 	admin.GET("/stats", func(c *gin.Context) {
-		// Create a new database connection
-		db, err := NewPGPersistence(pgDsn)
-		if err != nil {
-			log.Error(fmt.Sprintf("failed to connect to database: %v", err))
-			c.JSON(500, gin.H{
-				"error": "Internal server error",
-			})
-			return
-		}
-		defer db.Conn.Close()
-
 		log.Info("processing stats request")
-		response := StatsHandler(c, db)
+		response := controller.StatsHandler(c)
 		response.Send(c)
 	})
 
 	// GET /contacts endpoint to list all contacts
 	admin.GET("/contacts", func(c *gin.Context) {
-		// Create a new database connection
-		db, err := NewPGPersistence(pgDsn)
-		if err != nil {
-			log.Error(fmt.Sprintf("failed to connect to database: %v", err))
-			c.JSON(500, gin.H{
-				"error": "Internal server error",
-			})
-			return
-		}
-		defer db.Conn.Close()
-
 		log.Info("processing contacts request")
-		response := ListContactsHandler(c, db)
+		response := controller.ListContactsHandler(c)
 		response.Send(c)
 	})
 
 	// GET /contacts/requests endpoint to list all contact requests
 	admin.GET("/contacts/requests", func(c *gin.Context) {
-		// Create a new database connection
-		db, err := NewPGPersistence(pgDsn)
-		if err != nil {
-			log.Error(fmt.Sprintf("failed to connect to database: %v", err))
-			c.JSON(500, gin.H{
-				"error": "Internal server error",
-			})
-			return
-		}
-		defer db.Conn.Close()
-
 		log.Info("processing contact requests")
-		response := ListContactRequestsHandler(c, db)
+		response := controller.ListContactRequestsHandler(c)
 		response.Send(c)
 	})
 
@@ -150,7 +94,20 @@ func main() {
 	// set log level based on config settings
 	log.SetLevel(ParseLogLevel(config.LogLevel))
 
-	router := NewRouter(config)
+	// Create a new database connection
+	dsn := PostgresDSNFromConfig(config)
+	db, err := NewPGPersistence(dsn)
+	if err != nil {
+		log.Fatal(fmt.Sprintf("failed to connect to database: %v", err))
+	}
+	defer db.pool.Close()
+
+	controller := &Controller{
+		config: config,
+		db:     db,
+	}
+
+	router := NewRouter(controller)
 	// start server and listen on configured port
 	if err := router.Run(fmt.Sprintf(":%d", config.Port)); err != nil {
 		log.Fatal(fmt.Sprintf("failed to start server: %v", err))

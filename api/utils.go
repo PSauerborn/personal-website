@@ -1,6 +1,11 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+
+	"github.com/google/uuid"
+)
 
 // PostgresDSNFromConfig constructs a PostgreSQL DSN from the given configuration.
 func PostgresDSNFromConfig(cfg *Config) string {
@@ -12,4 +17,10 @@ func PostgresDSNFromConfig(cfg *Config) string {
 		cfg.PostgresDatabase,
 	)
 	return dsn
+}
+
+func GenerateId() string {
+	id := uuid.New().String()
+	id = strings.ReplaceAll(id, "-", "")
+	return id
 }

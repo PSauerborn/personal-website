@@ -1,0 +1,8 @@
+app:
+  log_level: info
+  port: 8080
+  version: v1
+
+resume:
+  path_pdf: etc/resume.pdf
+  path_json: etc/resume.json
