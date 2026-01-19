@@ -5,9 +5,9 @@
 <script setup>
 import { useMeta } from 'quasar'
 
-const siteUrl = 'https://pascal-sauerborn.com'
-const siteName = 'Pascal Sauerborn'
-const title = 'Pascal Sauerborn - Senior Software Engineer'
+const siteUrl = 'https://s31-software.com'
+const siteName = 'S31 Software & Co LLC'
+const title = 'Pascal Sauerborn - Senior Software & DevOps Engineer'
 const description =
   'Senior Software Engineer specializing in Backend & Cloud Infrastructure. Python, Go, AWS, Kubernetes, Terraform. Available for Outside IR35 contracts in UK & US. Trading as S31 Software & Co LLC.'
 
@@ -121,7 +121,7 @@ useMeta({
         '@context': 'https://schema.org',
         '@type': 'Person',
         name: 'Pascal Sauerborn',
-        jobTitle: 'Senior Software Engineer',
+        jobTitle: 'Senior Software & DevOps Engineer',
         url: siteUrl,
         image: `${siteUrl}/profile.png`,
         sameAs: ['https://github.com/psauerborn', 'https://linkedin.com/in/psauerborn'],

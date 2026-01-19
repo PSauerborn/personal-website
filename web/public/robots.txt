@@ -1,0 +1,11 @@
+# robots.txt for https://s31-software.com
+# Allow all web crawlers to access the entire site
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://s31-software.com/sitemap.xml
+
+# Crawl-delay for polite crawling (optional, respected by some bots)
+Crawl-delay: 1

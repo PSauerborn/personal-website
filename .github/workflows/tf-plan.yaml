@@ -8,6 +8,12 @@ on:
         required: true
       aws_secret_access_key:
         required: true
+      org_ssh_key:
+        required: true
+      pg_password:
+        required: false
+      pg_username:
+        required: false
     inputs:
       environment:
         required: true
@@ -15,11 +21,8 @@ on:
       aws_region:
         required: false
         type: string
-        default: eu-west-2
+        default: us-east-1
       aws_assume_role_arn:
-        required: true
-        type: string
-      aws_dynamodb_statelock_table:
         required: true
         type: string
       aws_s3_backend_bucket:
@@ -58,14 +61,22 @@ jobs:
         env:
           KUBE_CONFIG: ${{ secrets.kubeconfig }}
 
+      - name: Setup SSH Agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.org_ssh_key }}
+
       - name: Run Terraform Plan
-        working-directory: ./terraform/env/${{ inputs.environment }}
+        working-directory: ./infrastructure/terraform/env/${{ inputs.environment }}
         run: |
           echo "Running Terraform plan..."
           terraform init -backend-config="bucket=${{ inputs.aws_s3_backend_bucket }}" \
             -backend-config="region=${{ inputs.aws_region }}" \
-            -backend-config="dynamodb_table=${{ inputs.aws_dynamodb_statelock_table }}" \
             -backend-config="assume_role={ role_arn = \"${{ inputs.aws_assume_role_arn }}\" }"
 
-          terraform plan -var="aws_region=${{ inputs.aws_region }}" \
-            -var="aws_assume_role_arn=${{ inputs.aws_assume_role_arn }}"
+          terraform plan
+        env:
+          TF_VAR_postgres_password: ${{ secrets.pg_password }}
+          TF_VAR_postgres_user: ${{ secrets.pg_username }}
+          TF_VAR_aws_region: ${{ inputs.aws_region }}
+          TF_VAR_aws_assume_role_arn: ${{ inputs.aws_assume_role_arn }}

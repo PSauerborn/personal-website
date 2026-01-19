@@ -1,0 +1,32 @@
+replicaCount: 1
+
+image:
+  repository: 450876623734.dkr.ecr.us-east-1.amazonaws.com/personal-website/api
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+
+livenessProbe:
+  httpGet:
+    path: /v1/public/version
+    port: 8080
+readinessProbe:
+  httpGet:
+    path: /v1/public/health
+    port: 8080
+
+ingress:
+  enabled: true
+  tls:
+  - secretName: tls-cert
+    hosts:
+      - api.s31-software.com
+      - api-dev.s31-software.com
+
+env:
+  LOG_LEVEL: info
+
+secrets: {}
