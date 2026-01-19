@@ -1,19 +1,12 @@
-@font-face {
-  font-family: 'Avenir';
-  src: url('./fonts/Avenir-Medium.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
 @import 'https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,200..900;1,200..900&display=swap';
+@import url('https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap');
 
 :root {
-  --claude-paper: #f6f2ea;
-  --claude-surface: #fffcf6;
-  --claude-border: #e7dfd3;
-  --claude-text: #1d1f23;
-  --claude-muted: #5b6068;
+  --s31-paper: #f6f2ea;
+  --s31-surface: #fffcf6;
+  --s31-border: #e7dfd3;
+  --s31-text: #1d1f23;
+  --s31-muted: #5b6068;
 }
 
 body,
@@ -22,25 +15,25 @@ body,
 }
 
 body.body--light {
-  background: var(--claude-paper);
-  color: var(--claude-text);
+  background: var(--s31-paper);
+  color: var(--s31-text);
 }
 
 .q-card,
 .q-menu,
 .q-dialog__inner > div {
-  background: var(--claude-surface);
-  border: 1px solid var(--claude-border);
+  background: var(--s31-surface);
+  border: 1px solid var(--s31-border);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
   border-radius: 16px;
 }
 
 .q-field--outlined .q-field__control {
-  background: var(--claude-surface);
-  border-color: var(--claude-border);
+  background: var(--s31-surface);
+  border-color: var(--s31-border);
   border-radius: 14px;
 }
 
 .text-muted {
-  color: var(--claude-muted) !important;
+  color: var(--s31-muted) !important;
 }
