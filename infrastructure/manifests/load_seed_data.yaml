@@ -22,9 +22,9 @@ spec:
               value: "postgres-dev-rw.shared-infra"
             - name: DB_PORT
               value: "5432"
-            - name: DB_DATABASE
+            - name: DB_NAME
               value: personal_website
-            - name: DB_USERNAME
+            - name: DB_USER
               valueFrom:
                 secretKeyRef:
                   name: postgres-creds-dev

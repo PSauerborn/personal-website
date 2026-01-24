@@ -49,7 +49,7 @@ func (a *ApiFeature) iSubmitAContactRequest(name, email, message string) error {
 	}
 	body := bytes.NewBuffer(encoded)
 
-	url := fmt.Sprintf("%s/api/v1/public/contacts", API_BASE_URL)
+	url := fmt.Sprintf("%s/v1/public/contacts", API_BASE_URL)
 	request, err := http.NewRequest("POST", url, body)
 	if err != nil {
 		return err
