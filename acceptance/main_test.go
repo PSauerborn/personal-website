@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	API_BASE_URL = "https://api-dev.alpn-software.com"
+	API_BASE_URL = "https://api-dev.s31-software.com"
 )
 
 // TestMain is the entry point for running the acceptance tests using Godog.

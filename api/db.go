@@ -2,38 +2,58 @@ package main
 
 import (
 	"context"
+	"errors"
 	"strings"
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	log "github.com/sirupsen/logrus"
 )
 
 type Persistence interface {
 	HealthCheck() error
+
 	GetContact(email string) (*Contact, error)
-	CreateContact(contact Contact) (string, error)
+	CreateContact(email, name, message string) (string, error)
+	CreateContactRequest(email, message string) (string, error)
+
 	ListContacts() ([]Contact, error)
-	CreateContactRequest(entry ContactRequest) (string, error)
 	ListContactRequests() ([]ContactRequest, error)
+
 	LogRequest(request LoggedRequest) (string, error)
 	LogResponse(request LoggedResponse) error
 	GetRequestStats() (*RequestStats, error)
+
 	GetAPIKey(key string) (*APIKey, error)
 }
 
 type PGPersistence struct {
 	// Add fields for database connection if needed
-	Conn *pgxpool.Pool
+	pool *pgxpool.Pool
+}
+
+func NewPGPersistence(dsn string) (*PGPersistence, error) {
+	// Create a new PostgreSQL connection pool
+	// using the configuration parameters
+	pool, err := pgxpool.New(context.TODO(), dsn)
+	if err != nil {
+		return nil, err
+	}
+
+	return &PGPersistence{
+		pool: pool,
+	}, nil
 }
 
 func (db *PGPersistence) HealthCheck() error {
-	return db.Conn.Ping(context.TODO())
+	return db.pool.Ping(context.TODO())
 }
 
 func (db *PGPersistence) GetContact(email string) (*Contact, error) {
 	var contact Contact
-	response, err := db.Conn.Query(context.TODO(),
+	response, err := db.pool.Query(context.TODO(),
 		"SELECT id, name, email, created_at FROM base.contacts WHERE email=$1", email)
 	if err != nil {
 		return nil, err
@@ -51,24 +71,67 @@ func (db *PGPersistence) GetContact(email string) (*Contact, error) {
 	return nil, ContactNotFoundError{Email: email}
 }
 
-// CreateContact stores a new contact in the database
-func (db *PGPersistence) CreateContact(contact Contact) (string, error) {
-	id := uuid.New().String()
-	id = strings.ReplaceAll(id, "-", "")
+// CreateContact creates a new contact and a contact request.
+// It uses a transaction to ensure that both are created or neither is.
+func (db *PGPersistence) CreateContact(email, name, message string) (string, error) {
+	ctx := context.TODO()
+	// begin new transaction
+	tx, err := db.pool.Begin(ctx)
+	if err != nil {
+		return "", err
+	}
 
-	query := `
-		INSERT INTO base.contacts (id, name, email, created_at)
-		VALUES ($1, $2, $3, $4);`
-	_, err := db.Conn.Exec(context.TODO(), query,
-		id, contact.Name, contact.Email, time.Now())
+	defer func() {
+		if err := tx.Rollback(ctx); err != nil && !errors.Is(err, pgx.ErrTxClosed) {
+			log.WithError(err).Error("rollback error")
+		}
+	}()
+
+	contactId := GenerateId()
+	ts := time.Now().UTC()
+
+	contactQuery := "INSERT INTO base.contacts(id, name, email, created_at) VALUES ($1, $2, $3, $4);"
+	_, err = tx.Exec(ctx, contactQuery, contactId, name, email, ts)
+	if err != nil {
+		return "", err
+	}
+
+	contactRequestId := GenerateId()
+
+	contactRequestQuery := "INSERT INTO base.contact_requests(id, contact_id, message, created_at) VALUES ($1, $2, $3, $4);"
+	_, err = tx.Exec(ctx, contactRequestQuery, contactRequestId, contactId, message, ts)
+	if err != nil {
+		return "", err
+	}
+
+	if err := tx.Commit(ctx); err != nil {
+		return "", err
+	}
+
+	return contactId, nil
+}
+
+// CreateContactRequest stores a new contact request in the database
+func (db *PGPersistence) CreateContactRequest(email, message string) (string, error) {
+	id := GenerateId()
+
+	query := `WITH contact AS (
+		SELECT id FROM base.contacts WHERE email = $2
+	)
+		INSERT INTO
+			base.contact_requests (id, contact_id, message, created_at)
+		VALUES
+			($1, (SELECT id FROM contact), $3, $4);`
+	_, err := db.pool.Exec(context.TODO(), query,
+		id, email, message, time.Now().UTC())
 	return id, err
 }
 
 // ListContacts retrieves all contacts from the database
 func (db *PGPersistence) ListContacts() ([]Contact, error) {
 	var contacts []Contact
-	query := `SELECT id, name, email, created_at FROM base.contacts;`
-	rows, err := db.Conn.Query(context.TODO(), query)
+	query := "SELECT id, name, email, created_at FROM base.contacts;"
+	rows, err := db.pool.Query(context.TODO(), query)
 	if err != nil {
 		return nil, err
 	}
@@ -82,19 +145,6 @@ func (db *PGPersistence) ListContacts() ([]Contact, error) {
 		contacts = append(contacts, contact)
 	}
 	return contacts, nil
-}
-
-// CreateContactRequest stores a new contact request in the database
-func (db *PGPersistence) CreateContactRequest(entry ContactRequest) (string, error) {
-	id := uuid.New().String()
-	id = strings.ReplaceAll(id, "-", "")
-
-	query := `
-		INSERT INTO base.contact_requests (id, contact_id, message, created_at)
-		VALUES ($1, $2, $3, $4);`
-	_, err := db.Conn.Exec(context.TODO(), query,
-		id, entry.ContactId, entry.Message, time.Now())
-	return id, err
 }
 
 // ListContactRequests retrieves all contact requests from the database
@@ -112,7 +162,7 @@ func (db *PGPersistence) ListContactRequests() ([]ContactRequest, error) {
 	INNER JOIN
 		base.contacts c ON cr.contact_id = c.id;`
 
-	rows, err := db.Conn.Query(context.TODO(), query)
+	rows, err := db.pool.Query(context.TODO(), query)
 	if err != nil {
 		return nil, err
 	}
@@ -133,20 +183,16 @@ func (db *PGPersistence) LogRequest(request LoggedRequest) (string, error) {
 	id := uuid.New().String()
 	id = strings.ReplaceAll(id, "-", "")
 
-	query := `
-		INSERT INTO base.logged_requests (method, path, id, request_ts, ip_address)
-		VALUES ($1, $2, $3, $4, $5);`
-	_, err := db.Conn.Exec(context.TODO(), query,
+	query := "INSERT INTO base.logged_requests (method, path, id, request_ts, ip_address) VALUES ($1, $2, $3, $4, $5);"
+	_, err := db.pool.Exec(context.TODO(), query,
 		request.Method, request.Path, id, request.RequestTs, request.IPAddress)
 	return id, err
 }
 
 // LogResponse logs an outgoing response to the database
 func (db *PGPersistence) LogResponse(response LoggedResponse) error {
-	query := `
-		INSERT INTO base.logged_responses (id, status, time_elapsed, response_ts)
-		VALUES ($1, $2, $3, $4);`
-	_, err := db.Conn.Exec(context.TODO(), query,
+	query := "INSERT INTO base.logged_responses (id, status, time_elapsed, response_ts) VALUES ($1, $2, $3, $4);"
+	_, err := db.pool.Exec(context.TODO(), query,
 		response.RequestId, response.Status, response.TimeElapsed, time.Now())
 	return err
 }
@@ -162,7 +208,7 @@ func (db *PGPersistence) GetRequestStats() (*RequestStats, error) {
 	FROM
 		base.logged_requests;`
 
-	if err := db.Conn.QueryRow(context.TODO(), statsQuery).Scan(&stats.TotalRequests, &stats.UniqueIPCount); err != nil {
+	if err := db.pool.QueryRow(context.TODO(), statsQuery).Scan(&stats.TotalRequests, &stats.UniqueIPCount); err != nil {
 		return nil, err
 	}
 
@@ -175,7 +221,7 @@ func (db *PGPersistence) GetRequestStats() (*RequestStats, error) {
 		ORDER BY
 			request_count DESC;`
 
-	rows, err := db.Conn.Query(context.TODO(), pathQuery)
+	rows, err := db.pool.Query(context.TODO(), pathQuery)
 	if err != nil {
 		return nil, err
 	}
@@ -203,7 +249,7 @@ func (db *PGPersistence) GetRequestStats() (*RequestStats, error) {
 		ORDER BY
 			status_count DESC;`
 
-	rows, err = db.Conn.Query(context.TODO(), statusQuery)
+	rows, err = db.pool.Query(context.TODO(), statusQuery)
 	if err != nil {
 		return nil, err
 	}
@@ -229,8 +275,9 @@ func (db *PGPersistence) GetRequestStats() (*RequestStats, error) {
 func (db *PGPersistence) GetAPIKey(key string) (*APIKey, error) {
 
 	var apiKey APIKey
-	response, err := db.Conn.Query(context.TODO(),
-		"SELECT key, owner, created_at, expires_at FROM base.api_keys WHERE key=$1", key)
+
+	query := "SELECT key, owner, created_at, expires_at FROM base.api_keys WHERE key=$1;"
+	response, err := db.pool.Query(context.TODO(), query, key)
 	if err != nil {
 		return nil, err
 	}
@@ -245,17 +292,4 @@ func (db *PGPersistence) GetAPIKey(key string) (*APIKey, error) {
 	}
 
 	return nil, APIKeyNotFoundError{Key: key}
-}
-
-func NewPGPersistence(dsn string) (*PGPersistence, error) {
-	// Create a new PostgreSQL connection pool
-	// using the configuration parameters
-	pool, err := pgxpool.New(context.TODO(), dsn)
-	if err != nil {
-		return nil, err
-	}
-
-	return &PGPersistence{
-		Conn: pool,
-	}, nil
 }

@@ -3,7 +3,7 @@ include .build.env
 version ?= latest
 
 image_name := api
-repository_name := personal-website-api
+repository_name := personal-website/api
 
 .PHONY: run-tests
 run-tests:

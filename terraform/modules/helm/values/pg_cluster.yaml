@@ -1,4 +1,0 @@
-cluster:
-  instances: 1
-  storage:
-    size: 3Gi

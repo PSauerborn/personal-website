@@ -9,7 +9,7 @@ import (
 
 // iSubmitAHealthCheckRequest sends a GET request to the health check endpoint.
 func (a *ApiFeature) iSubmitAHealthCheckRequest() error {
-	url := fmt.Sprintf("%s/api/v1/public/health", API_BASE_URL)
+	url := fmt.Sprintf("%s/v1/public/health", API_BASE_URL)
 	resp, err := http.Get(url)
 	if err != nil {
 		return err

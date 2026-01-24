@@ -1,10 +1,9 @@
-aws_region=eu-west-2
-aws_account_id=215268073545
+include .build.env
 
 version ?= latest
 
 image_name := web
-repository_name := personal-website-web
+repository_name := personal-website/web
 
 .PHONY: build-image
 build-image:

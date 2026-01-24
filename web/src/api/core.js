@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const apiClient = axios.create({
-  baseURL: 'https://api-dev.alpn-software.com/api/v1/public',
+  baseURL: 'https://api.s31-software.com/v1/public',
   headers: {
     'Content-Type': 'application/json',
   },

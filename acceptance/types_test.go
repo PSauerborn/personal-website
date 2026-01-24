@@ -36,7 +36,7 @@ func (a *ApiFeature) ListContacts() (*http.Response, error) {
 	}
 	a.apiKey = &key
 
-	url := fmt.Sprintf("%s/api/v1/admin/contacts", API_BASE_URL)
+	url := fmt.Sprintf("%s/v1/admin/contacts", API_BASE_URL)
 	request, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err

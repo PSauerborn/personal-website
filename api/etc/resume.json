@@ -35,8 +35,8 @@
             "Designed and implemented GraphQL and REST APIs (Python, Go) for participant consent, access to EHR (3M+ records), dispatch & storage of biological sample kits (100k+ samples processed), and linking of sequenced genomic data via ancestry inference pipeline.",
             "Developed ETL pipelines processing 4TB+ of health and ancestry data from multiple 3rd party data providers.",
             "Built and maintained GDPR-compliant data storage in DynamoDB (single table design) and PostgreSQL.",
-            "Delivered CI/CD pipelines deploying containerised applications via Terraform to AWS.",
-            "Delivered a datalake for unified reporting and analytics across applications via AWSS3, Glue and Athena."
+            "Delivered CI/CD pipelines to deploy/manage DiscoverMe platform via Terraform to AWS.",
+            "Delivered datalake for unified reporting and analytics across applications via AWSS3, Glue and Athena."
         ]
     }, {
         "title": "Senior MLOps Engineer",
