@@ -75,7 +75,7 @@ Database table definitions and migrations managed via `alembic`. The included `D
 
 #### `infrastructure/manifests`
 
-Kubernetes manifests used for deployment.
+Additional kubernetes utility manifests, including a job to load seed data into the database for acceptance tests.
 
 #### `infrastructure/terraform`
 
