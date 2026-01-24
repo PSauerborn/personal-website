@@ -48,8 +48,8 @@ jobs:
       aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
       aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       org_ssh_key: ${{ secrets.ORG_SSH_KEY }}
-      pg_password: ${{ github.event.pull_request.base.ref == 'master' && secrets.POSTGRES_PASSWORD_PROD || secrets.POSTGRES_PASSWORD_DEV }}
-      pg_username: ${{ github.event.pull_request.base.ref == 'master' && secrets.POSTGRES_USERNAME_PROD || secrets.POSTGRES_USERNAME_DEV }}
+      pg_password: ${{ github.ref_name == 'master' && secrets.POSTGRES_PASSWORD_PROD || secrets.POSTGRES_PASSWORD_DEV }}
+      pg_username: ${{ github.ref_name == 'master' && secrets.POSTGRES_USERNAME_PROD || secrets.POSTGRES_USERNAME_DEV }}
 
   deploy-environment:
     uses: ./.github/workflows/tf-apply.yaml
@@ -65,8 +65,8 @@ jobs:
       aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
       aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       org_ssh_key: ${{ secrets.ORG_SSH_KEY }}
-      pg_password: ${{ github.event.pull_request.base.ref == 'master' && secrets.POSTGRES_PASSWORD_PROD || secrets.POSTGRES_PASSWORD_DEV }}
-      pg_username: ${{ github.event.pull_request.base.ref == 'master' && secrets.POSTGRES_USERNAME_PROD || secrets.POSTGRES_USERNAME_DEV }}
+      pg_password: ${{ github.ref_name == 'master' && secrets.POSTGRES_PASSWORD_PROD || secrets.POSTGRES_PASSWORD_DEV }}
+      pg_username: ${{ github.ref_name == 'master' && secrets.POSTGRES_USERNAME_PROD || secrets.POSTGRES_USERNAME_DEV }}
 
   integration-tests:
     uses: ./.github/workflows/integration-tests.yaml
