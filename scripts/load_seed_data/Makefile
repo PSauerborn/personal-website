@@ -3,7 +3,7 @@ include .build.env
 version ?= latest
 
 image_name := load-seed-data
-repository_name := personal-website-load-seed-data
+repository_name := personal-website/load-seed-data
 
 
 .PHONY: build-image

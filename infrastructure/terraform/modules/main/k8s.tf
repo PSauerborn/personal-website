@@ -32,7 +32,7 @@ resource "kubernetes_job" "alembic_migrations" {
 
           env {
             name  = "POSTGRES_DB"
-            value = "postgres"
+            value = "personal_website"
           }
 
           env {
