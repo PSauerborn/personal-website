@@ -8,9 +8,10 @@ RUN go mod download
 RUN go install gotest.tools/gotestsum@latest
 
 COPY etc ./etc
+COPY tests ./tests
 COPY *.go ./
 
-CMD ["gotestsum", "--format", "testname"]
+CMD ["gotestsum", "--format", "testdox"]
 
 FROM golang:1.25 AS build
 

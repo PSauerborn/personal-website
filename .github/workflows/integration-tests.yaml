@@ -30,7 +30,7 @@ jobs:
           KUBE_CONFIG: ${{ secrets.kubeconfig }}
 
       - name: Seed Test Environment
-        working-directory: ./manifests
+        working-directory: ./infrastructure/manifests
         run: |
           kubectl replace --force -f load_seed_data.yaml
 

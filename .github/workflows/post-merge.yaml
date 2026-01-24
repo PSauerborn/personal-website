@@ -11,14 +11,14 @@ jobs:
     name: Terraform Global (Plan Only)
     with:
       environment: global
-      aws_region: eu-west-2
+      aws_region: us-east-1
       aws_assume_role_arn: ${{ vars.AWS_ASSUME_ROLE_ARN }}
-      aws_dynamodb_statelock_table: ${{ vars.AWS_DYNAMODB_STATELOCK_TABLE }}
       aws_s3_backend_bucket: ${{ vars.AWS_S3_BACKEND_BUCKET }}
     secrets:
       kubeconfig: ${{ secrets.KUBE_CONFIG_DATA }}
       aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
       aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      org_ssh_key: ${{ secrets.ORG_SSH_KEY }}
 
   deploy-global:
     uses: ./.github/workflows/tf-apply.yaml
@@ -26,28 +26,30 @@ jobs:
     name: Terraform Global (Apply)
     with:
       environment: global
-      aws_region: eu-west-2
+      aws_region: us-east-1
       aws_assume_role_arn: ${{ vars.AWS_ASSUME_ROLE_ARN }}
-      aws_dynamodb_statelock_table: ${{ vars.AWS_DYNAMODB_STATELOCK_TABLE }}
       aws_s3_backend_bucket: ${{ vars.AWS_S3_BACKEND_BUCKET }}
     secrets:
       kubeconfig: ${{ secrets.KUBE_CONFIG_DATA }}
       aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
       aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      org_ssh_key: ${{ secrets.ORG_SSH_KEY }}
 
   plan-environment:
     uses: ./.github/workflows/tf-plan.yaml
     name: Terraform Environment (Plan Only)
     with:
       environment: ${{ github.ref_name == 'master' && 'prod' || 'dev' }}
-      aws_region: eu-west-2
+      aws_region: us-east-1
       aws_assume_role_arn: ${{ vars.AWS_ASSUME_ROLE_ARN }}
-      aws_dynamodb_statelock_table: ${{ vars.AWS_DYNAMODB_STATELOCK_TABLE }}
       aws_s3_backend_bucket: ${{ vars.AWS_S3_BACKEND_BUCKET }}
     secrets:
       kubeconfig: ${{ secrets.KUBE_CONFIG_DATA }}
       aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
       aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      org_ssh_key: ${{ secrets.ORG_SSH_KEY }}
+      pg_password: ${{ github.event.pull_request.base.ref == 'master' && secrets.POSTGRES_PASSWORD_PROD || secrets.POSTGRES_PASSWORD_DEV }}
+      pg_username: ${{ github.event.pull_request.base.ref == 'master' && secrets.POSTGRES_USERNAME_PROD || secrets.POSTGRES_USERNAME_DEV }}
 
   deploy-environment:
     uses: ./.github/workflows/tf-apply.yaml
@@ -55,14 +57,16 @@ jobs:
     name: Terraform Environment (Apply)
     with:
       environment: ${{ github.ref_name == 'master' && 'prod' || 'dev' }}
-      aws_region: eu-west-2
+      aws_region: us-east-1
       aws_assume_role_arn: ${{ vars.AWS_ASSUME_ROLE_ARN }}
-      aws_dynamodb_statelock_table: ${{ vars.AWS_DYNAMODB_STATELOCK_TABLE }}
       aws_s3_backend_bucket: ${{ vars.AWS_S3_BACKEND_BUCKET }}
     secrets:
       kubeconfig: ${{ secrets.KUBE_CONFIG_DATA }}
       aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
       aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      org_ssh_key: ${{ secrets.ORG_SSH_KEY }}
+      pg_password: ${{ github.event.pull_request.base.ref == 'master' && secrets.POSTGRES_PASSWORD_PROD || secrets.POSTGRES_PASSWORD_DEV }}
+      pg_username: ${{ github.event.pull_request.base.ref == 'master' && secrets.POSTGRES_USERNAME_PROD || secrets.POSTGRES_USERNAME_DEV }}
 
   integration-tests:
     uses: ./.github/workflows/integration-tests.yaml

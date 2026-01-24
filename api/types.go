@@ -42,7 +42,7 @@ type LoggedRequest struct {
 type LoggedResponse struct {
 	RequestId   string    `json:"request_id"`
 	Status      int       `json:"status"`
-	TimeElapsed int64     `json:"time_elapsed_ms"`
+	TimeElapsed float64   `json:"time_elapsed_ms"`
 	ResponseTs  time.Time `json:"response_ts"`
 }
 
@@ -66,3 +66,9 @@ const (
 	ResumeFormatPDF  ResumeFileFormat = "pdf"
 	ResumeFormatJSON ResumeFileFormat = "json"
 )
+
+type NewContactRequestBody struct {
+	Name    string `json:"name" binding:"required"`
+	Email   string `json:"email" binding:"required,email"`
+	Message string `json:"message" binding:"required"`
+}

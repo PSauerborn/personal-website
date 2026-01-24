@@ -6,11 +6,11 @@
 2. [Components](#components)
     - [.github/workflows](#.github%2Fworkflows)
     - [acceptance](#acceptance)
-    - [alembic](#alembic)
     - [api](#api)
-    - [manifests](#manifests)
+    - [infrastructure/alembic](#alembic)
+    - [infrastructure/manifests](#manifests)
+    - [infrastructure/terraform](#terraform)
     - [scripts](#scripts)
-    - [terraform](#terraform)
     - [web](#web)
 3. [Deployments](#deployments)
     - [Pipeline Triggers](#pipeline-triggers)
@@ -25,17 +25,14 @@ The following repository contains source code, IAC and CI/CD pipelines to manage
 ```txt
 .
 ├── .github
-│   └── workflows # CICD pipelines
+│   └── workflows # CICD pipelines
 ├── acceptance # End-to-end acceptance tests
-├── alembic # PostgreSQL table definition and migration scripts
 ├── api # source code for API layer
-├── manifests # Kubernetes manifests
+├── infrastructure # Infrastructure as Code
+│   ├── alembic # PostgreSQL table definition and migration scripts
+│   ├── manifests # Kubernetes manifests
+│   └── terraform # Terraform configuration
 ├── scripts # Helper scripts for development and deployment
-├── terraform
-│   └── env
-│       ├── dev # tf for DEV environment
-│       ├── global # tf for shared infra
-│       └── prod # tf for PROD environment
 ├── web # source code for UI layer
 └── .pre-commit-config.yaml
 ```
@@ -63,23 +60,24 @@ CI/CD workflows and shared actions used for deployments. `tests.yaml` runs on pu
 
 Gherkin feature files and Golang step definitions for end-to-end acceptance tests written in Golang using the Godog BDD framework. These tests run against the deployed environment to verify system functionality.
 
-#### `alembic`
-
-Database table definitions and migrations managed via `alembic`. The included `Dockerfile` builds a container that is ran as a Kubernetes job to provision the PostgreSQL database when a new revision is released.
-
 #### `api`
 
 Golang source code for the REST API that serves the main application and manages internal data.
-
-#### `manifests`
-
-Kubernetes manifests used for deployment.
 
 #### `scripts`
 
 Collection of shell scripts used for CI/CD, local development, and other utility tasks, including generation and loading of test data for acceptance tests.
 
-#### `terraform`
+
+#### `infrastructure/alembic`
+
+Database table definitions and migrations managed via `alembic`. The included `Dockerfile` builds a container that is ran as a Kubernetes job to provision the PostgreSQL database when a new revision is released.
+
+#### `infrastructure/manifests`
+
+Kubernetes manifests used for deployment.
+
+#### `infrastructure/terraform`
 
 IAC to manage the Kubernetes cluster and required AWS resources. All terraform is structured in accordance with the google best practices. Each environment has its own folder in the `terraform/env` directory that invokes `terraform/modules/main`. Currently, a `DEV`, `PROD` and `GLOBAL` environment is maintained.
 

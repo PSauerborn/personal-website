@@ -20,8 +20,8 @@ export default defineConfig((/* ctx */) => {
     extras: [
       // 'ionicons-v4',
       // 'mdi-v7',
-      'fontawesome-v6',
-      // 'eva-icons',
+      // 'fontawesome-v6',
+      'eva-icons',
       // 'themify',
       // 'line-awesome',
       // 'roboto-font-latin-ext', // this or either 'roboto-font', NEVER both!
@@ -37,7 +37,7 @@ export default defineConfig((/* ctx */) => {
         node: 'node20',
       },
 
-      vueRouterMode: 'hash', // available values: 'hash', 'history'
+      vueRouterMode: 'history', // Using history mode for SSR
       // vueRouterBase,
       // vueDevtools,
       // vueOptionsAPI: false,
@@ -91,7 +91,7 @@ export default defineConfig((/* ctx */) => {
       // directives: [],
 
       // Quasar plugins
-      plugins: ['Meta'],
+      plugins: ['Meta', 'Notify'],
     },
 
     // animations: 'all', // --- includes all animations

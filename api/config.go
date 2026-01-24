@@ -1,6 +1,8 @@
 package main
 
 import (
+	"strings"
+
 	"github.com/go-playground/validator/v10"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
@@ -29,27 +31,44 @@ func (c *Config) Validate() error {
 // and returns a Config struct. Panics if required
 // variables are missing or invalid.
 func LoadConfig() *Config {
+	replacer := strings.NewReplacer(".", "_")
+	viper.SetEnvKeyReplacer(replacer)
+
 	viper.AutomaticEnv()
-	// Set default values for optional variables
-	viper.SetDefault("POSTGRES_PORT", 5432)
-	viper.SetDefault("POSTGRES_DATABASE", "postgres")
-	viper.SetDefault("API_VERSION", "v1")
-	viper.SetDefault("LOG_LEVEL", "info")
-	viper.SetDefault("PORT", 8080)
-	viper.SetDefault("RESUME_PATH_PDF", "etc/resume.pdf")
-	viper.SetDefault("RESUME_PATH_JSON", "etc/resume.json")
+	// pull from config file if found
+	viper.AddConfigPath("etc")
+	viper.SetConfigType("yaml")
+
+	viper.SetConfigName("config")
+
+	if err := viper.ReadInConfig(); err != nil {
+		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+			// Config file not found; ignore error if desired
+		} else {
+			// Config file was found but another error was produced
+			panic(err)
+		}
+	}
+
+	viper.SetConfigName("config.local") // for development
+	if err := viper.MergeInConfig(); err != nil {
+		// It's okay if this file doesn't exist, usually
+		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
+			panic(err)
+		}
+	}
 
 	cfg := &Config{
-		PostgresHost:     viper.GetString("POSTGRES_HOST"),
-		PostgresPort:     viper.GetInt("POSTGRES_PORT"),
-		PostgresDatabase: viper.GetString("POSTGRES_DATABASE"),
-		PostgresUser:     viper.GetString("POSTGRES_USER"),
-		PostgresPassword: viper.GetString("POSTGRES_PASSWORD"),
-		APIVersion:       viper.GetString("API_VERSION"),
-		LogLevel:         viper.GetString("LOG_LEVEL"),
-		Port:             viper.GetInt("PORT"),
-		ResumePathPDF:    viper.GetString("RESUME_PATH_PDF"),
-		ResumePathJSON:   viper.GetString("RESUME_PATH_JSON"),
+		PostgresHost:     viper.GetString("postgres.host"),
+		PostgresPort:     viper.GetInt("postgres.port"),
+		PostgresDatabase: viper.GetString("postgres.database"),
+		PostgresUser:     viper.GetString("postgres.user"),
+		PostgresPassword: viper.GetString("postgres.password"),
+		APIVersion:       viper.GetString("app.version"),
+		LogLevel:         viper.GetString("app.log_level"),
+		Port:             viper.GetInt("app.port"),
+		ResumePathPDF:    viper.GetString("resume.path_pdf"),
+		ResumePathJSON:   viper.GetString("resume.path_json"),
 	}
 
 	if err := cfg.Validate(); err != nil {
