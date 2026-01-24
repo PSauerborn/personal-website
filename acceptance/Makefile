@@ -12,7 +12,7 @@ run-tests:
 		-t $(image_name)-tests .
 
 	docker run --rm \
-		-e ADMIN_API_KEY=${ADMIN_API_KEY} \
+		-e ADMIN_API_KEY \
 		$(image_name)-tests
 
 .PHONY: build-image

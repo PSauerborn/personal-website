@@ -11,7 +11,7 @@ import (
 
 // requestResumeInFormat sends a GET request to the resume endpoint with the specified format.
 func (a *ApiFeature) requestResumeInFormat(format string) error {
-	url := fmt.Sprintf("%s/api/v1/public/resume?format=%s", API_BASE_URL, format)
+	url := fmt.Sprintf("%s/v1/public/resume?format=%s", API_BASE_URL, format)
 
 	request, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -26,7 +26,7 @@ func (a *ApiFeature) requestResumeInFormat(format string) error {
 
 // requestResumeDefautltFormat sends a GET request to the resume endpoint without a format parameter.
 func (a *ApiFeature) requestResumeDefautltFormat() error {
-	url := fmt.Sprintf("%s/api/v1/public/resume", API_BASE_URL)
+	url := fmt.Sprintf("%s/v1/public/resume", API_BASE_URL)
 
 	request, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -41,7 +41,7 @@ func (a *ApiFeature) requestResumeDefautltFormat() error {
 
 // requestResumeInvalidFormat sends a GET request to the resume endpoint with an invalid format parameter.
 func (a *ApiFeature) requestResumeInvalidFormat() error {
-	url := fmt.Sprintf("%s/api/v1/public/resume?format=xml", API_BASE_URL)
+	url := fmt.Sprintf("%s/v1/public/resume?format=xml", API_BASE_URL)
 
 	request, err := http.NewRequest("GET", url, nil)
 	if err != nil {

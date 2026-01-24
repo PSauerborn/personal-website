@@ -10,7 +10,7 @@ import (
 
 // requestAdminEndpoint sends a request to a protected admin endpoint.
 func (a *ApiFeature) requestAdminEndpoint() error {
-	url := fmt.Sprintf("%s/api/v1/admin/stats", API_BASE_URL)
+	url := fmt.Sprintf("%s/v1/admin/stats", API_BASE_URL)
 
 	request, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -25,7 +25,7 @@ func (a *ApiFeature) requestAdminEndpoint() error {
 
 // requestAdminStatsEndpoint makes a GET request to the admin statistics endpoint.
 func (a *ApiFeature) requestAdminStatsEndpoint() error {
-	url := fmt.Sprintf("%s/api/v1/admin/stats", API_BASE_URL)
+	url := fmt.Sprintf("%s/v1/admin/stats", API_BASE_URL)
 
 	request, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -64,7 +64,7 @@ func (a *ApiFeature) responseShouldContainTotalNumberOfRequestsAndUniqueVisitors
 
 // requestAdminListContactsEndpoint makes a GET request to the admin contacts list endpoint.
 func (a *ApiFeature) requestAdminListContactsEndpoint() error {
-	url := fmt.Sprintf("%s/api/v1/admin/contacts", API_BASE_URL)
+	url := fmt.Sprintf("%s/v1/admin/contacts", API_BASE_URL)
 
 	request, err := http.NewRequest("GET", url, nil)
 	if err != nil {
