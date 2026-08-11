@@ -1,0 +1,2083 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DS-004-AGENTS — Agent Catalogue: Reference Dossier</title>
+  <link rel="preconnect" href="https://rsms.me/">
+  <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+  <!-- build:css -->
+  <style>
+@charset "UTF-8";
+:root {
+  --color-bg: hsl(220, 7%, 4%);
+  --color-surface: hsl(220, 6%, 7%);
+  --color-surface-hover: hsl(220, 6%, 10%);
+  --color-border: hsla(0, 0%, 100%, 0.08);
+  --color-border-hover: hsla(0, 0%, 100%, 0.12);
+  --color-text-primary: hsl(220, 27%, 97%);
+  --color-text-secondary: hsl(219, 6%, 57%);
+  --color-text-tertiary: hsl(220, 5%, 42%);
+  --color-accent: hsl(234, 56%, 60%);
+  --color-accent-text: hsl(234, 68%, 70%);
+  --header-height: 64px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+html {
+  color-scheme: dark;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: "Inter", "Inter Variable", -apple-system, "Segoe UI", "Helvetica Neue", sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0;
+  color: var(--color-text-primary);
+  background-color: var(--color-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "cv01", "cv03", "cv04";
+}
+
+img,
+video,
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+::selection {
+  background: hsla(234, 56%, 60%, 0.35);
+  color: hsl(220, 27%, 97%);
+}
+
+.text-hero, .hero__title {
+  font-size: 2.5rem;
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.022em;
+  background: linear-gradient(to bottom, hsl(220, 27%, 97%), hsla(220, 27%, 97%, 0.55));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: hsl(220, 27%, 97%);
+}
+@media (min-width: 768px) {
+  .text-hero, .hero__title {
+    font-size: 3.5rem;
+  }
+}
+@media (min-width: 1024px) {
+  .text-hero, .hero__title {
+    font-size: 4rem;
+  }
+}
+
+.text-heading, .section__title {
+  font-size: 1.5rem;
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.012em;
+  color: var(--color-text-primary);
+}
+@media (min-width: 768px) {
+  .text-heading, .section__title {
+    font-size: 2rem;
+  }
+}
+
+.text-subheading {
+  font-size: 1.125rem;
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.012em;
+  color: var(--color-text-primary);
+}
+@media (min-width: 768px) {
+  .text-subheading {
+    font-size: 1.3125rem;
+  }
+}
+
+.text-lede, .section__lede, .hero__lede {
+  font-size: 1.125rem;
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+  max-width: 65ch;
+}
+@media (min-width: 768px) {
+  .text-lede, .section__lede, .hero__lede {
+    font-size: 1.3125rem;
+  }
+}
+
+.text-body {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+  max-width: 65ch;
+}
+.text-body strong {
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.text-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: hsl(220, 5%, 42%);
+}
+
+.text-mono {
+  font-family: "Berkeley Mono", "SF Mono", "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.875rem;
+}
+
+.link {
+  color: var(--color-text-primary);
+  border-bottom: 1px solid hsla(0, 0%, 100%, 0.2);
+  transition: border-color 120ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.link:hover {
+  border-color: hsl(219, 6%, 57%);
+}
+
+.link-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  transition: color 120ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.link-arrow::after {
+  content: "→";
+  transition: transform 120ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.link-arrow:hover {
+  color: var(--color-text-primary);
+}
+.link-arrow:hover::after {
+  transform: translateX(2px);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 40px;
+  padding-inline: 16px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  white-space: nowrap;
+  border-radius: 8px;
+  transition: background-color 120ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 120ms cubic-bezier(0.16, 1, 0.3, 1), color 120ms cubic-bezier(0.16, 1, 0.3, 1);
+  outline: none;
+}
+.btn:focus-visible {
+  outline: 2px solid hsl(234, 68%, 70%);
+  outline-offset: 2px;
+}
+.btn--primary {
+  color: hsl(220, 27%, 97%);
+  background-color: hsl(234, 56%, 60%);
+  box-shadow: inset 0 1px 0 hsla(0, 0%, 100%, 0.06), 0 1px 2px hsla(0, 0%, 0%, 0.4);
+}
+.btn--primary:hover {
+  background-color: hsl(234, 68%, 70%);
+}
+.btn--primary:active {
+  background-color: hsl(234, 52%, 52%);
+}
+.btn--secondary {
+  color: var(--color-text-primary);
+  background-color: hsl(220, 6%, 10%);
+  box-shadow: inset 0 1px 0 hsla(0, 0%, 100%, 0.06), 0 1px 2px hsla(0, 0%, 0%, 0.4), inset 0 0 0 1px hsla(0, 0%, 100%, 0.08);
+}
+.btn--secondary:hover {
+  background-color: hsl(220, 5%, 13%);
+  box-shadow: inset 0 1px 0 hsla(0, 0%, 100%, 0.06), 0 1px 2px hsla(0, 0%, 0%, 0.4), inset 0 0 0 1px hsla(0, 0%, 100%, 0.12);
+}
+.btn--ghost {
+  color: var(--color-text-secondary);
+}
+.btn--ghost:hover {
+  color: var(--color-text-primary);
+  background-color: hsla(0, 0%, 100%, 0.06);
+}
+.btn--sm {
+  height: 32px;
+  padding-inline: 12px;
+}
+.btn--lg {
+  height: 48px;
+  padding-inline: 24px;
+  font-size: 1rem;
+  border-radius: 10px;
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  height: 64px;
+  background: hsla(220, 7%, 4%, 0.8);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border-bottom: 1px solid hsla(0, 0%, 100%, 0.06);
+}
+.header__inner {
+  width: 100%;
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: clamp(24px, 4vw, 32px);
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  height: 100%;
+}
+.header__logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  color: var(--color-text-primary);
+}
+.header__nav {
+  display: none;
+  align-items: center;
+  gap: 4px;
+}
+@media (min-width: 768px) {
+  .header__nav {
+    display: flex;
+  }
+}
+.header__link {
+  padding: 8px 12px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  border-radius: 8px;
+  transition: color 120ms cubic-bezier(0.16, 1, 0.3, 1), background-color 120ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.header__link:hover {
+  color: var(--color-text-primary);
+  background-color: hsla(0, 0%, 100%, 0.06);
+}
+.header__link.is-active {
+  color: var(--color-text-primary);
+}
+.header__actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+}
+
+.hero {
+  position: relative;
+  padding-block: 96px 64px;
+  text-align: left;
+  overflow: hidden;
+}
+@media (min-width: 768px) {
+  .hero {
+    padding-block: 128px 96px;
+  }
+}
+.hero__inner {
+  width: 100%;
+  max-width: 1024px;
+  margin-inline: auto;
+  padding-inline: clamp(24px, 4vw, 32px);
+  position: relative;
+}
+.hero__title {
+  max-width: 16ch;
+  margin-bottom: 24px;
+}
+.hero__lede {
+  margin-bottom: 32px;
+}
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+.hero::before {
+  content: "";
+  position: absolute;
+  top: -40%;
+  left: 50%;
+  width: 900px;
+  height: 600px;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at center, hsla(234, 56%, 60%, 0.12), transparent 65%);
+  pointer-events: none;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 28px;
+  padding-inline: 12px;
+  margin-bottom: 24px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  border-radius: 9999px;
+  box-shadow: inset 0 0 0 1px hsla(0, 0%, 100%, 0.08);
+  transition: color 120ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 120ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.pill:hover {
+  color: var(--color-text-primary);
+  box-shadow: inset 0 0 0 1px hsla(0, 0%, 100%, 0.12);
+}
+.pill__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background-color: hsl(152, 50%, 60%);
+}
+
+.section {
+  padding-block: 96px;
+}
+@media (min-width: 768px) {
+  .section {
+    padding-block: 128px;
+  }
+}
+.section__inner {
+  width: 100%;
+  max-width: 1024px;
+  margin-inline: auto;
+  padding-inline: clamp(24px, 4vw, 32px);
+}
+.section__label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: hsl(220, 5%, 42%);
+  margin-bottom: 12px;
+}
+.section__title {
+  max-width: 24ch;
+  margin-bottom: 16px;
+}
+.section__lede {
+  margin-bottom: 48px;
+}
+.section--ruled {
+  border-top: 1px solid transparent;
+  border-image: linear-gradient(to right, transparent, hsla(0, 0%, 100%, 0.08) 20%, hsla(0, 0%, 100%, 0.08) 80%, transparent) 1;
+}
+
+.grid {
+  display: grid;
+  gap: 16px;
+}
+@media (min-width: 640px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (min-width: 1024px) {
+  .grid--3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px;
+  background-color: var(--color-surface);
+  border-radius: 12px;
+  box-shadow: inset 0 0 0 1px hsla(0, 0%, 100%, 0.08);
+  transition: box-shadow 200ms cubic-bezier(0.16, 1, 0.3, 1), background-color 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.card:hover {
+  background-color: var(--color-surface-hover);
+  box-shadow: inset 0 0 0 1px hsla(0, 0%, 100%, 0.12);
+}
+.card__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  margin-bottom: 4px;
+  color: hsl(234, 80%, 80%);
+  background-color: hsla(234, 56%, 60%, 0.12);
+  border-radius: 8px;
+}
+.card__icon svg {
+  width: 18px;
+  height: 18px;
+}
+.card__title {
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: -0.012em;
+  color: var(--color-text-primary);
+}
+.card__body {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+}
+.card__footer {
+  margin-top: auto;
+  padding-top: 12px;
+}
+@media (min-width: 640px) {
+  .card--feature {
+    grid-column: 1/-1;
+  }
+}
+.card--feature:hover {
+  box-shadow: 0 0 48px hsla(234, 56%, 60%, 0.25), inset 0 0 0 1px hsla(0, 0%, 100%, 0.12);
+}
+
+.media-frame {
+  overflow: hidden;
+  background-color: var(--color-surface);
+  border-radius: 16px;
+  box-shadow: inset 0 0 0 1px hsla(0, 0%, 100%, 0.08);
+  box-shadow: inset 0 1px 0 hsla(0, 0%, 100%, 0.06), 0 4px 12px hsla(0, 0%, 0%, 0.4), 0 1px 3px hsla(0, 0%, 0%, 0.6);
+}
+.media-frame img,
+.media-frame video {
+  width: 100%;
+}
+
+.list-check {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.list-check li {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+.list-check li::before {
+  content: "✓";
+  flex-shrink: 0;
+  font-weight: 600;
+  color: hsl(234, 68%, 70%);
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding-inline: 8px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  background-color: hsl(220, 6%, 10%);
+  border-radius: 6px;
+  box-shadow: inset 0 0 0 1px hsla(0, 0%, 100%, 0.06);
+}
+
+.kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding-inline: 4px;
+  font-family: "Berkeley Mono", "SF Mono", "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  background-color: hsl(220, 5%, 13%);
+  border-radius: 6px;
+  box-shadow: inset 0 -1px 0 hsla(0, 0%, 0%, 0.4), inset 0 1px 0 hsla(0, 0%, 100%, 0.08), inset 0 0 0 1px hsla(0, 0%, 100%, 0.08);
+}
+
+.quote {
+  max-width: 65ch;
+  margin-inline: auto;
+  text-align: center;
+}
+.quote__text {
+  font-size: 1.3125rem;
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.012em;
+  background: linear-gradient(to bottom, hsl(220, 27%, 97%), hsla(220, 27%, 97%, 0.55));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: hsl(220, 27%, 97%);
+  margin-bottom: 24px;
+}
+@media (min-width: 768px) {
+  .quote__text {
+    font-size: 1.5rem;
+  }
+}
+.quote__attribution {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: 0.875rem;
+  color: var(--color-text-tertiary);
+}
+.quote__avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 9999px;
+  object-fit: cover;
+  box-shadow: inset 0 0 0 1px hsla(0, 0%, 100%, 0.08);
+}
+
+.input {
+  width: 100%;
+  height: 40px;
+  padding-inline: 12px;
+  font-family: inherit;
+  font-size: 0.875rem;
+  color: var(--color-text-primary);
+  background-color: hsl(220, 6%, 7%);
+  border: none;
+  border-radius: 8px;
+  box-shadow: inset 0 1px 2px hsla(0, 0%, 0%, 0.4), inset 0 0 0 1px hsla(0, 0%, 100%, 0.08);
+  transition: box-shadow 120ms cubic-bezier(0.16, 1, 0.3, 1);
+  outline: none;
+}
+.input:focus-visible {
+  outline: 2px solid hsl(234, 68%, 70%);
+  outline-offset: 2px;
+}
+.input::placeholder {
+  color: var(--color-text-tertiary);
+}
+.input:hover {
+  box-shadow: inset 0 1px 2px hsla(0, 0%, 0%, 0.4), inset 0 0 0 1px hsla(0, 0%, 100%, 0.12);
+}
+.input--textarea {
+  height: auto;
+  min-height: 96px;
+  padding-block: 12px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.field__label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+.field__hint {
+  font-size: 0.75rem;
+  color: var(--color-text-tertiary);
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 64px 24px;
+  text-align: center;
+  border-radius: 12px;
+  box-shadow: inset 0 0 0 1px hsla(0, 0%, 100%, 0.06);
+}
+.empty-state__title {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+.empty-state__body {
+  font-size: 0.875rem;
+  color: var(--color-text-tertiary);
+  max-width: 40ch;
+}
+.empty-state__action {
+  margin-top: 8px;
+}
+
+.footer {
+  padding-block: 64px 48px;
+  border-top: 1px solid hsla(0, 0%, 100%, 0.06);
+}
+.footer__inner {
+  width: 100%;
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: clamp(24px, 4vw, 32px);
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+.footer__grid {
+  display: grid;
+  gap: 32px;
+  grid-template-columns: repeat(2, 1fr);
+}
+@media (min-width: 768px) {
+  .footer__grid {
+    grid-template-columns: 2fr repeat(3, 1fr);
+  }
+}
+.footer__heading {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: hsl(220, 5%, 42%);
+  margin-bottom: 16px;
+}
+.footer__links {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.footer__link {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  transition: color 120ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.footer__link:hover {
+  color: var(--color-text-primary);
+}
+.footer__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 24px;
+  border-top: 1px solid hsla(0, 0%, 100%, 0.06);
+  font-size: 0.75rem;
+  color: var(--color-text-tertiary);
+}
+
+.u-container {
+  width: 100%;
+  max-width: 1024px;
+  margin-inline: auto;
+  padding-inline: clamp(24px, 4vw, 32px);
+}
+
+.u-container-wide {
+  width: 100%;
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: clamp(24px, 4vw, 32px);
+}
+
+.u-stack > * + * {
+  margin-top: 16px;
+}
+
+.u-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 400ms cubic-bezier(0.16, 1, 0.3, 1), transform 400ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/*# sourceMappingURL=app.css.map */
+/* ==========================================================================
+   DS-004-AGENTS — mockup stylesheet
+   --------------------------------------------------------------------------
+   Review scaffolding, not production code. `build.sh` inlines
+   `docs/specs/external-docs/stylesheets/app.css` followed by this file into
+   the mockup, so the .html can be opened directly from disk.
+
+   app.css is the source of truth for the design language: every value below
+   is one of its custom properties or a value from its scales (spacing 4/8/12/
+   16/24/32/48/64/96px, radii 6/8/12/16px, type 12/14/16/18/21/24/32/40px).
+   No colour is hardcoded that app.css already names.
+
+   In production these rules are Tailwind utilities on shadcn/ui components —
+   the class names here exist only so the static mockup needs no build step.
+   Class names are cited from DS-004-AGENTS.md where a rule carries a design
+   decision (`.dossier-block` scroll offset, `.dossier-agent` grid).
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   0. Review harness — the strip above the mockup, never part of the design
+   -------------------------------------------------------------------------- */
+
+.harness {
+  padding: 12px clamp(24px, 4vw, 32px);
+  font-size: 0.75rem;
+  color: var(--color-text-tertiary);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  align-items: baseline;
+}
+
+.harness strong {
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.harness code {
+  font-family: var(--font-mono, "SF Mono", ui-monospace, monospace);
+}
+
+/* --------------------------------------------------------------------------
+   1. Section furniture
+   -------------------------------------------------------------------------- */
+
+.ag-head {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 48px;
+}
+
+.ag-head__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.ag-repo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.ag-repo svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
+/* Small mono token used inline in prose */
+.ag-mono {
+  font-family: var(--font-mono, "SF Mono", ui-monospace, monospace);
+  font-size: 0.8125rem;
+  letter-spacing: -0.01em;
+}
+
+/* Agent, artifact, and document-type chips */
+.ag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  padding-inline: 8px;
+  font-family: var(--font-mono, "SF Mono", ui-monospace, monospace);
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  background: hsla(0, 0%, 100%, 0.04);
+  border-radius: 6px;
+  box-shadow: inset 0 0 0 1px var(--color-border);
+  white-space: nowrap;
+}
+
+/* Agent chips in the workflow rail — they are links into the catalogue */
+.ag-chip--accent {
+  color: hsl(234, 80%, 80%);
+  background: hsla(234, 56%, 60%, 0.12);
+  box-shadow: inset 0 0 0 1px hsla(234, 56%, 60%, 0.24);
+}
+
+a.ag-chip--accent:hover {
+  background: hsla(234, 56%, 60%, 0.2);
+}
+
+a.ag-chip:focus-visible {
+  outline: 2px solid var(--color-accent-text);
+  outline-offset: 2px;
+}
+
+/* Document chips inside a table cell */
+.ag-docs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* Gate marker — the [STOP] points where the run waits for the user */
+.ag-gate {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 22px;
+  padding-inline: 8px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: hsl(42, 74%, 62%);
+  background: hsla(42, 74%, 62%, 0.1);
+  border-radius: 9999px;
+  box-shadow: inset 0 0 0 1px hsla(42, 74%, 62%, 0.24);
+  white-space: nowrap;
+}
+
+.ag-gate--conditional {
+  color: var(--color-text-tertiary);
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--color-border);
+}
+
+/* Inputs / outputs block inside an agent row */
+.ag-io {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ag-io__label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-tertiary);
+}
+
+.ag-io__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ag-io__list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--color-text-tertiary);
+}
+
+.ag-io__name {
+  font-family: var(--font-mono, "SF Mono", ui-monospace, monospace);
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+/* Required / optional flags — the word carries the meaning, colour reinforces */
+.ag-io__req {
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: hsl(152, 50%, 60%);
+}
+
+.ag-io__opt {
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-tertiary);
+}
+
+/* --------------------------------------------------------------------------
+   2. Sticky sub-nav and the four blocks
+   -------------------------------------------------------------------------- */
+
+.dossier-nav {
+  position: sticky;
+  top: 64px; /* clears the 64px site header */
+  z-index: 20; /* below the header's z-index 50 */
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 0;
+  margin-bottom: 32px;
+  background: hsla(220, 7%, 4%, 0.85);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.dossier-nav a {
+  padding: 8px 12px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  border-radius: 8px;
+  transition: color 120ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dossier-nav a:hover {
+  color: var(--color-text-primary);
+  background: hsla(0, 0%, 100%, 0.06);
+}
+
+.dossier-nav a:focus-visible {
+  outline: 2px solid var(--color-accent-text);
+  outline-offset: 2px;
+}
+
+.dossier-nav__count {
+  margin-left: 6px;
+  font-family: var(--font-mono, "SF Mono", ui-monospace, monospace);
+  font-size: 0.6875rem;
+  color: var(--color-text-tertiary);
+}
+
+.dossier-block {
+  padding-block: 48px;
+  /* Clears the 64px header plus the sticky sub-nav, so an anchored heading
+     is never hidden beneath them — see DS-004-AGENTS.md § Accessibility Notes */
+  scroll-margin-top: 128px;
+}
+
+.dossier-block + .dossier-block {
+  border-top: 1px solid var(--color-border);
+}
+
+.dossier-block__title {
+  font-size: 1.5rem;
+  font-weight: 500;
+  letter-spacing: -0.012em;
+  color: var(--color-text-primary);
+  margin-bottom: 8px;
+}
+
+.dossier-block__lede {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+  max-width: 68ch;
+  margin-bottom: 32px;
+}
+
+/* --------------------------------------------------------------------------
+   3. Workflow rail — numbered steps on a hairline
+   -------------------------------------------------------------------------- */
+
+.dossier-flow {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.dossier-step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  gap: 16px;
+  padding-bottom: 24px;
+}
+
+.dossier-step:last-child {
+  padding-bottom: 0;
+}
+
+/* The rail: a hairline behind the step numbers, terminated on the last step */
+.dossier-step::before {
+  content: "";
+  position: absolute;
+  top: 32px;
+  bottom: 0;
+  left: 15px;
+  width: 1px;
+  background: var(--color-border);
+}
+
+.dossier-step:last-child::before {
+  display: none;
+}
+
+.dossier-step__n {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  font-family: var(--font-mono, "SF Mono", ui-monospace, monospace);
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  background: var(--color-surface);
+  border-radius: 9999px;
+  box-shadow: inset 0 0 0 1px var(--color-border);
+}
+
+.dossier-step--gate .dossier-step__n {
+  color: hsl(42, 74%, 62%);
+  box-shadow: inset 0 0 0 1px hsla(42, 74%, 62%, 0.32);
+}
+
+.dossier-step__body {
+  padding-top: 4px;
+}
+
+.dossier-step__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.dossier-step__name {
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: -0.012em;
+  color: var(--color-text-primary);
+}
+
+.dossier-step__summary {
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+  max-width: 72ch;
+  margin-bottom: 12px;
+}
+
+.dossier-step__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.dossier-step__foot .ag-io__label {
+  margin-right: 4px;
+}
+
+/* --------------------------------------------------------------------------
+   4. Agent catalogue — one spec-sheet row per agent
+   -------------------------------------------------------------------------- */
+
+.dossier-agent {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  padding: 24px 0;
+  /* Hairline rules, not card surfaces: thirteen raised cards would read as
+     thirteen competing objects — see DS-004-AGENTS.md § Hierarchy */
+  border-top: 1px solid var(--color-border);
+}
+
+@media (min-width: 1024px) {
+  .dossier-agent {
+    grid-template-columns: 240px 1fr 300px;
+    gap: 32px;
+  }
+}
+
+.dossier-agent__id {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dossier-agent__name {
+  font-family: var(--font-mono, "SF Mono", ui-monospace, monospace);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  overflow-wrap: anywhere;
+}
+
+.dossier-agent__stage {
+  font-size: 0.75rem;
+  color: var(--color-text-tertiary);
+}
+
+.dossier-agent__attrs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.dossier-agent__purpose {
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+}
+
+.dossier-agent__tools {
+  margin-top: 12px;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--color-text-tertiary);
+}
+
+.dossier-agent__io {
+  display: grid;
+  gap: 16px;
+  align-content: start;
+}
+
+/* Between sm and lg the two lists sit side by side, so the stacked row does
+   not run long */
+@media (min-width: 640px) and (max-width: 1023px) {
+  .dossier-agent__io {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Anchor target for the agent chips in the workflow rail */
+.dossier-agent:target .dossier-agent__name {
+  color: hsl(234, 80%, 80%);
+}
+
+/* --------------------------------------------------------------------------
+   5. Spec ledger and CI table
+   -------------------------------------------------------------------------- */
+
+.dossier-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.dossier-table th {
+  text-align: left;
+  padding: 8px 12px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-tertiary);
+  border-bottom: 1px solid var(--color-border);
+  white-space: nowrap;
+}
+
+.dossier-table td {
+  padding: 16px 12px;
+  vertical-align: top;
+  color: var(--color-text-secondary);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.dossier-table tr:last-child td {
+  border-bottom: none;
+}
+
+.dossier-table__id {
+  font-family: var(--font-mono, "SF Mono", ui-monospace, monospace);
+  font-size: 0.8125rem;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+}
+
+.dossier-table__sub {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.75rem;
+  color: var(--color-text-tertiary);
+  font-family: var(--font-sans, inherit);
+}
+
+/* Wide content scrolls inside its own container, never the page body */
+.dossier-scroll {
+  overflow-x: auto;
+}
+
+/* --------------------------------------------------------------------------
+   6. Acceptance-criteria disclosure
+   -------------------------------------------------------------------------- */
+
+.dossier-crit {
+  margin-top: 12px;
+}
+
+.dossier-crit summary {
+  list-style: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+}
+
+.dossier-crit summary::-webkit-details-marker {
+  display: none;
+}
+
+.dossier-crit summary::after {
+  content: "▸";
+  font-size: 0.6875rem;
+  color: var(--color-text-tertiary);
+  transition: transform 120ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dossier-crit[open] summary::after {
+  transform: rotate(90deg);
+}
+
+.dossier-crit summary:focus-visible {
+  outline: 2px solid var(--color-accent-text);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.dossier-crit table {
+  width: 100%;
+  margin-top: 12px;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+.dossier-crit th,
+.dossier-crit td {
+  text-align: left;
+  padding: 6px 12px 6px 0;
+  color: var(--color-text-secondary);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.dossier-crit th {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-tertiary);
+}
+
+.dossier-crit td:first-child,
+.dossier-crit td:nth-child(2) {
+  font-family: var(--font-mono, "SF Mono", ui-monospace, monospace);
+  font-size: 0.75rem;
+  color: var(--color-text-tertiary);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dossier-crit summary::after {
+    transition: none;
+  }
+}
+  </style>
+  <!-- /build:css -->
+</head>
+<body>
+
+<div class="harness">
+  <strong>DS-004-AGENTS · Reference Dossier — accepted design</strong>
+  <span>Static mockup for <code>docs/specs/SPEC-004.md</code> § 4.3</span>
+  <span>Sample content is real project data; the production section is server-rendered from <code>GET /v1/agents/list</code> and <code>GET /v1/agents/specs/list</code>.</span>
+</div>
+
+<header class="header">
+  <div class="header__inner">
+    <a class="header__logo" href="#">PS</a>
+    <nav class="header__nav">
+      <a class="header__link" href="#">CV</a>
+      <a class="header__link is-active" href="#agents">Agentic development</a>
+      <a class="header__link" href="#">Blog</a>
+      <a class="header__link" href="#">Contact</a>
+    </nav>
+    <div class="header__actions">
+      <a class="btn btn--secondary btn--sm" href="#">Get in touch</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="section section--ruled" id="agents">
+    <div class="section__inner">
+
+      <div class="ag-head">
+        <p class="section__label">Agentic development</p>
+        <div class="ag-head__row">
+          <div>
+            <h2 class="section__title">The pipeline that built this site, documented in full</h2>
+            <p class="section__lede">
+              A spec goes in; an orchestrator delegates each stage to a specialist subagent and stops
+              for approval at defined checkpoints; a reviewed, documented changeset comes out. Below:
+              the nine stages, the thirteen agents, and the specs they were pointed at.
+            </p>
+          </div>
+          <a class="btn btn--secondary ag-repo" id="repo-link" href="#" target="_blank" rel="noreferrer">
+            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+            View the agents repo
+          </a>
+        </div>
+      </div>
+
+      <nav class="dossier-nav" aria-label="Agentic development contents">
+        <a href="#workflow">Workflow<span class="dossier-nav__count" id="n-stages"></span></a>
+        <a href="#catalogue">Agent catalogue<span class="dossier-nav__count" id="n-agents"></span></a>
+        <a href="#specs">Specs<span class="dossier-nav__count" id="n-specs"></span></a>
+        <a href="#ci">CI</a>
+      </nav>
+
+      <!-- ── 1. Workflow ──────────────────────────────────────────────── -->
+      <div class="dossier-block" id="workflow">
+        <h3 class="dossier-block__title">Workflow</h3>
+        <p class="dossier-block__lede">
+          The orchestrator decides <em>what</em> to do and <em>where</em>; each subagent decides
+          <em>how</em>. Two markers matter when reading the run: a stop is a checkpoint that waits for
+          the user, and a conditional stage only runs when it applies.
+        </p>
+        <div class="dossier-flow" id="dossier-flow"></div>
+      </div>
+
+      <!-- ── 2. Agent catalogue ───────────────────────────────────────── -->
+      <div class="dossier-block" id="catalogue">
+        <h3 class="dossier-block__title">Agent catalogue</h3>
+        <p class="dossier-block__lede">
+          Every agent owns one responsibility, carries only the context that responsibility needs, and
+          returns a typed response — <span class="ag-mono">completed</span>, or
+          <span class="ag-mono">blocked</span> with a reason. Nothing here is a general assistant.
+        </p>
+        <div id="dossier-agents"></div>
+      </div>
+
+      <!-- ── 3. Specs ─────────────────────────────────────────────────── -->
+      <div class="dossier-block" id="specs">
+        <h3 class="dossier-block__title">Specs</h3>
+        <p class="dossier-block__lede">
+          The specs the pipeline was pointed at. Each requirement traces to a tagged Gherkin scenario;
+          the tag, not the file, is the unit of ownership, so a single feature file can serve several
+          specs at once.
+        </p>
+        <div class="dossier-scroll">
+          <table class="dossier-table">
+            <thead>
+              <tr>
+                <th scope="col">Spec</th>
+                <th scope="col">Date</th>
+                <th scope="col">Scope</th>
+                <th scope="col">Documents</th>
+              </tr>
+            </thead>
+            <tbody id="dossier-specs"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── 4. CI ────────────────────────────────────────────────────── -->
+      <div class="dossier-block" id="ci">
+        <h3 class="dossier-block__title">Continuous integration</h3>
+        <p class="dossier-block__lede">
+          Where the acceptance criteria actually execute. The suite runs against a live Postgres
+          service on every pull request, so a criterion is either passing in CI or it is not met.
+        </p>
+        <div class="dossier-scroll">
+          <table class="dossier-table">
+            <thead>
+              <tr>
+                <th scope="col">Workflow</th>
+                <th scope="col">Purpose</th>
+              </tr>
+            </thead>
+            <tbody id="dossier-ci"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="footer__inner">
+    <div class="footer__meta">
+      <span>© 2026 · Built with an agent pipeline</span>
+      <a class="link-arrow" id="repo-link-footer" href="#">Agents repo</a>
+    </div>
+  </div>
+</footer>
+
+  <!-- build:data -->
+  <script>
+/* ==========================================================================
+   DS-004-AGENTS — shared mockup content
+   --------------------------------------------------------------------------
+   Content for the mockup. It is real, not placeholder: STAGES mirrors the
+   `implement-spec` orchestration procedure, AGENTS mirrors the thirteen agent
+   definitions in the PSauerborn/agents plugin, and SPECS mirrors `docs/specs/`
+   and the scenario tags in `acceptance/features/`.
+
+   In production the catalogue and the spec ledger are server-rendered from
+   `GET /v1/agents/list` and `GET /v1/agents/specs/list` (SPEC-002 § 6.1.4 /
+   § 6.1.5); STAGES and CI_WORKFLOWS are static site content. The mockup builds
+   its DOM from this literal only so the file stays reviewable — see
+   DS-004-AGENTS.md § Accessibility Notes.
+   ========================================================================== */
+
+const REPO_URL = "https://github.com/PSauerborn/agents";
+
+/* -- The orchestration pipeline ------------------------------------------ */
+/* gate: run stops here for user approval.  conditional: does not always run. */
+
+const STAGES = [
+  {
+    n: "01",
+    id: "spec-review",
+    name: "Spec review",
+    gate: true,
+    agents: [],
+    owner: "orchestrator · review-spec skill",
+    artifacts: ["Review findings"],
+    summary:
+      "The spec is reviewed for ambiguity, missing edge cases, scope spanning several deliverables, and internal contradictions before any work begins. Material findings halt the run until the spec is corrected or the findings are explicitly waived.",
+  },
+  {
+    n: "02",
+    id: "analysis",
+    name: "Requirements analysis",
+    agents: ["requirements-analyzer"],
+    owner: "requirements-analyzer",
+    artifacts: ["Scale assessment (JSON)"],
+    summary:
+      "Task type, scale, affected files, and UI impact are assessed against the codebase, with the expected files cited as evidence. The returned scale selects the flow — reduced, standard, or full — so the amount of process stays proportional to the work.",
+  },
+  {
+    n: "03",
+    id: "design",
+    name: "Frontend design gate",
+    gate: true,
+    conditional: true,
+    agents: ["frontend-designer"],
+    owner: "frontend-designer",
+    artifacts: ["3 × design option", "3 × HTML mockup"],
+    summary:
+      "Runs only when the analysis reports significant UI impact. Three meaningfully distinct options are produced and the user selects one before any UI work is planned. This section of the site is the product of that gate.",
+  },
+  {
+    n: "04",
+    id: "planning",
+    name: "Planning",
+    gate: true,
+    agents: ["work-planner", "risk-analyzer"],
+    owner: "work-planner · risk-analyzer",
+    artifacts: ["WP-004.md", "WP-004-risk-plan.md"],
+    summary:
+      "The spec and the distilled analysis become a phased work plan with a design-to-plan traceability table, and a risk register whose mitigations are verified against the code later in the same run.",
+  },
+  {
+    n: "05",
+    id: "decomposition",
+    name: "Decomposition",
+    agents: ["task-decomposer"],
+    owner: "task-decomposer",
+    artifacts: ["TASK-001…N.md"],
+    summary:
+      "The plan is cut into single-commit tasks — one or two files, a diff under roughly 100 lines — each carrying its own investigation targets and an explicit target-file write set.",
+  },
+  {
+    n: "06",
+    id: "execution",
+    name: "Execution",
+    agents: ["task-executor"],
+    owner: "task-executor ×N",
+    artifacts: ["Code changes", "Execution manifest"],
+    summary:
+      "One executor per task file, written test-first. Executors run in parallel only when their write sets are disjoint. Every completion is appended to the execution manifest, which is the single record of what the run changed.",
+  },
+  {
+    n: "07",
+    id: "review",
+    name: "Review & remediation",
+    agents: [
+      "validation-runner",
+      "quality-controller",
+      "code-reviewer",
+      "security-reviewer",
+      "risk-reviewer",
+    ],
+    owner: "five reviewers",
+    artifacts: ["Quality report", "Risk review", "Remediation tasks"],
+    summary:
+      "Five reviewers read the same manifest changeset from five angles — suite results, standards, correctness, security, and risk-plan conformance. Findings become remediation task files that an executor runs, and the loop repeats until clean or the iteration cap is reached.",
+  },
+  {
+    n: "08",
+    id: "acceptance",
+    name: "Acceptance",
+    agents: ["acceptance-validator"],
+    owner: "acceptance-validator",
+    artifacts: ["Per-criterion verdicts"],
+    summary:
+      "Every acceptance criterion in the spec is verified against the implementation, citing a file and line or a passing scenario. Criteria too vague to verify are returned as unverifiable rather than guessed at.",
+  },
+  {
+    n: "09",
+    id: "documentation",
+    name: "Documentation",
+    agents: ["documenter"],
+    owner: "documenter",
+    artifacts: ["Changeset document", "Updated docs"],
+    summary:
+      "Doc strings, the OpenAPI schema, and the READMEs affected by the changeset are brought up to date, and the run is summarised in a changeset document. Staging and committing are left to the user.",
+  },
+];
+
+/* -- The subagent catalogue ---------------------------------------------- */
+
+const AGENTS = [
+  {
+    id: "requirements-analyzer",
+    name: "requirements-analyzer",
+    stage: "analysis",
+    stageName: "Requirements analysis",
+    role: "Analysis",
+    purpose:
+      "Analyses a spec or change request against the codebase to determine task type, work scale, affected files, UI impact, constraints, and open questions. Its scale assessment decides which orchestration flow runs, so every determination cites the files expected to change.",
+    inputs: [
+      { name: "requirements", required: true, note: "the request to assess" },
+      { name: "context", required: false, note: "recent changes, constraints" },
+    ],
+    outputs: [
+      { name: "scaleAssessment", note: "JSON — scale, taskType, affectedFiles, uiImpact" },
+    ],
+    model: "inherit",
+    effort: "high",
+    tools: "Read, Grep, Glob, LS, Bash, WebSearch",
+  },
+  {
+    id: "frontend-designer",
+    name: "frontend-designer",
+    stage: "design",
+    stageName: "Frontend design gate",
+    role: "Design",
+    purpose:
+      "Produces three meaningfully distinct design options for a spec with significant UI changes — a design document and a self-contained static mockup each — grounded in the existing design system so any of the three could be implemented as-is.",
+    inputs: [
+      { name: "specPath", required: true, note: "spec whose UI is designed" },
+      { name: "uiScope", required: false, note: "distilled UI constraints" },
+      { name: "context", required: false, note: "revision feedback" },
+    ],
+    outputs: [
+      { name: "designSetId", note: "e.g. DS-004-AGENTS" },
+      { name: "options[]", note: "3 × design document + HTML mockup" },
+    ],
+    model: "inherit",
+    effort: "high",
+    tools: "Read, Grep, Glob, LS, Write",
+  },
+  {
+    id: "work-planner",
+    name: "work-planner",
+    stage: "planning",
+    stageName: "Planning",
+    role: "Planning",
+    purpose:
+      "Converts the spec and the distilled requirements summary into one structured work plan: phases, implementation order, technical dependencies, and task identification. When a design was selected, the plan implements that design and cites it so downstream agents inherit it.",
+    inputs: [
+      { name: "specPath", required: true, note: "path to the spec" },
+      { name: "requirementsSummary", required: true, note: "distilled analysis fields" },
+      { name: "designPath", required: false, note: "user-selected design option" },
+      { name: "mode", required: false, note: "create (default) | update" },
+    ],
+    outputs: [
+      { name: "workPlanId", note: "WP-nnn" },
+      { name: "planPath", note: "docs/plans/{date}-{workPlanId}.md" },
+    ],
+    model: "fable",
+    effort: "high",
+    tools: "Read, Write, Edit, Glob, LS",
+  },
+  {
+    id: "risk-analyzer",
+    name: "risk-analyzer",
+    stage: "planning",
+    stageName: "Planning",
+    role: "Planning",
+    purpose:
+      "Reads the work plan and produces the risk register for its execution: delivery and technical risks with likelihood, impact, severity, and a concrete mitigation each, plus a design-to-risk traceability table mapping risks to the tasks that must honour them.",
+    inputs: [
+      { name: "workPlanId", required: true, note: "WP-nnn" },
+      { name: "requirements", required: true, note: "the request being planned" },
+      { name: "context", required: false, note: "" },
+    ],
+    outputs: [
+      { name: "riskPlanPath", note: "{workPlanId}-risk-plan.md" },
+      { name: "risks[]", note: "RISK-nnn, severity, mitigation" },
+    ],
+    model: "inherit",
+    effort: "medium",
+    tools: "Read, Write, Glob, LS",
+  },
+  {
+    id: "task-decomposer",
+    name: "task-decomposer",
+    stage: "decomposition",
+    stageName: "Decomposition",
+    role: "Planning",
+    purpose:
+      "Decomposes the work plan into independent, single-commit task files. Each file is the entire context its executor receives, so its read set and write set must be both complete and minimal — one or two files touched, a diff reviewable in under 100 lines.",
+    inputs: [
+      { name: "workPlanId", required: true, note: "WP-nnn" },
+      { name: "planPath", required: true, note: "path to the work plan" },
+    ],
+    outputs: [
+      { name: "tasks[]", note: "task file paths, dependencies, targetFiles" },
+    ],
+    model: "inherit",
+    effort: "medium",
+    tools: "Read, Write, Glob, LS",
+  },
+  {
+    id: "task-executor",
+    name: "task-executor",
+    stage: "execution",
+    stageName: "Execution",
+    role: "Execution",
+    purpose:
+      "Executes exactly one task file end-to-end — investigation, red-green-refactor implementation, and progress ticking — and never asks questions. Anything missing, ambiguous, or outside its target files is returned as a typed blocked response instead of improvised.",
+    inputs: [
+      { name: "taskFilePath", required: true, note: "one executable task file" },
+    ],
+    outputs: [
+      { name: "filesModified[]", note: "write set actually touched" },
+      { name: "testsAdded[]", note: "tests written for the change" },
+    ],
+    model: "inherit",
+    effort: "medium",
+    tools: "Read, Edit, Write, MultiEdit, Bash, Grep, Glob, LS, TaskCreate, TaskUpdate",
+  },
+  {
+    id: "validation-runner",
+    name: "validation-runner",
+    stage: "review",
+    stageName: "Review & remediation",
+    role: "Review",
+    purpose:
+      "The CI stage. Discovers the project's build, test, lint, format, and type checks from repo configuration and runs the full suite against the whole project — the only agent that validates the changeset as a whole. A skipped discoverable check is a failed run.",
+    inputs: [
+      { name: "workPlanId", required: true, note: "WP-nnn" },
+      { name: "manifestPath", required: true, note: "execution manifest" },
+    ],
+    outputs: [
+      { name: "checks[]", note: "per-check pass / fail / not-run with output" },
+      { name: "remediationTask", note: "TASK-VALIDATION-REMEDIATION.md on failure" },
+    ],
+    model: "sonnet",
+    effort: "medium",
+    tools: "Read, Write, Bash, Grep, Glob, LS",
+  },
+  {
+    id: "quality-controller",
+    name: "quality-controller",
+    stage: "review",
+    stageName: "Review & remediation",
+    role: "Review",
+    purpose:
+      "Reviews the changeset for coding-standards conformance and nothing else. Every finding cites the standards file, rule ID, path, and line; opinions that map to no rule are left out of the report.",
+    inputs: [
+      { name: "workPlanId", required: true, note: "WP-nnn" },
+      { name: "manifestPath", required: true, note: "execution manifest" },
+    ],
+    outputs: [
+      { name: "qualityReport", note: "{workPlanId}-quality-report.md" },
+      { name: "remediationTask", note: "TASK-QC-REMEDIATION.md on violations" },
+    ],
+    model: "inherit",
+    effort: "medium",
+    tools: "Read, Grep, Glob, LS, Bash, Write",
+  },
+  {
+    id: "code-reviewer",
+    name: "code-reviewer",
+    stage: "review",
+    stageName: "Review & remediation",
+    role: "Review",
+    purpose:
+      "The peer review. Reads the changeset diff the way a senior engineer reads a pull request — correctness, edge cases, and design — and constructs the concrete input or state that breaks the code rather than reporting suspicions.",
+    inputs: [
+      { name: "workPlanId", required: true, note: "WP-nnn" },
+      { name: "manifestPath", required: true, note: "execution manifest" },
+      { name: "specPath", required: true, note: "intended behaviour" },
+    ],
+    outputs: [
+      { name: "findings[]", note: "file:line, failure scenario, severity" },
+      { name: "remediationTask", note: "TASK-CODE-REVIEW-REMEDIATION.md on findings" },
+    ],
+    model: "inherit",
+    effort: "medium",
+    tools: "Read, Grep, Glob, LS, Bash, Write",
+  },
+  {
+    id: "security-reviewer",
+    name: "security-reviewer",
+    stage: "review",
+    stageName: "Review & remediation",
+    role: "Review",
+    purpose:
+      "Reviews the changeset for injection, authentication and authorisation flaws, secrets handling, unsafe deserialisation, path traversal, SSRF, and dependency risk. Each finding names the vulnerability class and a concrete attack scenario.",
+    inputs: [
+      { name: "workPlanId", required: true, note: "WP-nnn" },
+      { name: "manifestPath", required: true, note: "execution manifest" },
+    ],
+    outputs: [
+      { name: "findings[]", note: "class, file:line, attack scenario" },
+      { name: "remediationTask", note: "TASK-SEC-REMEDIATION.md on findings" },
+    ],
+    model: "inherit",
+    effort: "medium",
+    tools: "Read, Grep, Glob, LS, Write",
+  },
+  {
+    id: "risk-reviewer",
+    name: "risk-reviewer",
+    stage: "review",
+    stageName: "Review & remediation",
+    role: "Review",
+    purpose:
+      "Checks the code actually written against the mitigations the risk plan promised. Each risk is classified mitigated, deviation-found, or not-applicable, and every status cites a file and line.",
+    inputs: [
+      { name: "riskPlanPath", required: true, note: "the risk register" },
+      { name: "workPlanId", required: true, note: "WP-nnn" },
+      { name: "manifestPath", required: true, note: "execution manifest" },
+    ],
+    outputs: [
+      { name: "riskReview", note: "{workPlanId}-risk-review.md" },
+      { name: "remediationTask", note: "TASK-RISK-REMEDIATION.md on deviations" },
+    ],
+    model: "inherit",
+    effort: "medium",
+    tools: "Read, Grep, Glob, LS, Write",
+  },
+  {
+    id: "acceptance-validator",
+    name: "acceptance-validator",
+    stage: "acceptance",
+    stageName: "Acceptance",
+    role: "Acceptance",
+    purpose:
+      "The final gate. Every other stage validates process; this one validates outcome — does the software do what the spec asked. A criterion passes only on evidence: implementing code, a passing scenario, or the output of a command run in the session.",
+    inputs: [
+      { name: "specPath", required: true, note: "source of criteria" },
+      { name: "planPath", required: true, note: "traceability table" },
+      { name: "workPlanId", required: true, note: "WP-nnn" },
+      { name: "manifestPath", required: true, note: "execution manifest" },
+    ],
+    outputs: [
+      { name: "criteria[]", note: "met | unmet | unverifiable, with evidence" },
+    ],
+    model: "inherit",
+    effort: "medium",
+    tools: "Read, Grep, Glob, LS, Bash",
+  },
+  {
+    id: "documenter",
+    name: "documenter",
+    stage: "documentation",
+    stageName: "Documentation",
+    role: "Documentation",
+    purpose:
+      "Brings the documentation for the changeset up to date — doc strings, the OpenAPI schema, and the READMEs whose described behaviour changed — and writes the changeset summary document for the run.",
+    inputs: [
+      { name: "workPlanId", required: true, note: "WP-nnn" },
+      { name: "manifestPath", required: true, note: "execution manifest" },
+    ],
+    outputs: [
+      { name: "changesetDocument", note: "{workPlanId}-changeset.md" },
+      { name: "documentationUpdates[]", note: "files touched" },
+    ],
+    model: "sonnet",
+    effort: "low",
+    tools: "Read, Write, Edit, Glob, LS",
+  },
+];
+
+/* -- The specs that built the site --------------------------------------- */
+/* criteria[] are real rows from each spec's acceptance-criteria table;
+   criteriaTotal is the full count, of which criteria[] shows a sample.       */
+
+const SPECS = [
+  {
+    spec_id: "SPEC-001",
+    title: "Database and Schema",
+    date: "2026-08-04",
+    description:
+      "PostgreSQL schema and alembic migrations for the contact, CV, blog, and agent-catalogue data the rest of the system reads.",
+    documents: [
+      { filename: "SPEC-001.md", document_type: "SPEC" },
+      { filename: "SPEC-001-REVIEW.md", document_type: "OTHER" },
+    ],
+    criteriaTotal: 0,
+    criteria: [],
+    note: "Verified through migration and repository tests rather than tagged scenarios.",
+  },
+  {
+    spec_id: "SPEC-002",
+    title: "API",
+    date: "2026-08-01",
+    description:
+      "The public read API the site is built on: CV, blog articles and comments, the subagent catalogue, and the spec register.",
+    documents: [
+      { filename: "SPEC-002.md", document_type: "SPEC" },
+      { filename: "agent_catalogue.feature", document_type: "ACCEPTANCE" },
+      { filename: "cv.feature", document_type: "ACCEPTANCE" },
+      { filename: "blog.feature", document_type: "ACCEPTANCE" },
+    ],
+    criteriaTotal: 36,
+    criteria: [
+      { id: "AC-10", req: "REQ-2.5", scenario: "An empty CV returns empty collections" },
+      { id: "AC-11", req: "REQ-2.6", scenario: "Headline skills are grouped by category" },
+      { id: "AC-24", req: "REQ-5.2", scenario: "A request is made to list subagents" },
+      {
+        id: "AC-25",
+        req: "REQ-5.2",
+        scenario: "A subagent without declared schemas returns empty schema objects",
+      },
+      { id: "AC-26", req: "REQ-5.3", scenario: "A request is made to list specs" },
+      { id: "AC-27", req: "REQ-5.3", scenario: "A spec without a linked document is not listed" },
+      { id: "AC-28", req: "REQ-5.5", scenario: "A request is made to get the content of a spec" },
+    ],
+  },
+  {
+    spec_id: "SPEC-003",
+    title: "Admin API Endpoints",
+    date: "2026-08-01",
+    description:
+      "API-key authenticated admin endpoints for managing contacts, messages, blog posts, and specs, with an audit log over every admin request.",
+    documents: [
+      { filename: "SPEC-003.md", document_type: "SPEC" },
+      { filename: "agent_catalogue.feature", document_type: "ACCEPTANCE" },
+      { filename: "contacts.feature", document_type: "ACCEPTANCE" },
+    ],
+    criteriaTotal: 28,
+    criteria: [
+      {
+        id: "AC-1",
+        req: "REQ-1.1, REQ-1.2",
+        scenario: "The API rejects unauthenticated requests to admin endpoints",
+      },
+      { id: "AC-3", req: "REQ-1.5", scenario: "An authenticated admin request is recorded in the audit log" },
+      { id: "AC-18", req: "REQ-5.2", scenario: "The API rejects unauthenticated requests to create specs" },
+      { id: "AC-21", req: "REQ-5.4", scenario: "An admin sets the visibility of a spec" },
+    ],
+  },
+  {
+    spec_id: "SPEC-004",
+    title: "UI",
+    date: "2026-08-11",
+    description:
+      "The server-side rendered React application in front of the API — the CV display, this agentic development section, the blog, and the contact form.",
+    documents: [{ filename: "SPEC-004.md", document_type: "SPEC" }],
+    criteriaTotal: 0,
+    criteria: [],
+    note: "In flight — scenarios are tagged @spec-004 as each section lands.",
+    current: true,
+  },
+];
+
+/* -- Continuous integration ---------------------------------------------- */
+/* The workflows that run the acceptance suite the specs above are traced to. */
+
+const CI_WORKFLOWS = [
+  { name: "pre-merge.yaml", purpose: "Lint, unit tests, and secret scan on every pull request" },
+  { name: "integration-tests.yaml", purpose: "Godog acceptance suite against a live Postgres service" },
+  { name: "post-merge.yaml", purpose: "Image build and publish on merge to master" },
+  { name: "tf-plan.yaml", purpose: "Terraform plan posted to the pull request" },
+  { name: "tf-apply.yaml", purpose: "Terraform apply on merge" },
+];
+  </script>
+  <!-- /build:data -->
+
+<script>
+  /* Review aid: a script failure must be visible in the harness strip rather
+     than leaving the section blank. Not part of the design. */
+  window.addEventListener("error", function (e) {
+    var h = document.querySelector(".harness");
+    if (h) h.insertAdjacentHTML("beforeend", '<span style="color:hsl(0,68%,66%)">mockup script error — ' + e.message + '</span>');
+  });
+</script>
+
+<script>
+  (function () {
+    const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+    document.getElementById("repo-link").href = REPO_URL;
+    document.getElementById("repo-link-footer").href = REPO_URL;
+    document.getElementById("n-stages").textContent = STAGES.length;
+    document.getElementById("n-agents").textContent = AGENTS.length;
+    document.getElementById("n-specs").textContent = SPECS.length;
+
+    /* -- 1. Workflow rail ------------------------------------------------- */
+    document.getElementById("dossier-flow").innerHTML = STAGES.map((s) => {
+      const gate = s.conditional
+        ? '<span class="ag-gate ag-gate--conditional">Conditional</span>'
+        : s.gate
+          ? '<span class="ag-gate">Stops for approval</span>'
+          : "";
+      const agents = s.agents.length
+        ? s.agents.map((a) => `<a class="ag-chip ag-chip--accent" href="#agent-${esc(a)}">${esc(a)}</a>`).join("")
+        : '<span class="ag-chip">orchestrator</span>';
+      return `<div class="dossier-step${s.gate ? " dossier-step--gate" : ""}">
+        <div class="dossier-step__n">${s.n}</div>
+        <div class="dossier-step__body">
+          <div class="dossier-step__head">
+            <h4 class="dossier-step__name">${esc(s.name)}</h4>
+            ${gate}
+          </div>
+          <p class="dossier-step__summary">${esc(s.summary)}</p>
+          <div class="dossier-step__foot">
+            <span class="ag-io__label">Runs</span>${agents}
+          </div>
+          <div class="dossier-step__foot" style="margin-top:8px">
+            <span class="ag-io__label">Produces</span>
+            ${s.artifacts.map((f) => `<span class="ag-chip">${esc(f)}</span>`).join("")}
+          </div>
+        </div>
+      </div>`;
+    }).join("");
+
+    /* -- 2. Agent catalogue ----------------------------------------------- */
+    function ioList(items, kind) {
+      const rows = items
+        .map((i) => {
+          const flag =
+            kind === "in"
+              ? `<span class="${i.required ? "ag-io__req" : "ag-io__opt"}">${i.required ? "req" : "opt"}</span>`
+              : "";
+          const note = i.note ? `<span>${esc(i.note)}</span>` : "";
+          return `<li><span class="ag-io__name">${esc(i.name)}</span>${flag}${note}</li>`;
+        })
+        .join("");
+      return `<div class="ag-io">
+        <p class="ag-io__label">${kind === "in" ? "Inputs" : "Outputs"}</p>
+        <ul class="ag-io__list">${rows}</ul>
+      </div>`;
+    }
+
+    document.getElementById("dossier-agents").innerHTML = AGENTS.map(
+      (a) => `<article class="dossier-agent" id="agent-${esc(a.id)}">
+        <div class="dossier-agent__id">
+          <h4 class="dossier-agent__name">${esc(a.name)}</h4>
+          <p class="dossier-agent__stage">${esc(a.stageName)}</p>
+          <div class="dossier-agent__attrs">
+            <span class="ag-chip">${esc(a.role)}</span>
+            <span class="ag-chip">model: ${esc(a.model)}</span>
+            <span class="ag-chip">effort: ${esc(a.effort)}</span>
+          </div>
+        </div>
+        <div>
+          <p class="dossier-agent__purpose">${esc(a.purpose)}</p>
+          <p class="dossier-agent__tools"><span class="ag-io__label">Tools</span> ${esc(a.tools)}</p>
+        </div>
+        <div class="dossier-agent__io">
+          ${ioList(a.inputs, "in")}
+          ${ioList(a.outputs, "out")}
+        </div>
+      </article>`
+    ).join("");
+
+    /* -- 3. Specs ---------------------------------------------------------- */
+    document.getElementById("dossier-specs").innerHTML = SPECS.map((s) => {
+      const docs = s.documents
+        .map((d) => `<span class="ag-chip">${esc(d.filename)}<span class="ag-io__opt">${esc(d.document_type)}</span></span>`)
+        .join(" ");
+      const crit = s.criteriaTotal
+        ? `<details class="dossier-crit">
+            <summary>${s.criteriaTotal} acceptance criteria</summary>
+            <table>
+              <thead><tr><th scope="col">ID</th><th scope="col">Requirement</th><th scope="col">Scenario</th></tr></thead>
+              <tbody>
+                ${s.criteria.map((c) => `<tr><td>${esc(c.id)}</td><td>${esc(c.req)}</td><td>${esc(c.scenario)}</td></tr>`).join("")}
+                <tr><td></td><td></td><td class="ag-io__opt">showing ${s.criteria.length} of ${s.criteriaTotal}</td></tr>
+              </tbody>
+            </table>
+          </details>`
+        : `<p class="ag-io__opt" style="margin-top:12px">${esc(s.note || "No tagged scenarios yet")}</p>`;
+      return `<tr>
+        <td>
+          <span class="dossier-table__id">${esc(s.spec_id)}</span>
+          <span class="dossier-table__sub">${esc(s.title)}${s.current ? " · in flight" : ""}</span>
+        </td>
+        <td class="dossier-table__id">${esc(s.date)}</td>
+        <td>${esc(s.description)}${crit}</td>
+        <td><div class="ag-docs">${docs}</div></td>
+      </tr>`;
+    }).join("");
+
+    /* -- 4. CI ------------------------------------------------------------- */
+    document.getElementById("dossier-ci").innerHTML = CI_WORKFLOWS.map(
+      (w) => `<tr><td class="dossier-table__id">${esc(w.name)}</td><td>${esc(w.purpose)}</td></tr>`
+    ).join("");
+  })();
+</script>
+
+</body>
+</html>
