@@ -1,0 +1,359 @@
+{
+  "info": {
+    "_postman_id": "6d5f0a2e-9c31-4f0b-8a52-7c4b1e0d9f31",
+    "name": "psauerborn.dev API",
+    "description": "Requests for every endpoint of the psauerborn.dev API, as documented in docs/openapi.yaml. Every request is addressed through the collection variable `base_url`, which defaults to the local listen address configured in api/config.yaml. The API is entirely public, so the collection defines no authentication and carries no credentials.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:10000",
+      "type": "string",
+      "description": "Base URL of the API, without a trailing slash. Defaults to the local listen address; set it to https://api.psauerborn.dev to address the deployed API."
+    }
+  ],
+  "item": [
+    {
+      "name": "Base",
+      "description": "Health and version endpoints.",
+      "item": [
+        {
+          "name": "Get health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/health",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "health"
+              ]
+            },
+            "description": "Checks that the database backing the API is reachable."
+          },
+          "response": []
+        },
+        {
+          "name": "Get version",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/version",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "version"
+              ]
+            },
+            "description": "Returns the version string held by the deployed configuration."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "CV",
+      "description": "Curriculum vitae.",
+      "item": [
+        {
+          "name": "Get CV",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/cv",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "cv"
+              ]
+            },
+            "description": "Returns the complete CV: skills, work experience and education."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Agents",
+      "description": "Subagent catalogue and specs.",
+      "item": [
+        {
+          "name": "List agents",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/agents/list",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "agents",
+                "list"
+              ]
+            },
+            "description": "Returns every subagent together with its declared input and output schemas."
+          },
+          "response": []
+        },
+        {
+          "name": "List agent specs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/agents/specs/list",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "agents",
+                "specs",
+                "list"
+              ]
+            },
+            "description": "Returns the metadata of every listable spec together with its visible documents."
+          },
+          "response": []
+        },
+        {
+          "name": "Get spec document content",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/agents/specs/:id/:document_id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "agents",
+                "specs",
+                ":id",
+                ":document_id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "3c2a1b90-5d4e-4f8a-b7c6-1d2e3f4a5b6c",
+                  "description": "Identifier of the spec the document is linked to."
+                },
+                {
+                  "key": "document_id",
+                  "value": "7d6c5b4a-3e2f-4a1b-9c8d-0e1f2a3b4c5d",
+                  "description": "Identifier of the document to return."
+                }
+              ]
+            },
+            "description": "Returns the raw bytes of the requested spec document as binary/octet-stream."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Articles",
+      "description": "Article catalogue, content and comments.",
+      "item": [
+        {
+          "name": "List articles",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/articles/list",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "articles",
+                "list"
+              ]
+            },
+            "description": "Returns the metadata of every publicly visible article, without article content."
+          },
+          "response": []
+        },
+        {
+          "name": "Get article content",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/articles/:article_id/content",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "articles",
+                ":article_id",
+                "content"
+              ],
+              "variable": [
+                {
+                  "key": "article_id",
+                  "value": "8f1f1f52-3f1e-4a34-9f1e-1b0f1e2d3c4b",
+                  "description": "Identifier of the article."
+                }
+              ]
+            },
+            "description": "Returns the raw bytes of the document linked to the article as binary/octet-stream."
+          },
+          "response": []
+        },
+        {
+          "name": "List article comments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/articles/:article_id/comments",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "articles",
+                ":article_id",
+                "comments"
+              ],
+              "variable": [
+                {
+                  "key": "article_id",
+                  "value": "8f1f1f52-3f1e-4a34-9f1e-1b0f1e2d3c4b",
+                  "description": "Identifier of the article."
+                }
+              ]
+            },
+            "description": "Returns every comment recorded against the article, oldest first."
+          },
+          "response": []
+        },
+        {
+          "name": "Create article comment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/articles/:article_id/comment",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "articles",
+                ":article_id",
+                "comment"
+              ],
+              "variable": [
+                {
+                  "key": "article_id",
+                  "value": "8f1f1f52-3f1e-4a34-9f1e-1b0f1e2d3c4b",
+                  "description": "Identifier of the article."
+                }
+              ]
+            },
+            "description": "Records the submitted comment against the article and returns the identifier generated for it. The author is optional: omit it to record the comment anonymously.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"author\": \"Ada Lovelace\",\n    \"comment\": \"A thoroughly enjoyable read - thanks for writing it up.\"\n}\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Messages",
+      "description": "Contact messages.",
+      "item": [
+        {
+          "name": "Create message",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/messages",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "messages"
+              ]
+            },
+            "description": "Records a contact message and returns the identifier generated for it. The organization is optional and is stored as null when absent.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"ada.lovelace@example.com\",\n    \"name\": \"Ada Lovelace\",\n    \"organization\": \"Analytical Engines Ltd\",\n    \"message\": \"I would like to talk to you about a contract role.\"\n}\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Projects",
+      "description": "Project listing.",
+      "item": [
+        {
+          "name": "List projects",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/projects/list",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "projects",
+                "list"
+              ]
+            },
+            "description": "Returns every project flagged for display."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

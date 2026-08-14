@@ -1,0 +1,30 @@
+---
+# Default configuration values for the API. Every value can be overridden by
+# the environment variable formed by upper-casing the key and replacing '.'
+# with '_' (e.g. postgres.host -> POSTGRES_HOST). Secrets are never committed
+# here and must be supplied via the environment.
+api:
+  version: v1
+
+listen:
+  host: 0.0.0.0
+  port: 10000
+
+log:
+  level: info
+
+postgres:
+  host: localhost
+  port: 5432
+  user: postgres
+  db: postgres
+  ssl:
+    mode: disable
+  # Connection pool sizing and timeouts. Every endpoint is anonymous, so these
+  # bound the connections and the wait a traffic burst can produce; they are
+  # deliberately configurable rather than left on the pgx defaults.
+  pool:
+    max_connections: 10
+    connect_timeout_seconds: 5
+    max_connection_lifetime_seconds: 3600
+    max_connection_idle_time_seconds: 300

@@ -1,0 +1,67 @@
+/* ==========================================================================
+   app.css — shared, non-token styles.
+
+   Imported by `app/globals.css`, which owns every design token. Nothing here
+   declares a colour, size or spacing value of its own: each rule reads a
+   token. This file exists for the handful of element-level defaults that a
+   utility class cannot express — the document shell, browser-default
+   upgrades, and behaviour Tailwind's preflight would otherwise remove.
+   ========================================================================== */
+
+@layer base {
+  html {
+    color-scheme: dark;
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-normal);
+    line-height: var(--leading-normal);
+    color: var(--color-text-primary);
+    background-color: var(--color-bg);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* Inter's alternate glyph set — the single-storey `a` and straight-tailed
+       `l` the design language is drawn with. */
+    font-feature-settings: 'cv01', 'cv03', 'cv04';
+  }
+
+  /* Dates, counts and durations sit in ruled rows and must not jitter. */
+  time,
+  [data-numeric] {
+    font-variant-numeric: tabular-nums;
+  }
+
+  ::selection {
+    color: var(--color-text-primary);
+    background: var(--color-accent-selection);
+  }
+
+  /* One visible focus treatment for every interactive element, so no
+     component has to restate it. */
+  :focus-visible {
+    outline: 2px solid var(--color-accent-text);
+    outline-offset: 2px;
+  }
+
+  /* Filtering hides rows with the `hidden` attribute rather than unmounting
+     them, which keeps the full content in the server-rendered payload.
+     Preflight's `display` utilities would otherwise override the attribute,
+     so this rule is mandatory and must stay important. */
+  [hidden] {
+    display: none !important;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}

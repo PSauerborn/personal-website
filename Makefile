@@ -26,5 +26,6 @@ claude:
 
 	@docker run --rm \
 		-v $(PWD):/home/agent/workspace \
+		-v /home/agent/workspace/web/node_modules \
 		-it \
 		claude-sandbox

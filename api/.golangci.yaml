@@ -1,0 +1,42 @@
+# golangci-lint configuration for the api component.
+#
+# Run through the component Makefile:
+#
+#   $ make -C api lint
+#
+# Uses the v2 configuration schema.
+version: "2"
+
+run:
+  timeout: 5m
+  tests: true
+
+linters:
+  # The standard set (errcheck, govet, ineffassign, staticcheck, unused) plus
+  # the additions below.
+  default: standard
+  enable:
+    # Unhandled errors are the most common source of silent failure in Go, and
+    # the persistence and controller layers return errors everywhere.
+    - bodyclose
+    # Doc comments are mandatory on exported symbols per [GO-005].
+    - revive
+    - misspell
+    - unconvert
+  settings:
+    revive:
+      rules:
+        - name: exported
+        - name: package-comments
+          disabled: true
+  exclusions:
+    generated: lax
+    rules:
+      # Table-driven tests routinely ignore errors from helper setup calls.
+      - path: _test\.go$
+        linters:
+          - errcheck
+
+formatters:
+  enable:
+    - gofmt

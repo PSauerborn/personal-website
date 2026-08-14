@@ -201,3 +201,38 @@ Feature: Agent Catalogue
         When a request is made to list specs with include_hidden set to "false"
         Then the response status is 200
         And the list only includes specs that are marked as visible
+
+    @ui @spec-003
+    Scenario: The agents page displays the agentic workflow section
+        When a visitor navigates to the agents page
+        Then the workflow section displays a written account of the agentic development workflow
+        And the workflow section displays a graphical representation of the pipeline
+        And the graphic names every stage of the pipeline in the order it runs
+        And the graphic marks the stages that stop for human approval
+        And the graphic is followed by a numbered description of each stage
+
+    @ui @spec-003
+    Scenario: The agents page displays the subagent catalogue
+        Given a collection of subagents exists
+        When a visitor navigates to the agents page
+        Then the catalogue section lists every subagent
+        And each subagent entry displays the name of the subagent
+        And each subagent entry displays the description of the subagent
+        And each subagent entry displays the inputs and outputs of the subagent
+        And a subagent with no declared inputs or outputs displays "None declared" in their place
+
+    @ui @spec-003
+    Scenario: The agents page displays the spec listing with document content
+        Given a collection of specs marked as visible exists
+        And each spec has a document linked to it
+        When a visitor navigates to the agents page
+        Then the specs section lists every spec that is marked as visible
+        And each spec entry displays the identifier, name, and description of the spec
+        And each spec entry lists the documents linked to the spec
+        And the content of a document is displayed when the visitor expands it
+        And a document whose content could not be retrieved displays "Content unavailable" in its place
+
+    @ui @spec-003
+    Scenario: The agents page displays a GitHub link to the agents repository
+        When a visitor navigates to the agents page
+        Then the workflow section displays a link to the agents repository on GitHub

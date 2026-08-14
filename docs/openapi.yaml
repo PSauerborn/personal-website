@@ -1,0 +1,839 @@
+openapi: 3.0.3
+
+info:
+  title: psauerborn.dev API
+  version: "1.0.0"
+  description: |
+    Public API backing psauerborn.dev. It serves the CV, the article catalogue
+    and article content, the subagent and spec catalogues, the project listing,
+    and accepts contact messages and article comments.
+
+    Conventions:
+
+    - Every endpoint is served under the `/v1` prefix.
+    - Requests and responses are `application/json`, except the two content
+      endpoints, which return raw bytes as `binary/octet-stream`.
+    - Every error response (400, 404, 500) uses the shared `Error` envelope.
+    - The API is entirely public: no endpoint requires authentication, and no
+      security scheme is defined.
+
+    CORS: cross-origin requests are accepted from `http://localhost:9000`,
+    `https://psauerborn.dev` and `https://dev.psauerborn.dev`, for the methods
+    GET, POST, PATCH, PUT, DELETE and OPTIONS, with the `Content-Type`,
+    `Accept`, `Accept-Language` and `Content-Language` request headers.
+    Preflight `OPTIONS` requests are answered with `204 No Content` and an empty
+    body for every origin; only allowed origins receive the
+    `Access-Control-Allow-*` response headers, so browsers reject the response
+    for any other origin. The preflight handling applies to every path below and
+    is therefore not repeated per operation.
+
+servers:
+  - url: "{scheme}://{host}"
+    description: API base URL
+    variables:
+      scheme:
+        default: https
+        enum:
+          - http
+          - https
+        description: Transport scheme; `http` is only used for local development.
+      host:
+        default: api.psauerborn.dev
+        description: >-
+          Host serving the API, for example `api.psauerborn.dev` or
+          `localhost:10000` during local development.
+
+tags:
+  - name: base
+    description: Health and version endpoints.
+  - name: cv
+    description: Curriculum vitae.
+  - name: articles
+    description: Article catalogue, content and comments.
+  - name: agents
+    description: Subagent catalogue and specs.
+  - name: messages
+    description: Contact messages.
+  - name: projects
+    description: Project listing.
+
+paths:
+  /v1/health:
+    get:
+      tags: [base]
+      operationId: getHealth
+      summary: Report API health
+      description: >-
+        Checks that the database backing the API is reachable. Returns 200 when
+        it is, and the fixed 500 envelope when it is not; the underlying failure
+        is logged for operators and never disclosed to the caller.
+      responses:
+        "200":
+          description: The API and its dependencies are healthy.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /v1/version:
+    get:
+      tags: [base]
+      operationId: getVersion
+      summary: Return the deployed API version
+      description: >-
+        Returns the version string held by the application configuration, so
+        that the served value follows the deployed configuration.
+      responses:
+        "200":
+          description: The deployed API version.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VersionResponse"
+
+  /v1/cv:
+    get:
+      tags: [cv]
+      operationId: getCV
+      summary: Return the complete CV
+      description: >-
+        Returns the complete CV in a single response: work experience entries
+        and education entries, most recent first, together with the tech stack
+        items grouped by skill category. An empty CV yields empty collections
+        and an empty skills object rather than nulls. The endpoint is also
+        served on the trailing-slash path `/v1/cv/`, which is identical in
+        every respect.
+      responses:
+        "200":
+          description: The complete CV.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CVResponse"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /v1/agents/list:
+    get:
+      tags: [agents]
+      operationId: listAgents
+      summary: List the subagent catalogue
+      description: >-
+        Returns every subagent together with its declared input and output
+        schemas. An agent that declares no schema is served with an empty
+        object rather than a null. An empty catalogue yields an empty array.
+      responses:
+        "200":
+          description: The subagent catalogue.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AgentListResponse"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /v1/agents/specs/list:
+    get:
+      tags: [agents]
+      operationId: listAgentSpecs
+      summary: List the specs used by the agents
+      description: >-
+        Returns the metadata of every listable spec together with its visible
+        documents, and never the spec content itself. Specs that are hidden,
+        that carry no primary (`document_type: spec`) document, that carry more
+        than one, or whose primary document is restricted are omitted entirely;
+        restricted supporting documents are stripped from the specs that are
+        listed. Nothing to list yields an empty array.
+      responses:
+        "200":
+          description: The listable specs and their visible documents.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SpecListResponse"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /v1/agents/specs/{id}/{document_id}:
+    get:
+      tags: [agents]
+      operationId: getSpecDocumentContent
+      summary: Return the raw content of a spec document
+      description: >-
+        Returns the raw bytes of the requested document, written verbatim as
+        `binary/octet-stream` and never wrapped in JSON. A spec that does not
+        exist, a document that does not exist, a document that is not linked to
+        the given spec, and a restricted document are all answered with the same
+        404 envelope, so that the caller cannot tell them apart.
+      parameters:
+        - $ref: "#/components/parameters/SpecID"
+        - $ref: "#/components/parameters/SpecDocumentID"
+      responses:
+        "200":
+          description: The raw document content.
+          content:
+            binary/octet-stream:
+              schema:
+                type: string
+                format: binary
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /v1/messages:
+    post:
+      tags: [messages]
+      operationId: createMessage
+      summary: Submit a contact message
+      description: >-
+        Records a contact message and returns the identifier generated for it.
+        The email is trimmed and lower-cased. The name and organization are
+        trimmed, runs of internal whitespace are collapsed to a single space and
+        the first letter of each word is capitalized, while the rest of each
+        word is stored exactly as submitted.
+        The body is bound tolerantly: fields beyond the documented schema are
+        ignored rather than rejected. The endpoint is also served on the
+        trailing-slash path `/v1/messages/`, which is identical in every
+        respect.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateMessageRequest"
+      responses:
+        "201":
+          description: The message was recorded.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateMessageResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /v1/articles/list:
+    get:
+      tags: [articles]
+      operationId: listArticles
+      summary: List the publicly visible articles
+      description: >-
+        Returns the metadata of every publicly visible article together with the
+        topics linked to it. Hidden articles, articles without a linked document
+        and articles whose document is restricted are excluded; article content
+        is never part of the payload. An empty listing and an article without
+        topics both serialize as an empty array.
+      responses:
+        "200":
+          description: The article listing.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArticleListResponse"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /v1/articles/{article_id}/content:
+    get:
+      tags: [articles]
+      operationId: getArticleContent
+      summary: Return the raw content of an article
+      description: >-
+        Returns the raw bytes of the document linked to the article, written as
+        `binary/octet-stream` rather than as JSON. An article that does not
+        exist, is hidden, has no linked document, or whose document is
+        restricted is answered with the same 404 envelope.
+      parameters:
+        - $ref: "#/components/parameters/ArticleID"
+      responses:
+        "200":
+          description: The raw article content.
+          content:
+            binary/octet-stream:
+              schema:
+                type: string
+                format: binary
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /v1/articles/{article_id}/comments:
+    get:
+      tags: [articles]
+      operationId: listArticleComments
+      summary: List the comments of an article
+      description: >-
+        Returns every comment recorded against the article, oldest first. An
+        article without comments yields an empty array and an anonymously posted
+        comment yields a null author. An article that is not publicly visible
+        yields the same 404 envelope as every other article endpoint.
+      parameters:
+        - $ref: "#/components/parameters/ArticleID"
+      responses:
+        "200":
+          description: The comments of the article.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArticleCommentListResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /v1/articles/{article_id}/comment:
+    post:
+      tags: [articles]
+      operationId: createArticleComment
+      summary: Comment on an article
+      description: >-
+        Records the submitted comment against the article and returns the
+        identifier generated for it. The author is trimmed, runs of internal
+        whitespace are collapsed to a single space and the first letter of each
+        word is capitalized, while the rest of each word is stored exactly as
+        submitted; a comment submitted without an author is stored anonymously.
+        The body is bound tolerantly: fields beyond the documented schema are
+        ignored rather than rejected. An article that is not publicly visible
+        yields the same 404 envelope as the read endpoints.
+      parameters:
+        - $ref: "#/components/parameters/ArticleID"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCommentRequest"
+      responses:
+        "201":
+          description: The comment was recorded.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateCommentResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /v1/projects/list:
+    get:
+      tags: [projects]
+      operationId: listProjects
+      summary: List the displayed projects
+      description: >-
+        Returns every project flagged for display. Hidden projects are excluded
+        and an empty listing serializes as an empty array.
+      responses:
+        "200":
+          description: The project listing.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectListResponse"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+components:
+  parameters:
+    ArticleID:
+      name: article_id
+      in: path
+      required: true
+      description: Identifier of the article.
+      schema:
+        type: string
+      example: 8f1f1f52-3f1e-4a34-9f1e-1b0f1e2d3c4b
+
+    SpecID:
+      name: id
+      in: path
+      required: true
+      description: Identifier of the spec the document is linked to.
+      schema:
+        type: string
+      example: 3c2a1b90-5d4e-4f8a-b7c6-1d2e3f4a5b6c
+
+    SpecDocumentID:
+      name: document_id
+      in: path
+      required: true
+      description: Identifier of the document to return.
+      schema:
+        type: string
+      example: 7d6c5b4a-3e2f-4a1b-9c8d-0e1f2a3b4c5d
+
+  responses:
+    BadRequest:
+      description: >-
+        The request body could not be parsed, or a field failed validation. The
+        `details` value names the offending field and the reason it was
+        rejected.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error: Bad Request
+            details: "comment: must not be empty"
+
+    NotFound:
+      description: >-
+        The requested resource is not available. The same envelope is returned
+        whether the resource does not exist, is hidden, has no linked document
+        or is restricted, so that the cases cannot be told apart.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error: Not Found
+            details: The requested resource could not be found.
+
+    InternalServerError:
+      description: >-
+        An unhandled error occurred. The envelope is fixed: the underlying
+        failure is logged for operators and never disclosed to the caller.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error: Internal Server Error
+            details: Something went wrong.
+
+  schemas:
+    Error:
+      type: object
+      description: The envelope returned by every error response of this API.
+      required:
+        - error
+        - details
+      properties:
+        error:
+          type: string
+          description: >-
+            Generic error code mirroring the HTTP status reason phrase of the
+            response it accompanies.
+          enum:
+            - Bad Request
+            - Not Found
+            - Internal Server Error
+        details:
+          type: string
+          description: >-
+            Additional context that is safe to disclose. Validation failures
+            carry `<field>: <reason>`; all other errors carry a fixed, generic
+            string.
+          example: "comment: must not be empty"
+
+    HealthResponse:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          enum:
+            - OK
+          description: Fixed value returned when every dependency is healthy.
+
+    VersionResponse:
+      type: object
+      required:
+        - version
+      properties:
+        version:
+          type: string
+          description: Version string held by the deployed configuration.
+          example: v1
+
+    CVResponse:
+      type: object
+      required:
+        - skills
+        - experience
+        - education
+      properties:
+        skills:
+          $ref: "#/components/schemas/CVSkills"
+        experience:
+          type: array
+          description: Work experience entries, most recent first.
+          items:
+            $ref: "#/components/schemas/CVExperience"
+        education:
+          type: array
+          description: Education entries, most recent first.
+          items:
+            $ref: "#/components/schemas/CVEducation"
+
+    CVSkills:
+      type: object
+      description: >-
+        Tech stack items grouped by skill category. Each key is a category name
+        and each value the ordered names of the items linked to it. An
+        uncategorized CV yields an empty object.
+      additionalProperties:
+        type: array
+        items:
+          type: string
+      example:
+        backend:
+          - Go
+          - PostgreSQL
+        frontend:
+          - Vue.js
+
+    CVExperience:
+      type: object
+      required:
+        - id
+        - organization
+        - job_title
+        - start_date
+        - end_date
+        - description
+        - tech_stack
+        - responsibilities
+      properties:
+        id:
+          type: string
+        organization:
+          type: string
+        job_title:
+          type: string
+        start_date:
+          type: string
+          format: date-time
+          description: ISO8601 timestamp at which the role started.
+        end_date:
+          type: string
+          format: date-time
+          nullable: true
+          description: >-
+            ISO8601 timestamp at which the role ended, or null for a current
+            role.
+        description:
+          type: string
+        tech_stack:
+          type: array
+          description: Names of the tech stack items used in the role.
+          items:
+            type: string
+        responsibilities:
+          type: array
+          description: Responsibilities held in the role.
+          items:
+            type: string
+
+    CVEducation:
+      type: object
+      required:
+        - id
+        - institution
+        - certificate
+        - start_date
+        - end_date
+      properties:
+        id:
+          type: string
+        institution:
+          type: string
+        certificate:
+          type: string
+          description: Type of certificate, for example BSc, Masters or PhD.
+        start_date:
+          type: string
+          format: date-time
+          description: ISO8601 timestamp at which the course started.
+        end_date:
+          type: string
+          format: date-time
+          nullable: true
+          description: >-
+            ISO8601 timestamp at which the course ended, or null for an ongoing
+            course.
+
+    AgentListResponse:
+      type: object
+      required:
+        - agents
+      properties:
+        agents:
+          type: array
+          items:
+            $ref: "#/components/schemas/Agent"
+
+    Agent:
+      type: object
+      required:
+        - id
+        - name
+        - description
+        - inputs
+        - outputs
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        inputs:
+          type: object
+          description: >-
+            Declared input schema of the agent. An agent that declares none
+            yields an empty object rather than a null.
+          additionalProperties: true
+        outputs:
+          type: object
+          description: >-
+            Declared output schema of the agent. An agent that declares none
+            yields an empty object rather than a null.
+          additionalProperties: true
+
+    SpecListResponse:
+      type: object
+      required:
+        - specs
+      properties:
+        specs:
+          type: array
+          items:
+            $ref: "#/components/schemas/AgentSpec"
+
+    AgentSpec:
+      type: object
+      required:
+        - id
+        - display_name
+        - description
+        - documents
+      properties:
+        id:
+          type: string
+        display_name:
+          type: string
+        description:
+          type: string
+          description: Description of what the spec provides.
+        documents:
+          type: array
+          description: >-
+            Documents of the spec that may be disclosed. Restricted documents
+            are omitted, so the array may be empty.
+          items:
+            $ref: "#/components/schemas/AgentSpecDocument"
+
+    AgentSpecDocument:
+      type: object
+      required:
+        - document_id
+        - filename
+        - document_type
+      properties:
+        document_id:
+          type: string
+          description: >-
+            Identifier to pass to `GET /v1/agents/specs/{id}/{document_id}` to
+            read the content of the document.
+        filename:
+          type: string
+        document_type:
+          type: string
+          description: >-
+            Role of the document within the spec. A spec carries at most one
+            `spec` document, which is the spec itself.
+          enum:
+            - spec
+            - acceptance
+            - other
+
+    CreateMessageRequest:
+      type: object
+      description: >-
+        Contact message to record. Fields beyond this schema are ignored rather
+        than rejected.
+      required:
+        - email
+        - name
+        - message
+      properties:
+        email:
+          type: string
+          format: email
+          description: >-
+            Email address of the sender. It is trimmed and lower-cased before it
+            is stored; an invalid or over-long value yields a 400.
+        name:
+          type: string
+          description: >-
+            Name of the sender. It is trimmed, runs of internal whitespace are
+            collapsed to a single space and the first letter of each word is
+            capitalized, while the rest of each word is stored exactly as
+            submitted; an empty or over-long value yields a 400.
+        organization:
+          type: string
+          description: >-
+            Organization of the sender. Optional: an absent or empty value is
+            stored as null. An over-long value yields a 400.
+        message:
+          type: string
+          description: >-
+            Message body, stored as submitted. An empty or whitespace-only value
+            yields a 400.
+
+    CreateMessageResponse:
+      type: object
+      required:
+        - message_id
+      properties:
+        message_id:
+          type: string
+          description: Identifier generated for the recorded message.
+
+    ArticleListResponse:
+      type: object
+      required:
+        - articles
+      properties:
+        articles:
+          type: array
+          items:
+            $ref: "#/components/schemas/ArticleListEntry"
+
+    ArticleListEntry:
+      type: object
+      required:
+        - id
+        - title
+        - description
+        - author
+        - topics
+        - created_at
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        author:
+          type: string
+        topics:
+          type: array
+          description: >-
+            Topics linked to the article. An article without topics yields an
+            empty array.
+          items:
+            type: string
+        created_at:
+          type: string
+          format: date-time
+          description: >-
+            ISO8601 timestamp at which the article was authored, read from the
+            base.article.authored_at column rather than from the created_at
+            audit column.
+
+    ArticleCommentListResponse:
+      type: object
+      required:
+        - article_id
+        - comments
+      properties:
+        article_id:
+          type: string
+          description: Identifier of the article the comments belong to.
+        comments:
+          type: array
+          description: Comments recorded against the article, oldest first.
+          items:
+            $ref: "#/components/schemas/ArticleComment"
+
+    ArticleComment:
+      type: object
+      required:
+        - author
+        - comment
+        - created_at
+      properties:
+        author:
+          type: string
+          nullable: true
+          description: >-
+            Author of the comment, or null when it was posted anonymously.
+        comment:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          description: ISO8601 timestamp at which the comment was recorded.
+
+    CreateCommentRequest:
+      type: object
+      description: >-
+        Comment to record against the article. Fields beyond this schema are
+        ignored rather than rejected.
+      required:
+        - comment
+      properties:
+        author:
+          type: string
+          description: >-
+            Author of the comment. Optional: an absent or empty value records
+            the comment anonymously. An over-long value yields a 400.
+        comment:
+          type: string
+          description: >-
+            Comment body. An empty or whitespace-only value yields a 400.
+
+    CreateCommentResponse:
+      type: object
+      required:
+        - comment_id
+      properties:
+        comment_id:
+          type: string
+          description: Identifier generated for the recorded comment.
+
+    ProjectListResponse:
+      type: object
+      required:
+        - projects
+      properties:
+        projects:
+          type: array
+          items:
+            $ref: "#/components/schemas/Project"
+
+    Project:
+      type: object
+      required:
+        - id
+        - name
+        - description
+        - primary_link
+        - github_link
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        primary_link:
+          type: string
+          description: Primary link of the project, for example its landing page.
+        github_link:
+          type: string
+          nullable: true
+          description: >-
+            Link to the GitHub repository of the project, or null when it has
+            none.

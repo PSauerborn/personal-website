@@ -107,3 +107,21 @@ Feature: Projects
         And no project exists with the ID "7c1e5a9db2f6470c93d84b1a6e05c827"
         When a request is made to update the visibility of the project with the ID "7c1e5a9db2f6470c93d84b1a6e05c827"
         Then the response status is 404
+
+    @ui @spec-003
+    Scenario: The projects page lists all projects with descriptions and links
+        Given a collection of projects marked as visible exists
+        When a visitor navigates to the projects page
+        Then the projects page lists every visible project
+        And each project entry displays the name and the description of the project
+        And each project entry links to the project itself
+        And each project entry displays a link to the repository of the project where the project has one
+
+    @ui @spec-003
+    Scenario: A project without a GitHub repository shows no GitHub link
+        Given a project with the name "Sample Project" exists and is marked as visible
+        And the project "Sample Project" has no GitHub link
+        When a visitor navigates to the projects page
+        Then the projects page lists the project "Sample Project"
+        And the entry for the project "Sample Project" displays no repository link
+        And the entry for the project "Sample Project" still links to the project itself

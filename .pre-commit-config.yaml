@@ -15,3 +15,32 @@ repos:
   hooks:
   - id: detect-secrets
     args: ['--baseline', '.secrets.baseline']
+
+# Component-scoped hooks. Each component owns a `lint` target that is invoked
+# through `make -C <COMPONENT> lint`, and the hook only runs when files in that
+# component have changed.
+- repo: local
+  hooks:
+  - id: api-lint
+    name: api lint
+    entry: make -C api lint
+    language: system
+    files: ^api/
+    pass_filenames: false
+  - id: web-lint
+    name: web lint
+    entry: make -C web lint
+    language: system
+    files: ^web/
+    pass_filenames: false
+  # web-lint enforces no formatting: eslint-config-prettier switches every
+  # formatting rule off in web/eslint.config.mjs, so [JS-005] prettier
+  # conformance would otherwise be checked by nothing. This is a check, not a
+  # rewrite — a hook that reformats files under the committer would leave the
+  # tree differing from the commit it just allowed.
+  - id: web-format
+    name: web format check
+    entry: make -C web format-check
+    language: system
+    files: ^web/
+    pass_filenames: false

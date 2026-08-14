@@ -277,6 +277,12 @@ Not every scenario precondition is seed data. Three classes of precondition are 
    `@spec-002` scenarios in `contacts.feature`, and the three `@spec-003` contact-form
    scenarios presuppose no persisted data at all. They are covered by this catalogue in the
    sense that it deliberately provides nothing for them.
+5. **Preconditions the real CV cannot supply** — the CV fixtures are transcribed from the
+   site owner's CV rather than authored to fit the scenarios (§4.4), so a scenario needing a
+   shape the CV does not have is left to the step definitions. There is exactly one:
+   `cv.feature` — "Entries are ordered by start date, most recent first" needs a collection
+   of education entries with differing start dates, and the CV holds a single degree. See
+   the deviation recorded in §4.6.
 
 ### 3.2 Reserved literals — must never appear in a fixture
 
@@ -406,24 +412,51 @@ Rules:
 Aggregate: one `cv_experience` with embedded `cv_experience_responsibility` rows and stack
 item references. **This file owns every `cv_stack_item` row** (§5).
 
-Stack items owned: `Go`, `Python`, `Kubernetes`, `Terraform`, `PostgreSQL`.
-Cited by `cv.feature` — "Headline skills are grouped by category" (names Go, Python,
+> **Source of the corpus.** Unlike every other file in this catalogue, the CV fixtures
+> (§4.4 – §4.6) are **not synthetic**: they are transcribed from the site owner's CV,
+> `docs/specs/external-docs/PSauerborn CV.pdf`. The website serves this data to visitors, so
+> a placeholder corpus was never going to survive first contact with production. The
+> consequence for this catalogue is that real facts, not scenario convenience, decide the
+> shapes — where the two conflict, the CV wins and the scenario is re-derived around it
+> (see the deviations recorded in §4.6). Amending these tables means re-reading the PDF.
+
+Stack items owned (37): `Python`, `Golang`, `Claude Code`, `Spec Driven Development`,
+`Agent Sandboxing`, `AWS`, `Terraform`, `Kubernetes`, `Docker`, `PostgreSQL`, `DynamoDB`,
+`Apache Cassandra`, `GitHub`, `GitHub Actions`, `GitLab`, `Azure DevOps`, `IaC Pipelines`,
+`REST`, `GraphQL`, `gRPC`, `ETL Pipelines`, `RabbitMQ`, `Grafana`, `Prometheus`, `Agile`,
+`S3`, `Lambda`, `ECS`, `AppSync`, `API Gateway`, `Step Functions`, `SNS`, `SQS`, `Athena`,
+`Glue`, `Security Hub`, `Azure AKS`.
+Cited by `cv.feature` — "Headline skills are grouped by category" (names Golang, Python,
 Kubernetes) and "Tech stack items without a category are not returned as skills" (names
-Terraform).
+Athena).
 
 | Key | `job_title` @ `organization` | `start_date` → `end_date` | Responsibilities | Stack items | Cited by |
 | --- | --- | --- | --- | --- | --- |
-| `experience.senior_engineer` | Senior Engineer @ Acme Cloud GmbH | 2022-03-01 → **`null`** | 3 | Go, Kubernetes, Terraform | `cv.feature` — "Experience entries are returned as complete aggregates" (named "Senior Engineer", must have both responsibilities and stack items); "An ongoing role is returned as current" (null `end_date`) |
-| `experience.platform_engineer` | Platform Engineer @ Beta Systems AG | 2019-01-01 → 2022-02-28 | 2 | Python, PostgreSQL | `cv.feature` — "Entries are ordered by start date, most recent first" (`experience` row of the Examples table); "A request is made to retrieve CV" (needs a *collection*) |
-| `experience.software_engineer` | Software Engineer @ Gamma Labs | 2016-09-01 → 2018-12-31 | 2 | Python, Go | `cv.feature` — "Entries are ordered by start date, most recent first" (three distinct start dates make the ordering unambiguous) |
+| `experience.founder` | Founder & Developer @ S31 Software & Co | 2026-03-01 → **`null`** | 3 | 11 | `cv.feature` — "An ongoing role is returned as current" (named "Founder & Developer", null `end_date`) |
+| `experience.lead_backend` | Lead Backend Consultant & Developer @ Omnigen Biodata | 2022-10-01 → **`null`** | 5 | 22 | `cv.feature` — "A request is made to retrieve CV" (needs a *collection*); the widest aggregate in the corpus |
+| `experience.senior_mlops` | Senior MLOps Engineer @ ZenithAI | 2022-02-01 → 2022-10-01 | 3 | 10 | `cv.feature` — "Entries are ordered by start date, most recent first" (`experience` row of the Examples table) |
+| `experience.technical_lead` | Technical Lead @ Uniper Technologies | 2019-06-01 → 2022-02-01 | 4 | 12 | `cv.feature` — "Experience entries are returned as complete aggregates" (named "Technical Lead", must have both responsibilities and stack items); "Entries are ordered by start date, most recent first" (four distinct start dates make the ordering unambiguous) |
 
 Rules:
 
-- All three `start_date` values are distinct.
-- Exactly one entry has a null `end_date`; the other two are closed.
-- `Terraform` is linked to an experience but deliberately **not** to any skill category
-  (§4.5), which is what makes the uncategorised-skill scenario meaningful.
-- Seven `cv_stack_item_experience_link` rows result; the link tuple is unique per pair.
+- All four `start_date` values are distinct.
+- **Two** entries have a null `end_date` — the site owner holds two concurrent ongoing
+  roles. This is a deliberate departure from the synthetic corpus, which pinned *exactly*
+  one; the "An ongoing role is returned as current" scenario names `Founder & Developer`
+  specifically rather than relying on the ongoing role being unique.
+- Closed roles end on the first day of the month the CV states, so each role's `end_date`
+  is the successor role's `start_date` and the timeline has no overlap.
+- `Athena` is linked to an experience but deliberately **not** to any skill category (§4.5),
+  which is what makes the uncategorised-skill scenario meaningful. It is one of 14
+  uncategorised items; the scenario names it because it is the least ambiguous.
+- 55 `cv_stack_item_experience_link` rows result; the link tuple is unique per pair.
+- Nine stack items are practices rather than per-role technologies (`Spec Driven
+  Development`, `Agent Sandboxing`, `REST`, `GraphQL`, `gRPC`, `ETL Pipelines`,
+  `IaC Pipelines`, `Agile`). They appear in the CV's Technical Skills block but not in any
+  role's Tech Stack line, and a `cv_stack_item` can only be defined *through* an experience
+  (§5.2, A-1), so each is attached to the role whose bullets evidence it. `gRPC` is the one
+  item the CV evidences nowhere but the skills block; it is attached to the Uniper
+  microservice mesh as the nearest plausible home.
 
 ### 4.5 `cv_skills.json` — categories + stack-item ID references
 
@@ -431,30 +464,94 @@ Aggregate: one `cv_skill_category` with an array of **stack item ID references o
 file never defines a `cv_stack_item` row (§5); an ID that no fixture defines is a linking
 error before any database write.
 
+The six categories are the Technical Skills block of the CV, verbatim and in its order.
+
 | Key | `category` | Stack items referenced | Cited by |
 | --- | --- | --- | --- |
-| `skill_category.languages` | Languages | Go, Python | `cv.feature` — "Headline skills are grouped by category" ("the skills contain the category 'Languages' with the items 'Go' and 'Python'") |
-| `skill_category.infrastructure` | Infrastructure | Kubernetes | `cv.feature` — "Headline skills are grouped by category" ("the category 'Infrastructure' with the item 'Kubernetes'") |
-| `skill_category.databases` | Databases | PostgreSQL | `cv.feature` — "A request is made to retrieve CV" ("the response body contains a map of skills" — a third category proves the grouping is a map, not a fixed pair) |
+| `skill_category.core_languages` | Core Languages | Python, Golang | `cv.feature` — "Headline skills are grouped by category" ("the skills contain the category 'Core Languages' with the items 'Golang' and 'Python'"); "Tech stack items without a category are not returned as skills" |
+| `skill_category.agentic_development` | Agentic Development | Spec Driven Development, Claude Code, Agent Sandboxing | `cv.feature` — "A request is made to retrieve CV" ("the response body contains a map of skills" — more than two categories prove the grouping is a map, not a fixed pair) |
+| `skill_category.cloud_and_infrastructure` | Cloud and Infrastructure | AWS, Terraform, Kubernetes, Docker | `cv.feature` — "Headline skills are grouped by category" ("the category 'Cloud and Infrastructure' with the item 'Kubernetes'") |
+| `skill_category.database_technologies` | Database Technologies | DynamoDB, PostgreSQL, Apache Cassandra | `cv.feature` — "A request is made to retrieve CV" |
+| `skill_category.cicd_and_automation` | CI/CD and Automation | GitLab, GitHub Actions, Terraform, IaC Pipelines | `cv.feature` — "A request is made to retrieve CV" |
+| `skill_category.other` | Other | REST, GraphQL, gRPC, ETL Pipelines, RabbitMQ, Grafana, Prometheus, Agile | `cv.feature` — "A request is made to retrieve CV" |
 
-`Terraform` is intentionally referenced by **no** category — cited by `cv.feature` — "Tech
-stack items without a category are not returned as skills".
+23 of the 37 stack items are categorised. The remaining 14 — `GitHub`, `S3`, `Lambda`,
+`ECS`, `AppSync`, `API Gateway`, `Step Functions`, `SNS`, `SQS`, `Athena`, `Glue`,
+`Security Hub`, `Azure AKS`, `Azure DevOps` — are linked to an experience but to no
+category, which is the shape `cv.feature` — "Tech stack items without a category are not
+returned as skills" asserts on; that scenario names `Athena`.
+
+`Terraform` is referenced by **two** categories (Cloud and Infrastructure, CI/CD and
+Automation), as the CV lists it under both. The schema permits it: the uniqueness
+constraint on `base.cv_stack_item_category_link` is on the `(category_id, stack_item_id)`
+pair, not on `stack_item_id` alone.
 
 ### 4.6 `cv_education.json`
 
 | Key | `certificate` @ `institution` | `start_date` → `end_date` | Cited by |
 | --- | --- | --- | --- |
-| `education.pgcert` | Postgraduate Certificate @ Open University | 2025-01-01 → **`null`** | `cv.feature` — "A request is made to retrieve CV"; covers the nullable `end_date` on the education side |
-| `education.msc` | MSc @ TU Munich | 2014-10-01 → 2016-07-31 | `cv.feature` — "Entries are ordered by start date, most recent first" (`education` row of the Examples table) |
-| `education.bsc` | BSc @ University of Bristol | 2011-09-01 → 2014-06-30 | `cv.feature` — "Entries are ordered by start date, most recent first" (three distinct start dates); "A request is made to retrieve CV" (needs a *collection*) |
+| `education.bsc` | BSc Theoretical Physics & Mathematics, First Class Honours @ University of Nottingham | 2016-09-01 → 2019-06-30 | `cv.feature` — "A request is made to retrieve CV" ("the response body contains a list of education entries") |
+
+**Deviation — the education corpus no longer backs two scenarios.** The site owner holds a
+single completed degree, so this file has one row. Two things the synthetic corpus provided
+are therefore gone, and neither can be restored without inventing qualifications:
+
+- `cv.feature` — "Entries are ordered by start date, most recent first", `education` row of
+  the Examples table, needs a *collection with differing start dates*. One row cannot
+  demonstrate an ordering. The step definitions must set up their own education rows for
+  this Examples row; seed data covers only the `experience` row.
+- The nullable `end_date` is no longer exercised on the education side. It is still
+  exercised on the experience side by both ongoing roles (§4.4).
 
 ### 4.7 `subagents.json`
+
+Rows other than `subagent.sample_agent` are **derived data, not invented data**: they are the
+thirteen subagents of the `subagents-dev` plugin, one row per agent definition. For each of
+them:
+
+- `name` is the agent's `name` frontmatter field;
+- `description` is its `description` frontmatter field, verbatim;
+- `inputs` is the agent's row of the Input Parameters table in the
+  `subagents-orchestration-guide` skill, as JSON Schema (`required` mirrors the parameters
+  marked *required* there);
+- `outputs` is the agent's response schema from that skill's
+  `reference/responses/{agent}.jsonc`, as JSON Schema.
+
+Because every subagent answers with the `agent-response-protocol` envelope, each `outputs`
+schema requires only `status` (`completed` | `blocked`) and carries the completed-shape
+fields alongside the `reason` and `detail` that appear only when the agent is blocked. The
+`reason` enum is exactly the blocked-shape reason list of the agent's own schema.
+
+The plugin is the upstream source: when an agent's parameters or response schema change
+there, this fixture is stale until it is regenerated from it.
 
 | Key | `name` | `inputs` / `outputs` | Cited by |
 | --- | --- | --- | --- |
 | `subagent.sample_agent` | Sample Agent | **`null` / `null`** | `agent_catalogue.feature` — "A subagent without declared schemas returns empty schema objects" (the row must exist with *no declared* schemas) |
+| `subagent.requirements_analyzer` | requirements-analyzer | JSON object / JSON object | `agent_catalogue.feature` — "A request is made to list subagents" ("the response contains the complete subagent catalogue") |
+| `subagent.frontend_designer` | frontend-designer | JSON object / JSON object | as above |
 | `subagent.work_planner` | work-planner | JSON object / JSON object | `agent_catalogue.feature` — "A request is made to list subagents" ("each subagent in the list includes its inputs and outputs schemas") |
+| `subagent.risk_analyzer` | risk-analyzer | JSON object / JSON object | as above |
+| `subagent.task_decomposer` | task-decomposer | JSON object / JSON object | as above |
 | `subagent.task_executor` | task-executor | JSON object / JSON object | `agent_catalogue.feature` — "A request is made to list subagents" ("the response contains the complete subagent catalogue" — needs more than one populated entry) |
+| `subagent.validation_runner` | validation-runner | JSON object / JSON object | as above |
+| `subagent.quality_controller` | quality-controller | JSON object / JSON object | as above |
+| `subagent.code_reviewer` | code-reviewer | JSON object / JSON object | as above |
+| `subagent.security_reviewer` | security-reviewer | JSON object / JSON object | as above |
+| `subagent.risk_reviewer` | risk-reviewer | JSON object / JSON object | as above |
+| `subagent.acceptance_validator` | acceptance-validator | JSON object / JSON object | as above |
+| `subagent.documenter` | documenter | JSON object / JSON object | as above |
+
+The `@ui @spec-003` scenario "The agents page displays the subagent catalogue" asserts that
+every subagent is listed with its name, description and both schemas, and that a subagent
+declaring neither renders "None declared" — `subagent.sample_agent` is the row that
+exercises the second half, and the thirteen plugin rows the first.
+
+The three rows that predate this catalogue — `subagent.sample_agent`,
+`subagent.work_planner` and `subagent.task_executor` — keep their original IDs per §7. The
+`work-planner` and `task-executor` *schemas* were corrected to the plugin's own: the earlier
+placeholders named a `workPlanPath` output the agent does not return (it returns
+`planOutputPath`) and omitted the `mode`, `designPath` and `updateContext` inputs.
 
 ### 4.8 `projects.json`
 

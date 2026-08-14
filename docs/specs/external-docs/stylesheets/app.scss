@@ -23,7 +23,7 @@ $grey-900: hsl(220, 6%, 7%);    // raised surface (cards, panels)
 $grey-850: hsl(220, 6%, 10%);   // hover surface / inset wells
 $grey-800: hsl(220, 5%, 13%);   // active surface, code blocks
 $grey-600: hsl(220, 5%, 32%);   // disabled text, subtle icons
-$grey-500: hsl(220, 5%, 42%);   // tertiary text
+$grey-500: hsl(220, 5%, 50%);   // tertiary text (4.6:1 on $grey-950 — WCAG AA)
 $grey-400: hsl(219, 6%, 57%);   // secondary text (Linear's #8a8f98)
 $grey-200: hsl(220, 12%, 85%);  // strong secondary on dark
 $grey-50:  hsl(220, 27%, 97%);  // primary text (Linear's #f7f8f8)

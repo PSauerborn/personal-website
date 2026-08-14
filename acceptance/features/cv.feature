@@ -14,11 +14,11 @@ Feature: CV
 
     @api @spec-002
     Scenario: Experience entries are returned as complete aggregates
-        Given an experience entry "Senior Engineer" exists with responsibilities and tech stack items
+        Given an experience entry "Technical Lead" exists with responsibilities and tech stack items
         When a request is made to retrieve the CV
         Then the response status is 200
-        And the experience entry "Senior Engineer" contains its responsibilities
-        And the experience entry "Senior Engineer" contains its tech stack items
+        And the experience entry "Technical Lead" contains its responsibilities
+        And the experience entry "Technical Lead" contains its tech stack items
 
     @api @spec-002
     Scenario Outline: Entries are ordered by start date, most recent first
@@ -34,27 +34,27 @@ Feature: CV
 
     @api @spec-002
     Scenario: An ongoing role is returned as current
-        Given an experience entry "Senior Engineer" exists with no end date
+        Given an experience entry "Founder & Developer" exists with no end date
         When a request is made to retrieve the CV
         Then the response status is 200
-        And the experience entry "Senior Engineer" has a null end date
+        And the experience entry "Founder & Developer" has a null end date
 
     @api @spec-002
     Scenario: Headline skills are grouped by category
-        Given a skill category "Languages" exists with tech stack items "Go" and "Python"
-        And a skill category "Infrastructure" exists with tech stack item "Kubernetes"
+        Given a skill category "Core Languages" exists with tech stack items "Golang" and "Python"
+        And a skill category "Cloud and Infrastructure" exists with tech stack item "Kubernetes"
         When a request is made to retrieve the CV
         Then the response status is 200
-        And the skills contain the category "Languages" with the items "Go" and "Python"
-        And the skills contain the category "Infrastructure" with the item "Kubernetes"
+        And the skills contain the category "Core Languages" with the items "Golang" and "Python"
+        And the skills contain the category "Cloud and Infrastructure" with the item "Kubernetes"
 
     @api @spec-002
     Scenario: Tech stack items without a category are not returned as skills
-        Given a skill category "Languages" exists with tech stack item "Go"
-        And a tech stack item "Terraform" exists that is not mapped to a category
+        Given a skill category "Core Languages" exists with tech stack item "Golang"
+        And a tech stack item "Athena" exists that is not mapped to a category
         When a request is made to retrieve the CV
         Then the response status is 200
-        And the skills do not contain the item "Terraform"
+        And the skills do not contain the item "Athena"
 
     @api @spec-002
     Scenario: An empty CV returns empty collections

@@ -1,18 +1,26 @@
 # Local development stack.
 #
-# Currently provides the PostgreSQL server that the alembic migrations and the
-# seeding script run against. Further services (the API and the web frontend)
-# are added here as they are delivered by later specs.
+# Provides the PostgreSQL server that the alembic migrations and the seeding
+# script run against, the SPEC-002 REST API built from api/, and the SPEC-003
+# Next.js frontend built from web/.
 #
 #   $ export POSTGRES_PASSWORD=<password>
-#   $ docker compose up -d
+#   $ docker compose up -d --build
+#
+# The API and the web frontend are built from source rather than pulled, so
+# `--build` is needed on the first run and after any change under api/ or web/.
+# Rebuilding matters more for web than for api: NEXT_PUBLIC_API_BASE_URL is
+# baked into the client bundle at image build time, so changing it requires a
+# rebuild of the web image, not a restart. The stack does not apply migrations:
+# bring postgres up, run `make -C alembic run-migrations` (and optionally
+# `make -C scripts/seeding seed`), then start the API.
 #
 # Environment variables are read from the parent shell, falling back to the
 # defaults below. POSTGRES_PASSWORD has no default and must be set — see the
 # note in the README. The variable names and the 5432 port default match the
-# contract documented in alembic/README.md and scripts/seeding/README.md, so
-# the same exported variables drive `make -C alembic run-migrations` and
-# `make -C scripts/seeding seed`.
+# contract documented in alembic/README.md, scripts/seeding/README.md and
+# api/README.md, so the same exported variables drive `make -C alembic
+# run-migrations`, `make -C scripts/seeding seed` and this stack.
 
 name: personal-website
 
@@ -23,7 +31,10 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-admin}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      # No default, deliberately: the `:?` form aborts `docker compose up` with
+      # the message below rather than silently starting a server published on
+      # the host with a guessable password.
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}
       POSTGRES_DB: ${POSTGRES_DB:-personal_website}
       # Fixed at the UTC/C pairing the schema assumes: every timestamp column is
       # TIMESTAMP WITH TIME ZONE stored in UTC (see docs/db_schema.md section 2).
@@ -45,6 +56,106 @@ services:
       start_period: 30s
     networks:
       - personal-website
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: personal-website-api
+    restart: unless-stopped
+    environment:
+      API_VERSION: ${API_VERSION:-v1}
+      # 0.0.0.0 rather than the loopback address: the server has to accept
+      # connections arriving from outside the container's network namespace.
+      LISTEN_HOST: 0.0.0.0
+      LISTEN_PORT: 8080
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      # Reached over the compose network, so the service name resolves the host
+      # and the port is the container-internal 5432 — deliberately NOT
+      # ${POSTGRES_PORT}, which is the host-side half of the mapping below and
+      # would break the API whenever the server is published on another port.
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: ${POSTGRES_USER:-admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}
+      POSTGRES_DB: ${POSTGRES_DB:-personal_website}
+      # Traffic never leaves the compose network here. Deployed environments must
+      # set this to a verifying mode.
+      POSTGRES_SSL_MODE: ${POSTGRES_SSL_MODE:-disable}
+    ports:
+      - "${API_PORT:-8080}:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      # GET /v1/health is the only check that covers the database connection as
+      # well as the process: it answers 500 when the pool is unreachable
+      # (REQ-1.5), and curl --fail turns that into a non-zero exit.
+      test:
+        - CMD
+        - curl
+        - --fail
+        - --silent
+        - --show-error
+        - http://localhost:8080/v1/health
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - personal-website
+
+  # web:
+  #   build:
+  #     context: ./web
+  #     dockerfile: Dockerfile
+  #     # [DOCKER-004]: the image is built for linux/amd64 whatever the host
+  #     # architecture is. web/Dockerfile documents the equivalent `docker build
+  #     # --platform linux/amd64` flags, but the documented build path for this
+  #     # repository is `docker compose up -d --build`, which honours nothing but
+  #     # this key — without it an arm64 developer machine produces an arm64 image
+  #     # under the same tag the amd64 deployment targets expect. The Compose
+  #     # Specification spells this as the list `build.platforms` (the singular
+  #     # `platform` exists only at service level and is rejected here), so the
+  #     # single target architecture is given as its one entry.
+  #     platforms:
+  #       - linux/amd64
+  #     args:
+  #       # BUILD-time only. `next build` substitutes the literal value into the
+  #       # client bundle (web/Dockerfile promotes this ARG to an ENV just before
+  #       # the build), so it must be a build arg: setting it under `environment:`
+  #       # below would leave the browser code pointing at whatever origin the
+  #       # image was built with, silently and without any test failing.
+  #       # The value is the origin the browser reaches the API on, not the
+  #       # compose service name. Its default interpolates the same ${API_PORT}
+  #       # the api service publishes on above, so the two cannot drift: raising
+  #       # API_PORT alone would otherwise bake a dead origin into the bundle and
+  #       # into the build-time CSP `connect-src` (web/next.config.ts), with no
+  #       # policy violation to point at the cause. Setting
+  #       # NEXT_PUBLIC_API_BASE_URL explicitly overrides the whole origin, for
+  #       # hosts that reach the API somewhere other than localhost.
+  #       NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://localhost:${API_PORT:-8080}}
+  #   container_name: personal-website-web
+  #   restart: unless-stopped
+  #   environment:
+  #     # RUN-time, read server-side per request by Server Components and route
+  #     # handlers. Those run inside the compose network, so they address the API
+  #     # by service name on its container-internal port — deliberately NOT
+  #     # ${API_PORT}, which is the host-side half of the api mapping.
+  #     API_BASE_URL: http://api:8080
+  #     # Verbosity of the server-side JSON log, matching the api service above.
+  #     # Records go to stdout, so `docker compose logs -f web` is the reader.
+  #     LOG_LEVEL: ${LOG_LEVEL:-info}
+  #   ports:
+  #     # Not parameterised, unlike the ports above: 9000 is the exact origin the
+  #     # API's CORS allowlist pins (api/router.go), so publishing the frontend on
+  #     # any other host port breaks every browser call to the API.
+  #     - "9000:9000"
+  #   depends_on:
+  #     api:
+  #       condition: service_healthy
+  #   networks:
+  #     - personal-website
 
 networks:
   personal-website:

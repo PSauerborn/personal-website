@@ -1,23 +1,9 @@
 [
   {
-    "id": "019ffd06ba47701d91cc4f3200393af3",
-    "institution": "Open University",
-    "certificate": "Postgraduate Certificate",
-    "start_date": "2025-01-01",
-    "end_date": null
-  },
-  {
-    "id": "019ffd06ba47701e97c9dbb7582ccb8a",
-    "institution": "TU Munich",
-    "certificate": "MSc",
-    "start_date": "2014-10-01",
-    "end_date": "2016-07-31"
-  },
-  {
-    "id": "019ffd06ba47701f98ba5bba79d73b58",
-    "institution": "University of Bristol",
-    "certificate": "BSc",
-    "start_date": "2011-09-01",
-    "end_date": "2014-06-30"
+    "id": "01a002b7e08d763b9783b1afee1db202",
+    "institution": "University of Nottingham",
+    "certificate": "BSc Theoretical Physics & Mathematics, First Class Honours",
+    "start_date": "2016-09-01",
+    "end_date": "2019-06-30"
   }
 ]

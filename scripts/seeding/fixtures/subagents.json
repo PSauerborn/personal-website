@@ -7,9 +7,160 @@
     "outputs": null
   },
   {
-    "id": "019ffcfa065a7f39a0842ffd29a4a7d1",
-    "name": "work-planner",
-    "description": "Turns a specification into an ordered work plan of tasks, with dependencies, risks and acceptance criteria.",
+    "id": "019fd98500007e5b9d0d4878b621cbde",
+    "name": "requirements-analyzer",
+    "description": "Analyzes a spec or change request against the codebase to determine task type, work scale (small/medium/large), affected files, UI impact, constraints, and open questions. Takes requirements text and optional context; returns a JSON scale assessment the orchestrator uses to select the orchestration flow.",
+    "inputs": {
+      "type": "object",
+      "required": ["requirements"],
+      "additionalProperties": false,
+      "properties": {
+        "requirements": {
+          "type": "string",
+          "description": "User request describing what is to be achieved."
+        },
+        "context": {
+          "type": "string",
+          "description": "Optional recent changes, related issues, or additional constraints."
+        }
+      }
+    },
+    "outputs": {
+      "type": "object",
+      "required": ["status"],
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["completed", "blocked"]
+        },
+        "taskType": {
+          "type": "string",
+          "enum": ["feature", "fix", "refactor", "performance", "security"],
+          "description": "Type of task requested, determined from the context and the codebase."
+        },
+        "purpose": {
+          "type": "string",
+          "description": "Essential purpose of the request, in one or two sentences."
+        },
+        "scale": {
+          "type": "string",
+          "enum": ["small", "medium", "large"],
+          "description": "Work scale, which selects the orchestration flow the orchestrator runs."
+        },
+        "confidence": {
+          "type": "string",
+          "enum": ["confirmed", "provisional"],
+          "description": "Confidence in the scale determination."
+        },
+        "uiImpact": {
+          "type": "string",
+          "enum": ["significant", "minor", "none"],
+          "description": "Impact on the frontend. A value of significant triggers the frontend design gate."
+        },
+        "affectedFiles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Files the change is expected to affect."
+        },
+        "fileCount": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of affected files, the primary criterion for scale determination."
+        },
+        "technicalConsiderations": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "risks": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Requirements-stage risks only; the risk register belongs to risk-analyzer."
+            },
+            "dependencies": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "scopeDependencies": {
+          "type": "array",
+          "description": "Questions whose answers change the scope and scale of the work.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "question": {
+                "type": "string"
+              },
+              "impact": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "if_yes": {
+                    "type": "string",
+                    "enum": ["small", "medium", "large"]
+                  },
+                  "if_no": {
+                    "type": "string",
+                    "enum": ["small", "medium", "large"]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "questions": {
+          "type": "array",
+          "description": "General questions requiring confirmation before proceeding.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "category": {
+                "type": "string",
+                "enum": ["boundary", "existing_code", "dependencies"]
+              },
+              "question": {
+                "type": "string"
+              },
+              "options": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "reason": {
+          "type": "string",
+          "enum": ["requirements_missing", "repo_unreadable"],
+          "description": "Typed reason, present only when the status is blocked."
+        },
+        "detail": {
+          "type": "string",
+          "description": "What is missing and what would unblock the agent, present only when the status is blocked."
+        }
+      }
+    }
+  },
+  {
+    "id": "019fd98500017df88ca44b1aa765a962",
+    "name": "frontend-designer",
+    "description": "Produces three distinct frontend design options for a spec with significant UI changes — each a design document plus a self-contained static HTML mockup at the canonical designs location. Takes specPath and an optional UI scope; returns the design set ID and option list for user selection.",
     "inputs": {
       "type": "object",
       "required": ["specPath"],
@@ -17,17 +168,113 @@
       "properties": {
         "specPath": {
           "type": "string",
-          "description": "Path to the specification the work plan is derived from."
+          "description": "Path to the spec whose UI changes are being designed."
         },
-        "reviewNotesPath": {
+        "uiScope": {
           "type": "string",
-          "description": "Optional path to review notes that constrain the plan."
+          "description": "Optional distilled UI-relevant requirements and constraints from the requirements analysis."
+        },
+        "context": {
+          "type": "string",
+          "description": "Optional additional context, such as user feedback on a previous option set."
         }
       }
     },
     "outputs": {
       "type": "object",
-      "required": ["status", "workPlanId", "workPlanPath"],
+      "required": ["status"],
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["completed", "blocked"]
+        },
+        "designSetId": {
+          "type": "string",
+          "pattern": "^DES-[0-9]{3}$",
+          "description": "Identifier of the generated design set, for example DES-001."
+        },
+        "options": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "description": "Exactly three design options, one entry per option.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "optionNumber": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 3
+              },
+              "name": {
+                "type": "string",
+                "description": "Short label for the option, used when presenting choices to the user."
+              },
+              "summary": {
+                "type": "string",
+                "description": "One or two sentence pitch of the design approach."
+              },
+              "documentPath": {
+                "type": "string",
+                "description": "Path of the design option document."
+              },
+              "mockupPath": {
+                "type": "string",
+                "description": "Path of the self-contained static HTML mockup."
+              }
+            }
+          }
+        },
+        "reason": {
+          "type": "string",
+          "enum": ["spec_not_found", "no_ui_scope"],
+          "description": "Typed reason, present only when the status is blocked."
+        },
+        "detail": {
+          "type": "string",
+          "description": "What is missing and what would unblock the agent, present only when the status is blocked."
+        }
+      }
+    }
+  },
+  {
+    "id": "019ffcfa065a7f39a0842ffd29a4a7d1",
+    "name": "work-planner",
+    "description": "Converts a spec and a requirements summary into a single structured work plan document with phases, tasks, and dependencies at its canonical location. Takes specPath and the distilled requirements-analyzer output; returns the work plan ID and path.",
+    "inputs": {
+      "type": "object",
+      "required": ["specPath", "requirementsSummary"],
+      "additionalProperties": false,
+      "properties": {
+        "specPath": {
+          "type": "string",
+          "description": "Path to the specification the work plan is derived from."
+        },
+        "requirementsSummary": {
+          "type": "string",
+          "description": "Distilled requirements-analyzer fields: purpose, taskType, scale, affectedFiles and constraints."
+        },
+        "designPath": {
+          "type": "string",
+          "description": "Path to the user-selected design option document, when the frontend design gate ran."
+        },
+        "mode": {
+          "type": "string",
+          "enum": ["create", "update"],
+          "default": "create",
+          "description": "Whether to create a new work plan or update an existing one."
+        },
+        "updateContext": {
+          "type": "string",
+          "description": "Path to the existing plan and the reason for the change. Update mode only."
+        }
+      }
+    },
+    "outputs": {
+      "type": "object",
+      "required": ["status"],
       "additionalProperties": false,
       "properties": {
         "status": {
@@ -36,16 +283,188 @@
         },
         "workPlanId": {
           "type": "string",
+          "pattern": "^WP-[0-9]{3}$",
           "description": "Identifier of the generated work plan, for example WP-001."
         },
-        "workPlanPath": {
+        "planOutputPath": {
           "type": "string",
           "description": "Path of the generated work plan document."
         },
-        "taskCount": {
-          "type": "integer",
-          "minimum": 0,
-          "description": "Number of executable tasks the plan decomposes into."
+        "reason": {
+          "type": "string",
+          "enum": [
+            "spec_not_found",
+            "input_missing",
+            "design_not_found",
+            "plan_conflict"
+          ],
+          "description": "Typed reason, present only when the status is blocked."
+        },
+        "detail": {
+          "type": "string",
+          "description": "What is missing and what would unblock the agent, present only when the status is blocked."
+        }
+      }
+    }
+  },
+  {
+    "id": "019fd985000277da851240459261c507",
+    "name": "risk-analyzer",
+    "description": "Analyzes a work plan and produces a single risk plan document identifying delivery and technical risks, likelihood/impact assessments, and mitigation strategies at its canonical location. Takes workPlanId and requirements; returns the risk plan path and identified risks.",
+    "inputs": {
+      "type": "object",
+      "required": ["workPlanId", "requirements"],
+      "additionalProperties": false,
+      "properties": {
+        "workPlanId": {
+          "type": "string",
+          "pattern": "^WP-[0-9]{3}$",
+          "description": "Identifier of the work plan the risk plan is derived from."
+        },
+        "requirements": {
+          "type": "string",
+          "description": "User request describing what is to be achieved."
+        },
+        "context": {
+          "type": "string",
+          "description": "Optional additional context."
+        }
+      }
+    },
+    "outputs": {
+      "type": "object",
+      "required": ["status"],
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["completed", "blocked"]
+        },
+        "workPlanId": {
+          "type": "string",
+          "pattern": "^WP-[0-9]{3}$",
+          "description": "Identifier of the work plan the risks were identified against."
+        },
+        "planOutputPath": {
+          "type": "string",
+          "description": "Path of the generated risk plan document."
+        },
+        "risksIdentified": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "riskId": {
+                "type": "string",
+                "pattern": "^RISK-[0-9]{3}$"
+              },
+              "description": {
+                "type": "string"
+              },
+              "impact": {
+                "type": "string",
+                "description": "Potential impact of the risk on the project."
+              },
+              "severity": {
+                "type": "string",
+                "enum": ["low", "medium", "high", "critical"]
+              },
+              "mitigationStrategy": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "reason": {
+          "type": "string",
+          "enum": ["work_plan_not_found", "input_missing"],
+          "description": "Typed reason, present only when the status is blocked."
+        },
+        "detail": {
+          "type": "string",
+          "description": "What is missing and what would unblock the agent, present only when the status is blocked."
+        }
+      }
+    }
+  },
+  {
+    "id": "019fd985000378dea9eb42504794877b",
+    "name": "task-decomposer",
+    "description": "Decomposes a work plan into independent, single-commit-granularity executable task files at their canonical location. Takes workPlanId and planPath; returns the list of generated task files with dependencies.",
+    "inputs": {
+      "type": "object",
+      "required": ["workPlanId", "planPath"],
+      "additionalProperties": false,
+      "properties": {
+        "workPlanId": {
+          "type": "string",
+          "pattern": "^WP-[0-9]{3}$",
+          "description": "Identifier of the work plan being decomposed, for example WP-001."
+        },
+        "planPath": {
+          "type": "string",
+          "description": "Path to the work plan document."
+        }
+      }
+    },
+    "outputs": {
+      "type": "object",
+      "required": ["status"],
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["completed", "blocked"]
+        },
+        "taskFiles": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "taskName": {
+                "type": "string"
+              },
+              "taskId": {
+                "type": "string",
+                "pattern": "^TASK-[0-9]{3}$"
+              },
+              "taskFilePath": {
+                "type": "string",
+                "description": "Path of the generated task file."
+              },
+              "description": {
+                "type": "string"
+              },
+              "targetFiles": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "The task's write set, used by the orchestrator for the parallel-execution disjointness guard."
+              },
+              "dependencies": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Task IDs this task depends on, empty if none."
+              },
+              "completionCriteria": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "reason": {
+          "type": "string",
+          "enum": ["work_plan_not_found", "plan_not_decomposable"],
+          "description": "Typed reason, present only when the status is blocked."
+        },
+        "detail": {
+          "type": "string",
+          "description": "What is missing and what would unblock the agent, present only when the status is blocked."
         }
       }
     }
@@ -53,7 +472,7 @@
   {
     "id": "019ffcfa065b762999ba6542d11bc3a2",
     "name": "task-executor",
-    "description": "Executes a single task file end to end, red-green-refactor, writing only the files the task nominates.",
+    "description": "Executes exactly one task file end-to-end — investigation, TDD implementation, and progress ticking — without asking questions. Takes taskFilePath; returns a change summary with modified files, or a blocked response with a typed reason.",
     "inputs": {
       "type": "object",
       "required": ["taskFilePath"],
@@ -74,12 +493,27 @@
           "type": "string",
           "enum": ["completed", "blocked"]
         },
-        "filesChanged": {
+        "taskName": {
+          "type": "string",
+          "description": "Exact name of the executed or attempted task."
+        },
+        "changeSummary": {
+          "type": "string",
+          "description": "Summary of the implementation content and changes."
+        },
+        "filesModified": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "description": "Absolute paths of every file the task wrote."
+          "description": "Every file the task wrote, consumed by the orchestrator to update the execution manifest."
+        },
+        "testsAdded": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Test files the task created, consumed by the orchestrator to update the execution manifest."
         },
         "reason": {
           "type": "string",
@@ -89,6 +523,637 @@
             "incomplete_task"
           ],
           "description": "Typed reason, present only when the status is blocked."
+        },
+        "detail": {
+          "type": "string",
+          "description": "What is missing or out of scope, and what would unblock the task."
+        }
+      }
+    }
+  },
+  {
+    "id": "019fd985000471fe805b04f4a2ca5a5b",
+    "name": "validation-runner",
+    "description": "Discovers the project's build, test, lint, and type-check commands from repo configuration and runs the full suite against the changeset. Takes workPlanId and manifestPath; returns per-check pass/fail results and creates a validation remediation task on failure.",
+    "inputs": {
+      "type": "object",
+      "required": ["workPlanId", "manifestPath"],
+      "additionalProperties": false,
+      "properties": {
+        "workPlanId": {
+          "type": "string",
+          "pattern": "^WP-[0-9]{3}$",
+          "description": "Identifier of the work plan being validated."
+        },
+        "manifestPath": {
+          "type": "string",
+          "description": "Path to the execution manifest, the single changeset source."
+        }
+      }
+    },
+    "outputs": {
+      "type": "object",
+      "required": ["status"],
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["completed", "blocked"]
+        },
+        "checksRun": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["build", "test", "lint", "format", "typecheck"]
+              },
+              "command": {
+                "type": "string",
+                "description": "Exact command executed."
+              },
+              "passed": {
+                "type": "boolean"
+              },
+              "summary": {
+                "type": "string",
+                "description": "One-line result summary, for example 142 passed, 0 failed."
+              }
+            }
+          }
+        },
+        "allPassed": {
+          "type": "boolean",
+          "description": "True only if every discovered check was run and passed."
+        },
+        "failures": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              },
+              "outputExcerpt": {
+                "type": "string",
+                "description": "Relevant excerpt of the failure output, naming the failing tests or targets."
+              },
+              "suspectedFiles": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Manifest files correlated with the failure."
+              }
+            }
+          }
+        },
+        "remediationRequired": {
+          "type": "boolean",
+          "description": "True if any check failed."
+        },
+        "remediationTaskPath": {
+          "type": ["string", "null"],
+          "description": "Path of the validation remediation task, or null when every check passed."
+        },
+        "reason": {
+          "type": "string",
+          "enum": ["manifest_not_found", "checks_not_discoverable"],
+          "description": "Typed reason, present only when the status is blocked."
+        },
+        "detail": {
+          "type": "string",
+          "description": "What is missing and what would unblock the agent, present only when the status is blocked."
+        }
+      }
+    }
+  },
+  {
+    "id": "019fd9850005768b907b2fd9dda53f85",
+    "name": "quality-controller",
+    "description": "Reviews the changeset for coding-standards conformance only. Takes workPlanId and manifestPath; produces a quality report, and a QC remediation task when violations are found.",
+    "inputs": {
+      "type": "object",
+      "required": ["workPlanId", "manifestPath"],
+      "additionalProperties": false,
+      "properties": {
+        "workPlanId": {
+          "type": "string",
+          "pattern": "^WP-[0-9]{3}$",
+          "description": "Identifier of the work plan being reviewed."
+        },
+        "manifestPath": {
+          "type": "string",
+          "description": "Path to the execution manifest, the single changeset source."
+        }
+      }
+    },
+    "outputs": {
+      "type": "object",
+      "required": ["status"],
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["completed", "blocked"]
+        },
+        "violationsFound": {
+          "type": "boolean",
+          "description": "True if any coding-standards violation was found."
+        },
+        "violationsCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "violations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "standardsFile": {
+                "type": "string",
+                "description": "Coding standards file containing the violated rule."
+              },
+              "ruleId": {
+                "type": "string",
+                "description": "Identifier of the violated rule, for example GEN-001."
+              },
+              "filePath": {
+                "type": "string"
+              },
+              "line": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "description": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "qualityReportPath": {
+          "type": "string",
+          "description": "Path of the generated quality report."
+        },
+        "qcRemediationRequired": {
+          "type": "boolean",
+          "description": "True if any violation requires remediation."
+        },
+        "remediationTaskPath": {
+          "type": ["string", "null"],
+          "description": "Path of the QC remediation task, or null when no violations were found."
+        },
+        "reason": {
+          "type": "string",
+          "enum": ["manifest_not_found", "standards_unreadable"],
+          "description": "Typed reason, present only when the status is blocked."
+        },
+        "detail": {
+          "type": "string",
+          "description": "What is missing and what would unblock the agent, present only when the status is blocked."
+        }
+      }
+    }
+  },
+  {
+    "id": "019fd98500067c539389e0d869a1488e",
+    "name": "code-reviewer",
+    "description": "Reviews the changeset diff for correctness, edge cases, and design — the peer-review stage. Takes workPlanId, manifestPath, and specPath; returns findings with file/line citations and creates a code-review remediation task when needed.",
+    "inputs": {
+      "type": "object",
+      "required": ["workPlanId", "manifestPath", "specPath"],
+      "additionalProperties": false,
+      "properties": {
+        "workPlanId": {
+          "type": "string",
+          "pattern": "^WP-[0-9]{3}$",
+          "description": "Identifier of the work plan being reviewed."
+        },
+        "manifestPath": {
+          "type": "string",
+          "description": "Path to the execution manifest, the single changeset source."
+        },
+        "specPath": {
+          "type": "string",
+          "description": "Path to the spec defining the intended behaviour."
+        }
+      }
+    },
+    "outputs": {
+      "type": "object",
+      "required": ["status"],
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["completed", "blocked"]
+        },
+        "findingsCount": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total number of verified findings."
+        },
+        "findings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "category": {
+                "type": "string",
+                "enum": [
+                  "correctness",
+                  "edge-case",
+                  "design",
+                  "test-coverage"
+                ]
+              },
+              "filePath": {
+                "type": "string"
+              },
+              "line": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "description": {
+                "type": "string",
+                "description": "The defect, stated concretely."
+              },
+              "failureScenario": {
+                "type": "string",
+                "description": "Concrete input or state that triggers the failure."
+              },
+              "severity": {
+                "type": "string",
+                "enum": ["low", "medium", "high", "critical"]
+              },
+              "suggestedFix": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "remediationRequired": {
+          "type": "boolean",
+          "description": "True if any finding requires a code change."
+        },
+        "remediationTaskPath": {
+          "type": ["string", "null"],
+          "description": "Path of the code-review remediation task, or null when no finding requires changes."
+        },
+        "reason": {
+          "type": "string",
+          "enum": ["manifest_not_found", "spec_not_found"],
+          "description": "Typed reason, present only when the status is blocked."
+        },
+        "detail": {
+          "type": "string",
+          "description": "What is missing and what would unblock the agent, present only when the status is blocked."
+        }
+      }
+    }
+  },
+  {
+    "id": "019fd98500077083b80ac11e8fe1eeb3",
+    "name": "security-reviewer",
+    "description": "Reviews the changeset for security defects — injection, authn/authz flaws, secrets handling, unsafe deserialization, path traversal, SSRF, and dependency risk. Takes workPlanId and manifestPath; returns findings with file/line citations and creates a security remediation task when needed.",
+    "inputs": {
+      "type": "object",
+      "required": ["workPlanId", "manifestPath"],
+      "additionalProperties": false,
+      "properties": {
+        "workPlanId": {
+          "type": "string",
+          "pattern": "^WP-[0-9]{3}$",
+          "description": "Identifier of the work plan being reviewed."
+        },
+        "manifestPath": {
+          "type": "string",
+          "description": "Path to the execution manifest, the single changeset source."
+        }
+      }
+    },
+    "outputs": {
+      "type": "object",
+      "required": ["status"],
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["completed", "blocked"]
+        },
+        "findingsCount": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total number of verified findings."
+        },
+        "findings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "vulnerabilityClass": {
+                "type": "string",
+                "enum": [
+                  "injection",
+                  "authnz",
+                  "secrets",
+                  "deserialization",
+                  "path-traversal-ssrf",
+                  "dependency"
+                ]
+              },
+              "filePath": {
+                "type": "string"
+              },
+              "line": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "description": {
+                "type": "string",
+                "description": "The vulnerability, stated concretely."
+              },
+              "attackScenario": {
+                "type": "string",
+                "description": "Concrete scenario an attacker could execute."
+              },
+              "severity": {
+                "type": "string",
+                "enum": ["low", "medium", "high", "critical"],
+                "description": "Reflects exploitability and impact."
+              },
+              "requiredFix": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "remediationRequired": {
+          "type": "boolean",
+          "description": "True if any finding requires a code change."
+        },
+        "remediationTaskPath": {
+          "type": ["string", "null"],
+          "description": "Path of the security remediation task, or null when no finding requires changes."
+        },
+        "reason": {
+          "type": "string",
+          "enum": ["manifest_not_found"],
+          "description": "Typed reason, present only when the status is blocked."
+        },
+        "detail": {
+          "type": "string",
+          "description": "What is missing and what would unblock the agent, present only when the status is blocked."
+        }
+      }
+    }
+  },
+  {
+    "id": "019fd98500087f038f71108a0e2c285d",
+    "name": "risk-reviewer",
+    "description": "Reviews the changeset against the risk plan to verify mitigations were implemented. Takes riskPlanPath, workPlanId, and manifestPath; produces a risk review document and a risk remediation task for any deviations.",
+    "inputs": {
+      "type": "object",
+      "required": ["riskPlanPath", "workPlanId", "manifestPath"],
+      "additionalProperties": false,
+      "properties": {
+        "riskPlanPath": {
+          "type": "string",
+          "description": "Path to the risk plan whose mitigations are being verified."
+        },
+        "workPlanId": {
+          "type": "string",
+          "pattern": "^WP-[0-9]{3}$",
+          "description": "Identifier of the work plan being reviewed."
+        },
+        "manifestPath": {
+          "type": "string",
+          "description": "Path to the execution manifest, the single changeset source."
+        }
+      }
+    },
+    "outputs": {
+      "type": "object",
+      "required": ["status"],
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["completed", "blocked"]
+        },
+        "riskReviewPath": {
+          "type": "string",
+          "description": "Path of the generated risk review document."
+        },
+        "riskRemediationRequired": {
+          "type": "boolean",
+          "description": "True if any risk deviation requires remediation."
+        },
+        "riskRemediationCount": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total number of deviations requiring remediation."
+        },
+        "riskRemediations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "riskId": {
+                "type": "string",
+                "pattern": "^RISK-[0-9]{3}$",
+                "description": "Identifier of the risk from the risk plan."
+              },
+              "filePath": {
+                "type": "string",
+                "description": "File where the deviation was identified."
+              },
+              "description": {
+                "type": "string",
+                "description": "The deviation found."
+              },
+              "severity": {
+                "type": "string",
+                "enum": ["low", "medium", "high", "critical"]
+              },
+              "remediationAction": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "remediationTaskPath": {
+          "type": ["string", "null"],
+          "description": "Path of the risk remediation task, or null when no deviation was found."
+        },
+        "reason": {
+          "type": "string",
+          "enum": ["risk_plan_not_found", "manifest_not_found"],
+          "description": "Typed reason, present only when the status is blocked."
+        },
+        "detail": {
+          "type": "string",
+          "description": "What is missing and what would unblock the agent, present only when the status is blocked."
+        }
+      }
+    }
+  },
+  {
+    "id": "019fd98500097a27b6b41e6922ad7a75",
+    "name": "acceptance-validator",
+    "description": "Verifies post-implementation that every acceptance criterion in the spec is demonstrably met, using the work plan's traceability table and the execution manifest. Takes specPath, planPath, workPlanId, and manifestPath; returns per-criterion pass/fail with evidence.",
+    "inputs": {
+      "type": "object",
+      "required": ["specPath", "planPath", "workPlanId", "manifestPath"],
+      "additionalProperties": false,
+      "properties": {
+        "specPath": {
+          "type": "string",
+          "description": "Path to the spec carrying the acceptance criteria."
+        },
+        "planPath": {
+          "type": "string",
+          "description": "Path to the work plan, read for its traceability table."
+        },
+        "workPlanId": {
+          "type": "string",
+          "pattern": "^WP-[0-9]{3}$",
+          "description": "Identifier of the work plan being validated."
+        },
+        "manifestPath": {
+          "type": "string",
+          "description": "Path to the execution manifest, the single changeset source."
+        }
+      }
+    },
+    "outputs": {
+      "type": "object",
+      "required": ["status"],
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["completed", "blocked"]
+        },
+        "allCriteriaMet": {
+          "type": "boolean",
+          "description": "True only if every criterion has the verdict met."
+        },
+        "criteria": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "criterion": {
+                "type": "string",
+                "description": "The acceptance criterion, quoted or closely paraphrased from the spec."
+              },
+              "verdict": {
+                "type": "string",
+                "enum": ["met", "not_met", "unverifiable"]
+              },
+              "evidence": {
+                "type": "string",
+                "description": "File and line, or the test executed with its result. Empty only for unverifiable."
+              },
+              "gap": {
+                "type": "string",
+                "description": "For not_met, what is absent or wrong; for unverifiable, what clarification is needed."
+              }
+            }
+          }
+        },
+        "reason": {
+          "type": "string",
+          "enum": ["spec_not_found", "plan_not_found", "manifest_not_found"],
+          "description": "Typed reason, present only when the status is blocked."
+        },
+        "detail": {
+          "type": "string",
+          "description": "What is missing and what would unblock the agent, present only when the status is blocked."
+        }
+      }
+    }
+  },
+  {
+    "id": "019fd985000a73bbbd7ef091ecd69290",
+    "name": "documenter",
+    "description": "Updates documentation for the changeset — doc strings, API/OpenAPI schemas, READMEs — and produces the changeset summary document at its canonical location. Takes workPlanId and manifestPath; returns the list of documentation updates.",
+    "inputs": {
+      "type": "object",
+      "required": ["workPlanId", "manifestPath"],
+      "additionalProperties": false,
+      "properties": {
+        "workPlanId": {
+          "type": "string",
+          "pattern": "^WP-[0-9]{3}$",
+          "description": "Identifier of the work plan being documented."
+        },
+        "manifestPath": {
+          "type": "string",
+          "description": "Path to the execution manifest, the single changeset source."
+        }
+      }
+    },
+    "outputs": {
+      "type": "object",
+      "required": ["status"],
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["completed", "blocked"]
+        },
+        "workPlanId": {
+          "type": "string",
+          "pattern": "^WP-[0-9]{3}$",
+          "description": "Identifier of the work plan the changeset belongs to."
+        },
+        "changesetPath": {
+          "type": "string",
+          "description": "Path of the generated changeset document."
+        },
+        "documentationUpdates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "filepath": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "docstring",
+                  "change_diff",
+                  "openapi",
+                  "readme",
+                  "other"
+                ]
+              },
+              "description": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "reason": {
+          "type": "string",
+          "enum": ["manifest_not_found"],
+          "description": "Typed reason, present only when the status is blocked."
+        },
+        "detail": {
+          "type": "string",
+          "description": "What is missing and what would unblock the agent, present only when the status is blocked."
         }
       }
     }

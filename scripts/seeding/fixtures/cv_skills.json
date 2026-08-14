@@ -1,35 +1,133 @@
 [
   {
-    "id": "019ffd06ba477016b013a8d5fafed4c3",
-    "category": "Languages",
+    "id": "01a002b7e06f792c992effee66d4a850",
+    "category": "Core Languages",
     "stack_items": [
       {
-        "id": "019ffd06ba4770179799e87cf48306eb",
-        "stack_item_id": "019ffd06ba4770008eb0f99b5b10a408"
+        "id": "01a002b7e070739eab304a5c1287f8e5",
+        "stack_item_id": "01a002b7e00076609daf44e8e0ca7532"
       },
       {
-        "id": "019ffd06ba477018b65810b18b228423",
-        "stack_item_id": "019ffd06ba4770018aa25cd9692014e4"
+        "id": "01a002b7e0717fbb9524dbc1a9983347",
+        "stack_item_id": "01a002b7e00175138e341ddc7646a4b3"
       }
     ]
   },
   {
-    "id": "019ffd06ba4770198604b4834c360008",
-    "category": "Infrastructure",
+    "id": "01a002b7e072745d82c186c249287c62",
+    "category": "Agentic Development",
     "stack_items": [
       {
-        "id": "019ffd06ba47701a8e19c1ed1cd2c05a",
-        "stack_item_id": "019ffd06ba4770029d0ada10e8817bf6"
+        "id": "01a002b7e073788c85ccbdce677c9236",
+        "stack_item_id": "01a002b7e00379b28111ce2bcf6854ce"
+      },
+      {
+        "id": "01a002b7e07476c481fe7306ea428982",
+        "stack_item_id": "01a002b7e00278da8c6c1390b2c3118c"
+      },
+      {
+        "id": "01a002b7e07579cab702ecaadf1f2644",
+        "stack_item_id": "01a002b7e00473a89c0269c883b006bd"
       }
     ]
   },
   {
-    "id": "019ffd06ba47701ba85e5eb310c7b58a",
-    "category": "Databases",
+    "id": "01a002b7e07672eeb95e43c41b515e84",
+    "category": "Cloud and Infrastructure",
     "stack_items": [
       {
-        "id": "019ffd06ba47701cbc4d9513f7246ede",
-        "stack_item_id": "019ffd06ba477004a107971fd9791ec1"
+        "id": "01a002b7e077730bb49779ff7eea1481",
+        "stack_item_id": "01a002b7e005798798a5a48e464c3411"
+      },
+      {
+        "id": "01a002b7e07878e7bede0ae0f6f5d2aa",
+        "stack_item_id": "01a002b7e006747da3170f03510e900d"
+      },
+      {
+        "id": "01a002b7e079766bb1c950d465fe8261",
+        "stack_item_id": "01a002b7e0077ee58aa2875ff8fd89ce"
+      },
+      {
+        "id": "01a002b7e07a7bf3b98671c5fe35075e",
+        "stack_item_id": "01a002b7e0087b0281f4045e57ef7fb4"
+      }
+    ]
+  },
+  {
+    "id": "01a002b7e07b779281c100355c32db0c",
+    "category": "Database Technologies",
+    "stack_items": [
+      {
+        "id": "01a002b7e07c7bac938f9c98c9671379",
+        "stack_item_id": "01a002b7e00a70a695e39e245b10d0bf"
+      },
+      {
+        "id": "01a002b7e07d7e6cac486ed85679ffa8",
+        "stack_item_id": "01a002b7e0097106a44d803d3ab4aaf5"
+      },
+      {
+        "id": "01a002b7e07e7e1a87c6484bd5c6d42f",
+        "stack_item_id": "01a002b7e00b7997bd5837f39163e0a5"
+      }
+    ]
+  },
+  {
+    "id": "01a002b7e07f7563ab274c3927fd9d1b",
+    "category": "CI/CD and Automation",
+    "stack_items": [
+      {
+        "id": "01a002b7e080792ab49da6f9e7bb27b2",
+        "stack_item_id": "01a002b7e00e77b78d6afd0d1427fc03"
+      },
+      {
+        "id": "01a002b7e0817cf0945a56051f299cd9",
+        "stack_item_id": "01a002b7e00d76ff8a4c2db6bf33649a"
+      },
+      {
+        "id": "01a002b7e08271b49fcc8761f4ae3d07",
+        "stack_item_id": "01a002b7e006747da3170f03510e900d"
+      },
+      {
+        "id": "01a002b7e0837c4caf6f06efeeb58585",
+        "stack_item_id": "01a002b7e0107f78a36145792510f976"
+      }
+    ]
+  },
+  {
+    "id": "01a002b7e0847be3bafdfae53b6bf137",
+    "category": "Other",
+    "stack_items": [
+      {
+        "id": "01a002b7e08572feab4f255780d6145d",
+        "stack_item_id": "01a002b7e0117a3ebee1811894b959ea"
+      },
+      {
+        "id": "01a002b7e0867baf918a9f1364c022b5",
+        "stack_item_id": "01a002b7e01275c986880671fc87863d"
+      },
+      {
+        "id": "01a002b7e087764ca3dc2061bdb41917",
+        "stack_item_id": "01a002b7e0137890be7a0db386e98df6"
+      },
+      {
+        "id": "01a002b7e0887dd9b552ce9535659d54",
+        "stack_item_id": "01a002b7e014794b8c77e716df1d28a9"
+      },
+      {
+        "id": "01a002b7e08978f193e894c008c53089",
+        "stack_item_id": "01a002b7e0157740b28c8fd9a8ef077c"
+      },
+      {
+        "id": "01a002b7e08a7b848e922367329de50c",
+        "stack_item_id": "01a002b7e016779a8a312438af3f06a1"
+      },
+      {
+        "id": "01a002b7e08b798083fbe54214968167",
+        "stack_item_id": "01a002b7e0177b12a3ac7a76e702f1f3"
+      },
+      {
+        "id": "01a002b7e08c7b04a71aeb6caafaa255",
+        "stack_item_id": "01a002b7e01874feb3c7d4bfaa964ad4"
       }
     ]
   }

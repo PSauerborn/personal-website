@@ -1,0 +1,396 @@
+/* ==========================================================================
+   globals.css — the single styling source for the application.
+
+   Every colour, type, spacing, radius, shadow and motion value used by any
+   component is declared here exactly once, derived from the design token
+   source `docs/specs/external-docs/stylesheets/app.scss` and the accepted
+   design `docs/plans/designs/DES-001/DES-001-option-1.md` ("Broadsheet").
+
+   Components must reference these tokens — through a Tailwind utility or
+   through `var(--token)` — and must never introduce a literal colour, size or
+   spacing value. The utility name is the token name minus its namespace, so
+   `--color-text-secondary` is `text-text-secondary` (text colour) or
+   `bg-text-secondary`, `--space-5` is `p-5`/`gap-5`, `--container-column` is
+   `max-w-column`, and `--shadow-raised` is `shadow-raised`. Tokens outside a
+   Tailwind namespace (`--hairline*`, `--gradient-*`, `--measure-*`,
+   `--duration-*`) are read with `var()` or an arbitrary value such as
+   `shadow-(--hairline)`.
+
+   Documented deviations from `app.scss`:
+   - The tertiary text colour was raised to 50% lightness (~4.6:1, WCAG AA) in
+     the token source itself, so the two stay in step.
+   - The accent family is green rather than `app.scss`'s indigo. The token names
+     and the shape of the ramp are unchanged, so nothing downstream moves; only
+     the hue and the fill/text lightness split differ. See the accent block.
+   ========================================================================== */
+
+@import 'tailwindcss';
+@import '../styles/app.css';
+
+/* `static` keeps every token in the emitted `:root` block, including tokens no
+   utility happens to reference yet, so `var(--token)` works everywhere. */
+@theme static {
+  /* ---- Colour ----------------------------------------------------------
+     Cool greys (blue-shifted), near-black canvas, no pure black or white.
+     "Broadsheet" allows exactly three text colours; `--color-text-disabled`
+     is chrome (inert controls), not a fourth content colour. */
+  --color-bg: hsl(220 7% 4%);
+  --color-surface: hsl(220 6% 7%);
+  --color-surface-hover: hsl(220 6% 10%);
+  --color-surface-active: hsl(220 5% 13%);
+
+  --color-text-primary: hsl(220 27% 97%);
+  --color-text-secondary: hsl(219 6% 57%);
+  --color-text-tertiary: hsl(220 5% 50%);
+  --color-text-disabled: hsl(220 5% 32%);
+
+  /* Hairlines and glass — the design separates content with alpha rules
+     rather than solid borders or cards. */
+  --color-wash: hsl(0 0% 100% / 0.02);
+  --color-border-soft: hsl(0 0% 100% / 0.04);
+  --color-border-subtle: hsl(0 0% 100% / 0.06);
+  --color-border: hsl(0 0% 100% / 0.08);
+  --color-border-hover: hsl(0 0% 100% / 0.12);
+  --color-border-strong: hsl(0 0% 100% / 0.2);
+  --color-glass: hsl(220 7% 4% / 0.8);
+
+  /* Accent: green. The ramp is split in two because green carries far more
+     luminance than the indigo it replaces. The fill steps (`accent`, `-hover`,
+     `-active`, `-deep`) are dark enough to keep `--color-text-primary` legible
+     on top of them — 4.96:1 and 4.68:1 for the two the buttons actually use —
+     while the text steps (`-text`, `-bright`) stay light enough to read on the
+     canvas (9.15:1 and 12.88:1 on `--color-bg`). The alpha tints derive from
+     `-text`, not the fill, so they remain visible over a near-black surface. */
+  --color-accent: hsl(142 60% 30%);
+  --color-accent-hover: hsl(142 55% 32%);
+  --color-accent-active: hsl(142 64% 24%);
+  --color-accent-deep: hsl(142 66% 18%);
+  --color-accent-text: hsl(142 50% 55%);
+  --color-accent-bright: hsl(142 60% 72%);
+  --color-accent-tint: hsl(142 50% 55% / 0.12);
+  --color-accent-glow: hsl(142 50% 55% / 0.25);
+  --color-accent-selection: hsl(142 50% 55% / 0.35);
+
+  /* Semantic accents — status dots, validation, alerts. Never the only
+     carrier of meaning; always paired with text or an icon. */
+  --color-success: hsl(152 50% 60%);
+  --color-success-tint: hsl(152 50% 60% / 0.12);
+  --color-warning: hsl(42 74% 62%);
+  --color-warning-tint: hsl(42 74% 62% / 0.12);
+  --color-danger: hsl(0 68% 66%);
+  --color-danger-ring: hsl(0 68% 66% / 0.7);
+
+  /* Syntax highlighting — github-dark's hues, lifted onto this site's canvas.
+     The code well is `--color-surface-active` (hsl(220 5% 13%), relative
+     luminance 0.0148), not github-dark's own `#0d1117`, so every hue below was
+     re-measured against that surface and every one clears WCAG AA 4.5:1. The
+     ratio in each comment is against the well. Consumed only by the `hljs`
+     rules at the foot of this file. */
+  --color-code-fg: hsl(210 17% 82%); /* 10.49:1 — github-dark #c9d1d9 */
+  --color-code-muted: hsl(212 9% 58%); /* 5.27:1 — #8b949e */
+  --color-code-keyword: hsl(4 100% 72%); /* 6.42:1 — #ff7b72 */
+  --color-code-title: hsl(269 100% 83%); /* 8.32:1 — #d2a8ff */
+  --color-code-literal: hsl(208 100% 74%); /* 8.32:1 — #79c0ff */
+  --color-code-string: hsl(207 100% 82%); /* 10.54:1 — #a5d6ff */
+  --color-code-builtin: hsl(28 100% 67%); /* 8.36:1 — #ffa657 */
+  --color-code-name: hsl(125 69% 70%); /* 10.54:1 — #7ee787 */
+  --color-code-bullet: hsl(44 85% 66%); /* 10.48:1 — #f2cc60 */
+
+  /* The one deliberate deviation from literal github-dark: `.hljs-section` is
+     `#1f6feb` upstream, which measures 3.50:1 on this well and fails AA. It is
+     lifted to github-dark's own lighter blue (#58a6ff) at 6.41:1. Its
+     `font-weight` is kept below so colour is not the sole carrier of meaning. */
+  --color-code-section: hsl(212 100% 67%); /* 6.41:1, lifted from 3.50:1 */
+
+  /* Diff rows carry their own background, so each pair is measured against
+     that background rather than against the well. */
+  --color-code-addition: hsl(124 78% 82%); /* 10.21:1 on the pair below */
+  --color-code-addition-bg: hsl(141 90% 12%);
+  --color-code-deletion: hsl(8 100% 92%); /* 10.25:1 on the pair below */
+  --color-code-deletion-bg: hsl(356 100% 21%);
+
+  /* ---- Typography ------------------------------------------------------
+     Inter carries the personality; the web font itself is loaded by the root
+     layout. Two weights only (400 body, 500 emphasis); 600 is reserved for
+     the 12px all-caps signpost labels. */
+  --font-sans:
+    'Inter', 'Inter Variable', -apple-system, 'Segoe UI', 'Helvetica Neue',
+    sans-serif;
+  --font-mono:
+    'Berkeley Mono', 'SF Mono', 'JetBrains Mono', ui-monospace, monospace;
+
+  /* Type scale. Line-height falls as size grows: body 1.5–1.6, headings
+     1.25, the masthead 1.1. */
+  --text-xs: 0.75rem; /* 12px — caps labels, metadata */
+  --text-xs--line-height: 1.5;
+  --text-sm: 0.875rem; /* 14px — UI text, nav, buttons */
+  --text-sm--line-height: 1.5;
+  --text-base: 1rem; /* 16px — body */
+  --text-base--line-height: 1.6;
+  --text-lg: 1.125rem; /* 18px — standfirst */
+  --text-lg--line-height: 1.25;
+  --text-xl: 1.3125rem; /* 21px — lede, detail titles */
+  --text-xl--line-height: 1.25;
+  --text-2xl: 1.5rem; /* 24px — prose headings */
+  --text-2xl--line-height: 1.25;
+  --text-3xl: 2rem; /* 32px — section headings */
+  --text-3xl--line-height: 1.25;
+  --text-4xl: 2.5rem; /* 40px — page headings */
+  --text-4xl--line-height: 1.1;
+  --text-5xl: 3.5rem; /* 56px — the masthead name, used once */
+  --text-5xl--line-height: 1.1;
+  --text-6xl: 4rem; /* 64px */
+  --text-6xl--line-height: 1.1;
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+
+  --tracking-tight-lg: -0.022em; /* masthead */
+  --tracking-tight: -0.012em; /* headings */
+  --tracking-normal: 0em;
+  --tracking-wide: 0.08em; /* all-caps labels */
+
+  --leading-tight: 1.1;
+  --leading-snug: 1.25;
+  --leading-normal: 1.5;
+  --leading-loose: 1.6;
+  --leading-prose: 1.7; /* long-form article body */
+
+  /* ---- Spacing ---------------------------------------------------------
+     Non-linear scale, adjacent steps ≥25% apart. `--spacing` keeps the
+     numeric Tailwind utilities on the same 4px grid, so `p-5` is step 5
+     (24px) and `var(--space-5)` is the same value. */
+  --spacing: 0.25rem;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
+  --space-10: 128px;
+  --space-11: 160px;
+
+  /* ---- Radii -----------------------------------------------------------
+     Restrained: internals do not scale proportionally, so a large button
+     gets 10px rather than a scaled-up 8px. */
+  --radius-sm: 6px; /* tags, badges, inline code */
+  --radius-md: 8px; /* buttons, inputs, chips */
+  --radius-lg: 10px; /* large buttons */
+  --radius-xl: 12px; /* code blocks, empty states */
+  --radius-2xl: 16px; /* media panels */
+  --radius-full: 9999px; /* pills, avatars */
+
+  /* ---- Elevation -------------------------------------------------------
+     Light from above: a lighter top edge plus a shadow below. Each level
+     pairs an ambient shadow with a tighter contact shadow. */
+  --shadow-raised:
+    inset 0 1px 0 hsl(0 0% 100% / 0.06), 0 1px 2px hsl(0 0% 0% / 0.4);
+  --shadow-inset: inset 0 1px 2px hsl(0 0% 0% / 0.4);
+  --shadow-overlay:
+    inset 0 1px 0 hsl(0 0% 100% / 0.06), 0 4px 12px hsl(0 0% 0% / 0.4),
+    0 1px 3px hsl(0 0% 0% / 0.6);
+  --shadow-modal:
+    inset 0 1px 0 hsl(0 0% 100% / 0.08), 0 16px 48px hsl(0 0% 0% / 0.6),
+    0 4px 12px hsl(0 0% 0% / 0.6);
+  --shadow-glow: 0 0 48px var(--color-accent-glow);
+
+  /* Hairlines drawn as inset rings — no layout shift, cleaner than borders. */
+  --hairline: inset 0 0 0 1px var(--color-border);
+  --hairline-soft: inset 0 0 0 1px var(--color-border-subtle);
+  --hairline-strong: inset 0 0 0 1px var(--color-border-hover);
+
+  /* Gradient rule between major sections. */
+  --gradient-rule: linear-gradient(
+    to right,
+    transparent,
+    var(--color-border) 20%,
+    var(--color-border) 80%,
+    transparent
+  );
+  --gradient-glow: radial-gradient(
+    ellipse at center,
+    hsl(142 50% 55% / 0.12),
+    transparent 65%
+  );
+
+  /* ---- Motion ---------------------------------------------------------- */
+  --ease-out-quint: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 400ms;
+
+  /* ---- Layout ---------------------------------------------------------- */
+  --container-column: 1024px; /* the one content column, every route */
+  --container-wide: 1200px; /* header and footer */
+  --container-form: 520px; /* contact form and comment composer */
+  --container-rail: 280px; /* CV explorer master list */
+  --measure-article: var(--container-column); /* article body and code, flush */
+  --measure-prose: 65ch;
+  --measure-lede: 60ch;
+  --measure-heading: 24ch;
+  --header-height: 64px;
+  --gutter: clamp(var(--space-5), 4vw, var(--space-6));
+
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-explorer: 900px; /* CV explorer collapses to one column */
+  --breakpoint-lg: 1024px;
+}
+
+/* ==========================================================================
+   In-page anchors — landing clear of the sticky header.
+
+   The site header is `sticky top-0` at `--header-height`, so an anchor scrolled
+   to y=0 arrives underneath it: the section's caps eyebrow and the top of its
+   heading are covered. One declaration here offsets every in-page anchor on the
+   site — the hero's page index, the header's *Get in touch* action, and any
+   future one — by the header plus one step of the spacing scale, rather than
+   each target carrying its own `scroll-mt-*` utility to forget.
+   ========================================================================== */
+
+html {
+  scroll-padding-top: calc(var(--header-height) + var(--space-5));
+}
+
+/* ==========================================================================
+   Switcher panels — showing one body at a time without dropping the rest.
+
+   A `SelectSwitcher` panel server-renders every body it can show, so crawlers
+   and readers without JavaScript get the whole set. Hiding is this one rule:
+   the switcher stamps `data-switcher="ready"` on the panel once it has mounted
+   and moves `data-selected` between the bodies, and only then does anything
+   disappear. With JavaScript disabled the attribute is never set, the rule
+   never matches, and every body stays visible.
+
+   `SelectSwitcher` (`web/components/ui/select-switcher.tsx`) is the only writer
+   of all three attributes below: `data-agent` is its exported
+   `SWITCHER_BODY_ATTRIBUTE`, and `data-switcher`/`data-selected` are set by its
+   mount effect. This rule is the other half of a contract no type can check, so
+   it must not be renamed without renaming it there too — `app/globals.test.ts`
+   asserts the two agree.
+   ========================================================================== */
+
+[data-switcher='ready'] [data-agent]:not([data-selected]) {
+  display: none;
+}
+
+/* ==========================================================================
+   Code highlighting — a hand-authored github-dark mapping.
+
+   `rehype-highlight` emits highlight.js class names but no colours, and no
+   vendor stylesheet is imported: a vendor theme would hard-code its own
+   palette and its own `#0d1117` background, which is exactly the
+   single-declaration rule this file exists to keep. Every rule below reads a
+   `--color-code-*` token declared once in the block above, so the theme is
+   retuned by editing the token, never the rule.
+
+   The class-to-token map is the contrast table in
+   `docs/plans/designs/DES-002/DES-002-option-4.md` (Accessibility Notes).
+   Three selectors deliberately overlap a broader one — `.hljs-variable`,
+   `.hljs-title` and `.hljs-meta` — and the narrower selector wins on
+   specificity rather than on source order.
+   ========================================================================== */
+
+.hljs {
+  color: var(--color-code-fg);
+  background: var(--color-surface-active);
+}
+
+.hljs-subst,
+.hljs-params,
+.hljs-property,
+.hljs-punctuation,
+.hljs-tag,
+.hljs-link,
+.hljs-char.escape_ {
+  color: var(--color-code-fg);
+}
+
+.hljs-emphasis {
+  color: var(--color-code-fg);
+  font-style: italic;
+}
+
+.hljs-strong {
+  color: var(--color-code-fg);
+  font-weight: var(--font-weight-semibold);
+}
+
+.hljs-comment,
+.hljs-code,
+.hljs-formula {
+  color: var(--color-code-muted);
+}
+
+.hljs-keyword,
+.hljs-doctag,
+.hljs-template-tag,
+.hljs-template-variable,
+.hljs-type,
+.hljs-variable.language_ {
+  color: var(--color-code-keyword);
+}
+
+.hljs-title,
+.hljs-title.class_,
+.hljs-title.class_.inherited__,
+.hljs-title.function_ {
+  color: var(--color-code-title);
+}
+
+.hljs-attr,
+.hljs-attribute,
+.hljs-literal,
+.hljs-meta,
+.hljs-number,
+.hljs-operator,
+.hljs-variable,
+.hljs-selector-attr,
+.hljs-selector-class,
+.hljs-selector-id {
+  color: var(--color-code-literal);
+}
+
+.hljs-string,
+.hljs-regexp,
+.hljs-meta .hljs-string {
+  color: var(--color-code-string);
+}
+
+.hljs-built_in,
+.hljs-symbol {
+  color: var(--color-code-builtin);
+}
+
+.hljs-name,
+.hljs-quote,
+.hljs-selector-tag,
+.hljs-selector-pseudo {
+  color: var(--color-code-name);
+}
+
+.hljs-bullet {
+  color: var(--color-code-bullet);
+}
+
+/* Lifted from github-dark's failing `#1f6feb`; see the token declaration. */
+.hljs-section {
+  color: var(--color-code-section);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Diff rows fill their own row background, so they are the only two rules that
+   do not sit on the well. */
+.hljs-addition {
+  color: var(--color-code-addition);
+  background: var(--color-code-addition-bg);
+}
+
+.hljs-deletion {
+  color: var(--color-code-deletion);
+  background: var(--color-code-deletion-bg);
+}

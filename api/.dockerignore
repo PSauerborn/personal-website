@@ -1,0 +1,22 @@
+# Build context exclusions for api/Dockerfile.
+#
+# The Dockerfile copies go.mod, go.sum, *.go and config.yaml explicitly, so
+# nothing listed here is needed by any stage. The compiled binary is the entry
+# that matters: `make -C api build` writes it to the context root, where it would
+# otherwise be uploaded to the daemon on every build.
+
+# Compiled binary produced by `make -C api build` / `go build ./...`. Named `api`
+# because the module path ends in `/api`; it sits at the context root and is
+# ~34MB. Also ignored by the repository .gitignore as /api/api.
+/api
+
+# Component tooling and documentation. None of it is copied into any stage.
+/Makefile
+/README.md
+/.golangci.yaml
+/.dockerignore
+/Dockerfile
+
+# Go build and coverage artefacts.
+*.out
+*.test

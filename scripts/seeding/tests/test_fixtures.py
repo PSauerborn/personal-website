@@ -649,6 +649,55 @@ DOCUMENT_BEARING_DOMAINS: tuple[str, ...] = ("blog.json", "agent_specs.json")
 # Keys identifying a raw document payload inside a domain file (README §5.1).
 DOCUMENT_KEYS: frozenset[str] = frozenset({"filename", "content"})
 
+# Every `base.cv_stack_item` name owned by `cv_experience.json` (README §4.4).
+# The set is closed: a technology that no role in the shipped CV used is not a
+# stack item, and `cv_skills.json` can therefore only reference names from here.
+SHIPPED_STACK_ITEM_NAMES: frozenset[str] = frozenset(
+    {
+        "Python",
+        "Golang",
+        "Claude Code",
+        "Spec Driven Development",
+        "Agent Sandboxing",
+        "AWS",
+        "Terraform",
+        "Kubernetes",
+        "Docker",
+        "PostgreSQL",
+        "DynamoDB",
+        "Apache Cassandra",
+        "GitHub",
+        "GitHub Actions",
+        "GitLab",
+        "Azure DevOps",
+        "IaC Pipelines",
+        "REST",
+        "GraphQL",
+        "gRPC",
+        "ETL Pipelines",
+        "RabbitMQ",
+        "Grafana",
+        "Prometheus",
+        "Agile",
+        "S3",
+        "Lambda",
+        "ECS",
+        "AppSync",
+        "API Gateway",
+        "Step Functions",
+        "SNS",
+        "SQS",
+        "Athena",
+        "Glue",
+        "Security Hub",
+        "Azure AKS",
+    }
+)
+
+# The stack item `cv.feature` — "Tech stack items without a category are not
+# returned as skills" names: linked to an experience, referenced by no category.
+UNCATEGORISED_STACK_ITEM_NAME: str = "Athena"
+
 # The literals of README §3.2, reserved by `Given no ... exists` steps. A
 # fixture using one of them would make the owning scenario fail.
 RESERVED_LITERALS: tuple[str, ...] = (
@@ -1319,10 +1368,14 @@ def test_shipped_cv_experience_fixtures_cover_the_catalogue(
     """test_shipped_cv_experience_fixtures_cover_the_catalogue covers README §4.4.
 
     The experience rows exist to distinguish the cases `cv.feature` asserts on,
-    so the harness pins those distinctions: exactly one ongoing role with a null
+    so the harness pins those distinctions: at least one ongoing role with a null
     `end_date`, distinct start dates so the descending-order assertion is
-    unambiguous, and a named entry carrying both responsibilities and stack
-    items.
+    unambiguous, and the two entries `cv.feature` names by title carrying what
+    their scenarios assert on.
+
+    The corpus is the site owner's real CV (README §4.4), which holds **two**
+    concurrent ongoing roles, so the ongoing count is a lower bound rather than
+    the exact `1` it was while the corpus was synthetic.
 
     Args:
         shipped_fixtures_root (Path): The real `scripts/seeding/fixtures/` tree.
@@ -1335,15 +1388,18 @@ def test_shipped_cv_experience_fixtures_cover_the_catalogue(
     by_title = {experience.job_title: experience for experience in experiences}
 
     assert len(by_title) == len(experiences)
-    assert "Senior Engineer" in by_title
+    assert {"Technical Lead", "Founder & Developer"} <= set(by_title)
 
-    current = by_title["Senior Engineer"]
-    assert current.end_date is None
-    assert len(current.responsibilities) > 1
-    assert len(current.stack_items) > 1
+    # "Experience entries are returned as complete aggregates" names this entry.
+    aggregate = by_title["Technical Lead"]
+    assert len(aggregate.responsibilities) > 1
+    assert len(aggregate.stack_items) > 1
+
+    # "An ongoing role is returned as current" names this entry.
+    assert by_title["Founder & Developer"].end_date is None
 
     ongoing = [experience for experience in experiences if experience.end_date is None]
-    assert len(ongoing) == 1
+    assert ongoing
     assert all(
         experience.end_date is None or experience.start_date < experience.end_date
         for experience in experiences
@@ -1387,7 +1443,7 @@ def test_shipped_cv_experience_owns_every_stack_item(
         assert by_id[link.stack_item.id] == link.stack_item.model_dump()
 
     names = {item["name"] for item in by_id.values()}
-    assert names == {"Go", "Python", "Kubernetes", "Terraform", "PostgreSQL"}
+    assert names == SHIPPED_STACK_ITEM_NAMES
     assert len(names) == len(by_id)
 
     pairs = [(experience_id, link.stack_item.id) for experience_id, link in links]
@@ -1400,7 +1456,7 @@ def test_shipped_cv_skills_reference_stack_items_by_id_only(
     """test_shipped_cv_skills_reference_stack_items_by_id_only covers README §4.5.
 
     `cv_skills.json` never defines a stack item: it references the rows owned by
-    `cv_experience.json` by ID, every reference resolves, and `Terraform` is
+    `cv_experience.json` by ID, every reference resolves, and `Athena` is
     referenced by no category so that the uncategorised-skill scenario stays
     meaningful.
 
@@ -1424,16 +1480,27 @@ def test_shipped_cv_skills_reference_stack_items_by_id_only(
     }
 
     assert len(by_category) == len(categories) > 2
-    assert {"Languages", "Infrastructure", "Databases"} <= set(by_category)
+    assert {
+        "Core Languages",
+        "Cloud and Infrastructure",
+        "Database Technologies",
+    } <= set(by_category)
     assert referenced
     assert referenced <= set(stack_items)
     assert {
-        stack_items[link.stack_item_id] for link in by_category["Languages"].stack_items
+        stack_items[link.stack_item_id]
+        for link in by_category["Core Languages"].stack_items
     } == {
-        "Go",
+        "Golang",
         "Python",
     }
-    assert "Terraform" not in {stack_items[identifier] for identifier in referenced}
+    assert "Kubernetes" in {
+        stack_items[link.stack_item_id]
+        for link in by_category["Cloud and Infrastructure"].stack_items
+    }
+    assert UNCATEGORISED_STACK_ITEM_NAME not in {
+        stack_items[identifier] for identifier in referenced
+    }
 
     payload = json.loads(
         shipped_domain_path(shipped_fixtures_root, "cv_skills.json").read_text(
@@ -1483,6 +1550,14 @@ def test_shipped_cv_education_fixtures_cover_the_catalogue(
 ) -> None:
     """test_shipped_cv_education_fixtures_cover_the_catalogue covers README §4.6.
 
+    The corpus is the site owner's real education history, which is a single
+    completed degree. The count and the nullable-`end_date` case the synthetic
+    corpus pinned here are therefore gone: `cv.feature` — "Entries are ordered by
+    start date, most recent first" cannot be satisfied from seed data on the
+    education side and is set up by the step definitions instead (README §4.6).
+    What remains pinned is what the corpus can still guarantee: every entry
+    validates, start dates are distinct, and no entry ends before it starts.
+
     Args:
         shipped_fixtures_root (Path): The real `scripts/seeding/fixtures/` tree.
 
@@ -1493,8 +1568,7 @@ def test_shipped_cv_education_fixtures_cover_the_catalogue(
     entries = load_shipped_domain(shipped_fixtures_root, "cv_education.json")
     starts = [entry.start_date for entry in entries]
 
-    assert len(entries) > 2
-    assert len([entry for entry in entries if entry.end_date is None]) == 1
+    assert entries
     assert all(
         entry.end_date is None or entry.start_date < entry.end_date for entry in entries
     )

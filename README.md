@@ -39,7 +39,7 @@ The following repository contains source code, IAC and CI/CD pipelines to manage
 └── .pre-commit-config.yaml
 ```
 
-The project is deployed to a Kubernetes cluster (`k3s`) hosted on a virtual machine. With the exception of the `k3s` cluster itself, all infrastructure is managed via the terraform and CICD pipelines provided in this project. This includes the `golang` API and `quasar` Vue application that serve the backend and frontend respectively. Data is stored within a `postgresql` server deployed within the Kubernetes cluster.
+The project is deployed to a Kubernetes cluster (`k3s`) hosted on a virtual machine. With the exception of the `k3s` cluster itself, all infrastructure is managed via the terraform and CICD pipelines provided in this project. This includes the `golang` API and the Next.js application that serve the backend and frontend respectively. Data is stored within a `postgresql` server deployed within the Kubernetes cluster.
 
 Some key infrastructure items are hosted in AWS instead of k8s. This includes:
 
@@ -68,7 +68,7 @@ Database table definitions and the `alembic` migrations that provision them. A s
 
 #### `api`
 
-Golang source code for the REST API that serves the main application and manages internal data.
+Golang source code for the REST API that serves the main application and manages internal data. It is a single flat Go module built on `gin`, mounted on the `/v1` prefix with CORS enabled, and reads from the `base` schema provisioned by the `alembic` component — it owns no schema and applies no migrations of its own. The endpoints cover the CV, the subagent and spec catalogue, the blog articles and their comments, contact messages and the project listing. Configuration defaults live in `api/config.yaml` and every value is overridable through the environment; the database password is supplied through the environment only. Note that `golangci-lint`, which the `make -C api lint` target and the `api` pre-commit hook require, is not provisioned by this repository and must be installed separately. See `api/README.md` for the configuration reference and the endpoint list, and `docs/openapi.yaml` for the full request/response contract.
 
 #### `infrastructure/manifests`
 
@@ -84,7 +84,7 @@ Python component that seeds an already-migrated database with the test fixtures 
 
 #### `web`
 
-Vue source code for `quasar` app. All UI components are server-side rendered and served via the NodeJS container deployed within the cluster.
+TypeScript source code for the Next.js (App Router) frontend that renders the site, styled with Tailwind CSS and built on `shadcn/ui` primitives. Pages are server-rendered by Server Components that read from the `api` component; the small amount of interactive behaviour is isolated in client islands that call the API directly from the browser, so the component contains no proxying route handlers of its own. Both the development server and the container listen on **port 9000** rather than Next's default 3000 — 9000 is the exact origin the API pins in its CORS allowlist (`api/router.go`), so serving the frontend anywhere else breaks every browser-side call. Locally the component is run with `npm ci && npm run dev` from `web/` (`http://localhost:9000`), with `make -C web lint`, `make -C web test`, `make -C web format` and `make -C web build` providing the usual checks; the full stack is run with `docker compose up -d --build` from the repository root, which publishes postgres on 5432, the API on 8080 and the frontend on 9000 and requires `POSTGRES_PASSWORD` to be exported first. Two environment variables configure the API location and they are **not** interchangeable: `API_BASE_URL` is a genuine runtime value, re-read server-side on every request (`http://api:8080` under compose, so Server Components reach the API over the compose network), while `NEXT_PUBLIC_API_BASE_URL` is **inlined into the client bundle by `next build`** and must therefore be supplied as a compose `build.args` entry — setting it in the runtime environment of an already-built image has no effect and fails silently. Changing it requires an image rebuild, not a restart. See `web/README.md` for the make targets, the test conventions and the standards-waiver boundary that applies to this component.
 
 ## Deployments
 
