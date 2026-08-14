@@ -1,0 +1,10 @@
+# Runtime dependencies of the alembic migration component.
+# All pins resolve on Python 3.14 (cp314 wheels verified for every compiled
+# distribution). The component ships without unit tests, so no test dependencies
+# are pinned here.
+alembic==1.19.1
+sqlalchemy==2.0.52
+psycopg[binary]==3.3.4
+pydantic==2.13.4
+pydantic-settings==2.15.0
+structlog==26.1.0

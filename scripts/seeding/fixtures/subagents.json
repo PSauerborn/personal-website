@@ -1,0 +1,96 @@
+[
+  {
+    "id": "019ffcfa06597c9cbe37bf8a669ec888",
+    "name": "Sample Agent",
+    "description": "The worked example of a catalogue entry: a subagent that declares neither an input nor an output schema.",
+    "inputs": null,
+    "outputs": null
+  },
+  {
+    "id": "019ffcfa065a7f39a0842ffd29a4a7d1",
+    "name": "work-planner",
+    "description": "Turns a specification into an ordered work plan of tasks, with dependencies, risks and acceptance criteria.",
+    "inputs": {
+      "type": "object",
+      "required": ["specPath"],
+      "additionalProperties": false,
+      "properties": {
+        "specPath": {
+          "type": "string",
+          "description": "Path to the specification the work plan is derived from."
+        },
+        "reviewNotesPath": {
+          "type": "string",
+          "description": "Optional path to review notes that constrain the plan."
+        }
+      }
+    },
+    "outputs": {
+      "type": "object",
+      "required": ["status", "workPlanId", "workPlanPath"],
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["completed", "blocked"]
+        },
+        "workPlanId": {
+          "type": "string",
+          "description": "Identifier of the generated work plan, for example WP-001."
+        },
+        "workPlanPath": {
+          "type": "string",
+          "description": "Path of the generated work plan document."
+        },
+        "taskCount": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of executable tasks the plan decomposes into."
+        }
+      }
+    }
+  },
+  {
+    "id": "019ffcfa065b762999ba6542d11bc3a2",
+    "name": "task-executor",
+    "description": "Executes a single task file end to end, red-green-refactor, writing only the files the task nominates.",
+    "inputs": {
+      "type": "object",
+      "required": ["taskFilePath"],
+      "additionalProperties": false,
+      "properties": {
+        "taskFilePath": {
+          "type": "string",
+          "description": "Path to the executable task file."
+        }
+      }
+    },
+    "outputs": {
+      "type": "object",
+      "required": ["status"],
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["completed", "blocked"]
+        },
+        "filesChanged": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Absolute paths of every file the task wrote."
+        },
+        "reason": {
+          "type": "string",
+          "enum": [
+            "investigation_target_not_found",
+            "out_of_scope_file",
+            "incomplete_task"
+          ],
+          "description": "Typed reason, present only when the status is blocked."
+        }
+      }
+    }
+  }
+]

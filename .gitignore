@@ -3,3 +3,7 @@
 .DS_Store
 
 SPEC-*-REVIEW.md
+
+# Python build artefacts
+__pycache__/
+*.py[cod]

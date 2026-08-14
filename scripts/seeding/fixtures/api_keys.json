@@ -1,0 +1,26 @@
+[
+  {
+    "id": "019ffd029b037d20a407bf3bcb24a207",
+    "api_key": "75952bd375671a21940e6f19fd474070e93f7b4abd3e2f7a0c2a161b4d296e31",
+    "description": "The key every 'a valid API key is provided' step of the acceptance suite authenticates with. Never expires.",
+    "issued_at": "2025-01-01T00:00:00Z",
+    "expires_at": null,
+    "issued_for": "acceptance-suite"
+  },
+  {
+    "id": "019ffd029b0373c7b644894df99691ac",
+    "api_key": "d664cc4ea16e25955b662e2509da7563a657cf6d990d274bf32c6f874262ed74",
+    "description": "The key every 'an expired API key is provided' step presents: it exists, but its expiry is in the past, so admin requests carrying it are rejected.",
+    "issued_at": "2019-01-01T00:00:00Z",
+    "expires_at": "2020-01-01T00:00:00Z",
+    "issued_for": "acceptance-suite"
+  },
+  {
+    "id": "019ffd029b0372c8920ca81450e3fe3a",
+    "api_key": "09d5568fa45a317420a97d578398c77b8d9999651715afe313342f809f3be77f",
+    "description": "A key with an expiry that has not yet passed, so an expiry check comparing against now() is distinguishable from one merely testing that expires_at is null.",
+    "issued_at": "2025-01-01T00:00:00Z",
+    "expires_at": "2999-01-01T00:00:00Z",
+    "issued_for": "acceptance-suite"
+  }
+]

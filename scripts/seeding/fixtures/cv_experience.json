@@ -1,0 +1,115 @@
+[
+  {
+    "id": "019ffd06ba477005ac008496e60713eb",
+    "organization": "Acme Cloud GmbH",
+    "job_title": "Senior Engineer",
+    "start_date": "2022-03-01",
+    "end_date": null,
+    "description": "Current role: owns the platform the product teams deploy onto, from the Go services at the edge to the Kubernetes clusters and the Terraform that provisions them.",
+    "responsibilities": [
+      {
+        "id": "019ffd06ba477006bb68b656b9dd3fcb",
+        "description": "Designs and maintains the Go services behind the public API, including the request auditing and API key authentication paths."
+      },
+      {
+        "id": "019ffd06ba4770079656e047cfbfbd72",
+        "description": "Runs the Kubernetes platform the product teams deploy onto, and the progressive delivery tooling that fronts it."
+      },
+      {
+        "id": "019ffd06ba477008b2bb23c9f3bd8caa",
+        "description": "Owns the Terraform modules that provision every environment, and reviews the changes other teams make to them."
+      }
+    ],
+    "stack_items": [
+      {
+        "id": "019ffd06ba477009818be1e262d4e9f1",
+        "stack_item": {
+          "id": "019ffd06ba4770008eb0f99b5b10a408",
+          "name": "Go"
+        }
+      },
+      {
+        "id": "019ffd06ba47700a8a63eca87681078b",
+        "stack_item": {
+          "id": "019ffd06ba4770029d0ada10e8817bf6",
+          "name": "Kubernetes"
+        }
+      },
+      {
+        "id": "019ffd06ba47700b9f8597392354c46e",
+        "stack_item": {
+          "id": "019ffd06ba4770038173062e491917de",
+          "name": "Terraform"
+        }
+      }
+    ]
+  },
+  {
+    "id": "019ffd06ba47700cb7d9218c8fe2c2ac",
+    "organization": "Beta Systems AG",
+    "job_title": "Platform Engineer",
+    "start_date": "2019-01-01",
+    "end_date": "2022-02-28",
+    "description": "Built the internal data platform: Python ingestion services writing into a PostgreSQL estate that the reporting teams queried directly.",
+    "responsibilities": [
+      {
+        "id": "019ffd06ba47700db9dde15018eb0677",
+        "description": "Wrote and operated the Python ingestion services that fed the reporting warehouse."
+      },
+      {
+        "id": "019ffd06ba47700eb2c5aad6fd0e2e13",
+        "description": "Tuned the PostgreSQL schemas and queries behind the reporting estate, and ran its migrations."
+      }
+    ],
+    "stack_items": [
+      {
+        "id": "019ffd06ba47700f8a66f76d95414079",
+        "stack_item": {
+          "id": "019ffd06ba4770018aa25cd9692014e4",
+          "name": "Python"
+        }
+      },
+      {
+        "id": "019ffd06ba4770108c3b9c443be1eb55",
+        "stack_item": {
+          "id": "019ffd06ba477004a107971fd9791ec1",
+          "name": "PostgreSQL"
+        }
+      }
+    ]
+  },
+  {
+    "id": "019ffd06ba477011ab0c1fbbe8afe480",
+    "organization": "Gamma Labs",
+    "job_title": "Software Engineer",
+    "start_date": "2016-09-01",
+    "end_date": "2018-12-31",
+    "description": "First engineering role: delivered backend features in Python and, later, the first Go services the company shipped.",
+    "responsibilities": [
+      {
+        "id": "019ffd06ba477012b5c28568807eecd2",
+        "description": "Delivered backend features in Python across the customer-facing product and its internal tooling."
+      },
+      {
+        "id": "019ffd06ba477013b20add3e7e494601",
+        "description": "Wrote the first Go services the company shipped, and the test suites that kept them honest."
+      }
+    ],
+    "stack_items": [
+      {
+        "id": "019ffd06ba47701483d664e15b7d424d",
+        "stack_item": {
+          "id": "019ffd06ba4770018aa25cd9692014e4",
+          "name": "Python"
+        }
+      },
+      {
+        "id": "019ffd06ba4770159b861f79c00ee715",
+        "stack_item": {
+          "id": "019ffd06ba4770008eb0f99b5b10a408",
+          "name": "Go"
+        }
+      }
+    ]
+  }
+]

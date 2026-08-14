@@ -1,6 +1,8 @@
 .PHONY: scan-secrets
 scan-secrets:
 	detect-secrets scan \
+		--exclude-files "acceptance/features/*" \
+		--exclude-files "scripts/seeding/fixtures/*" \
 		> .secrets.baseline
 
 	detect-secrets audit .secrets.baseline

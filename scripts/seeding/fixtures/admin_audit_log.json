@@ -1,0 +1,48 @@
+[
+  {
+    "id": "019ffd029b0373d0bbf13a90e501d462",
+    "api_key_id": "019ffd029b037d20a407bf3bcb24a207",
+    "endpoint": "/v1/admin/contacts",
+    "method": "get",
+    "status_code": 200,
+    "payload": null,
+    "response": {
+      "contacts": [
+        {
+          "email": "ada.lovelace@example.org",
+          "organization": "Analytical Engines Ltd"
+        },
+        {
+          "email": "grace.hopper@example.net",
+          "organization": null
+        }
+      ]
+    }
+  },
+  {
+    "id": "019ffd029b037e3d8601e376f071b6eb",
+    "api_key_id": "019ffd029b037d20a407bf3bcb24a207",
+    "endpoint": "/v1/admin/projects",
+    "method": "post",
+    "status_code": 201,
+    "payload": {
+      "name": "Homelab Automation",
+      "description": "Ansible and Terraform for the rack in the cupboard.",
+      "primary_link": "https://example.org/projects/homelab",
+      "github_link": "https://github.com/example/homelab"
+    },
+    "response": {
+      "name": "Homelab Automation",
+      "display": true
+    }
+  },
+  {
+    "id": "019ffd029b0378f389049a43c5835356",
+    "api_key_id": null,
+    "endpoint": "/v1/admin/contacts",
+    "method": "get",
+    "status_code": 403,
+    "payload": null,
+    "response": null
+  }
+]

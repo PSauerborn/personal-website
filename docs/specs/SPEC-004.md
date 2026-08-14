@@ -2,11 +2,11 @@
 
 **Spec ID**: SPEC-004
 
-**Spec Date**: 2026-08-01
+**Spec Date**: 2026-08-13
 
 ## 1. Spec Statement
 
-As a admin I want a set of admin-authenticated endpoints that I can access with an API key so that I can access and manage resources stored in the database.
+As a admin I want a set of admin-authenticated endpoints that I can call with an API key so that I can access and manage resources stored in the database.
 
 ## 2. Context and Background
 
@@ -24,15 +24,17 @@ The goal of this spec is to develop the admin functionality within the REST API 
 | `DELETE /v1/articles/:article_id` | Delete article. Admin only.  | § 6.1.15 | § 6.1.15 |
 | `POST /v1/agents/specs` | Create a new spec. Admin only. | § 6.1.18 | § 6.1.18 |
 | `PUT /v1/agents/specs/:spec_id` | Update spec metadata. Admin only. | § 6.1.18 | § 6.1.18 |
-| `PUT /v1/agents/specs/:spec_id/content` | Update spec file contents. Admin only. | § 6.1.19 | § 6.1.19 |
+| `POST /v1/agents/specs/:spec_id` | Attach document to spec | | |
+| `PUT /v1/agents/specs/:spec_id/:document_id/content` | Update spec file contents. Admin only. | § 6.1.19 | § 6.1.19 |
 | `PATCH /v1/agents/specs/:spec_id/visibility` | Toggle visibility of spec. Admin only. | § 6.1.20 | § 6.1.20 |
+| `DELETE /v1/agents/specs/:spec_id/:document_id` | Delete a spec document. Admin only. | § 6.1.18 | § 6.1.18 |
 | `DELETE /v1/agents/specs/:spec_id` | Delete a spec. Admin only. | § 6.1.18 | § 6.1.18 |
 | `POST /v1/projects` | Create a new project. Admin only. | 6.1.21  | 6.1.21 |
 | `PUT /v1/projects/:project_id` | Update project. Admin only. | N/A | N/A |
 | `PATCH /v1/projects/:project_id` | Toggle visibility of project. Admin only. |6.1.22 | 6.1.22 |
 | `DELETE /v1/projects/:project_id` | Delete a project. Admin only. | N/A | N/A |
 
-Admin endpoint should be authenticated using API keys stored and maintained in the database.
+Admin endpoint should be authenticated using API keys (see § 4.1) stored and maintained in the database.
 
 ## 3. Scope Definitions
 
@@ -84,7 +86,11 @@ Admin endpoint should be authenticated using API keys stored and maintained in t
 - **REQ-5.1**: The existing agents router must be updated and must expose the following new endpoints:
     - `POST /v1/agents/specs`
     - `PUT /v1/agents/specs/:spec_id`
+    - `POST /v1/agents/specs/:spec_id`
+    - `PUT /v1/agents/specs/:spec_id/:document_id/content`
     - `PATCH /v1/agents/specs/:spec_id/visibility`
+    - `DELETE /v1/agents/specs/:spec_id/:document_id`
+    - `DELETE /v1/agents/specs/:spec_id`
 
 - **REQ-5.2**: The endpoints listed in **REQ-5.1** must be registered behind the admin authentication middleware defined in § 4.1. All existing endpoints on the agents router group must remain public.
 - **REQ-5.3**: A request for a spec ID that does not exist must be rejected with a `404`.
@@ -93,7 +99,7 @@ Admin endpoint should be authenticated using API keys stored and maintained in t
 - **REQ-5.6**: `PATCH /v1/agents/specs/:spec_id/visibility` must set the `display` flag of the given spec to the value supplied in the request body. The endpoint must set the flag to the supplied value explicitly rather than inverting the current value, so that repeated requests are idempotent. No other spec fields, and no linked document content, may be modified by this endpoint.
 - **REQ-5.7**: `PATCH /v1/agents/specs/:spec_id/visibility` must return the updated spec metadata so that the caller does not need to re-fetch the spec to observe the new state.
 - **REQ-5.8**: Any request referencing a `spec_id` that does not exist must be rejected with a `404`.
-- **REQ-5.9**: `GET /v1/agents/specs/list` must accept an optional `?include_hidden=(true|false)` query parameter. If provided and set to `true`, the request must be treated as an admin endpoint. The API key provided must be validated, and the request must be logged in the audit log table.
+- **REQ-5.9**: `GET /v1/agents/specs/list` must accept an optional `?include_hidden=(true|false)` query parameter. If provided and set to `true`, the request must be treated as an admin endpoint and return all documents linked to spec including hidden specs and documents marked as restricted. The API key provided must be validated, and the request must be logged in the audit log table.
 
 ### 4.6 - Messages Router
 

@@ -1,0 +1,119 @@
+[
+  {
+    "id": "019ffcfa06457db1acd723a59a5fb503",
+    "display_name": "Sample Spec",
+    "description": "The worked example of a spec: what a spec is for, what it must contain, and how it is published.",
+    "display": true,
+    "documents": [
+      {
+        "id": "019ffcfa0646793982b3fc7e8bc93bf9",
+        "document_type": "spec",
+        "document": {
+          "id": "019ffcfa064773eeab88f69fec490347",
+          "filename": "sample-spec.md",
+          "restricted": false,
+          "content": "documents/specs/sample-spec.md"
+        }
+      },
+      {
+        "id": "019ffcfa064872a3a2c5b4c6a1256108",
+        "document_type": "other",
+        "document": {
+          "id": "019ffcfa06497999b46820a8a2ea1252",
+          "filename": "sample-spec-notes.md",
+          "restricted": true,
+          "content": "documents/specs/sample-spec-notes.md"
+        }
+      }
+    ]
+  },
+  {
+    "id": "019ffcfa064a72b7b81f759eb56aadc7",
+    "display_name": "SPEC-001 Database and Schema",
+    "description": "The database component: schema principles, entities, link tables, visibility flags and the migration contract.",
+    "display": true,
+    "documents": [
+      {
+        "id": "019ffcfa064b75a09691821c1b17bc95",
+        "document_type": "spec",
+        "document": {
+          "id": "019ffcfa064c7002aa25c3b28451df82",
+          "filename": "spec-001-database.md",
+          "restricted": false,
+          "content": "documents/specs/spec-001-database.md"
+        }
+      },
+      {
+        "id": "019ffcfa064d7ea893336282efdc02a5",
+        "document_type": "acceptance",
+        "document": {
+          "id": "019ffcfa064e7d89addc9b54496aaecc",
+          "filename": "spec-001-acceptance.md",
+          "restricted": false,
+          "content": "documents/specs/spec-001-acceptance.md"
+        }
+      }
+    ]
+  },
+  {
+    "id": "019ffcfa064f754c98a70ac6ae79a28e",
+    "display_name": "Restricted Spec",
+    "description": "Operational detail of the deployment pipeline. Visible as a spec, but its only spec document is restricted.",
+    "display": true,
+    "documents": [
+      {
+        "id": "019ffcfa06507308947fc6ece6c2f128",
+        "document_type": "spec",
+        "document": {
+          "id": "019ffcfa0651757a89d5676c1047fb4c",
+          "filename": "restricted-spec.md",
+          "restricted": true,
+          "content": "documents/specs/restricted-spec.md"
+        }
+      }
+    ]
+  },
+  {
+    "id": "019ffcfa06527b6f9c1fc8b2878b6b27",
+    "display_name": "Draft Spec",
+    "description": "A spec that has been created but has no document linked to it yet.",
+    "display": true,
+    "documents": []
+  },
+  {
+    "id": "019ffcfa065376d18e729a6b2838e290",
+    "display_name": "Hidden Spec Alpha",
+    "description": "Full-text search and indexing over the site content. Specified, unbuilt, and hidden until it exists.",
+    "display": false,
+    "documents": [
+      {
+        "id": "019ffcfa0654722fb82335a9c71f8cec",
+        "document_type": "spec",
+        "document": {
+          "id": "019ffcfa065578e68658d718f79be4a2",
+          "filename": "hidden-spec-alpha.md",
+          "restricted": false,
+          "content": "documents/specs/hidden-spec-alpha.md"
+        }
+      }
+    ]
+  },
+  {
+    "id": "019ffcfa065679229841f3885fb2ff3b",
+    "display_name": "Hidden Spec Beta",
+    "description": "Comment moderation states and the admin queue that works through them. Specified, unbuilt, and hidden.",
+    "display": false,
+    "documents": [
+      {
+        "id": "019ffcfa065777fba9699f3346da4185",
+        "document_type": "spec",
+        "document": {
+          "id": "019ffcfa06587ef3b78aaac46658ec46",
+          "filename": "hidden-spec-beta.md",
+          "restricted": false,
+          "content": "documents/specs/hidden-spec-beta.md"
+        }
+      }
+    ]
+  }
+]

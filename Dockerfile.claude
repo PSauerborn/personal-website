@@ -7,7 +7,17 @@ ARG CLAUDE_CODE_VERSION=2.1.220
 WORKDIR /agent
 
 RUN apt-get update && \
-    apt-get install -y curl git build-essential golang-go python3 python3-pip
+    apt-get install -y curl git build-essential golang-go python3 python3-pip \
+        podman uidmap fuse-overlayfs passt slirp4netns
+
+# rootless podman for the agent user: subuid/subgid ranges for user
+# namespaces, fuse-overlayfs storage (plain overlay is unavailable
+# inside a container) and a docker alias so agents can run either CLI
+RUN echo "agent:100000:65536" >> /etc/subuid && \
+    echo "agent:100000:65536" >> /etc/subgid && \
+    printf '[storage]\ndriver = "overlay"\n\n[storage.options.overlay]\nmount_program = "/usr/bin/fuse-overlayfs"\n' \
+        > /etc/containers/storage.conf && \
+    ln -s /usr/bin/podman /usr/local/bin/docker
 
 # acceptance criteria use tags do organize cross-cutting feature files.
 # agents need to link tagged scenarios to specs using the godog tool
@@ -36,6 +46,14 @@ RUN curl -fsSL https://claude.ai/install.sh | bash -s -- "${CLAUDE_CODE_VERSION}
 
 # write claude config: bypass permission prompts (safe here — non-root user in sandbox)
 COPY --chown=agent:agent .claude.docker.json /home/agent/.claude/settings.json
+
+# podman's image storage cannot live on the image's own overlayfs
+# (nested overlay breaks container exec), so declare it as a volume;
+# pre-creating the directory as the agent user makes docker carry
+# its ownership into the auto-provisioned volume. NOTE: nested
+# containers require running this image with --privileged
+RUN mkdir -p /home/agent/.local/share/containers
+VOLUME /home/agent/.local/share/containers
 
 ENV PATH="/home/agent/.local/bin:${PATH}"
 ENV CODING_STANDARDS_DIR=/etc/coding-standards

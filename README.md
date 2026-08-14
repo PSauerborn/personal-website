@@ -6,11 +6,11 @@
 2. [Components](#components)
     - [.github/workflows](#.github%2Fworkflows)
     - [acceptance](#acceptance)
+    - [alembic](#alembic)
     - [api](#api)
-    - [infrastructure/alembic](#alembic)
     - [infrastructure/manifests](#manifests)
     - [infrastructure/terraform](#terraform)
-    - [scripts](#scripts)
+    - [scripts/seeding](#scriptsseeding)
     - [web](#web)
 3. [Deployments](#deployments)
     - [Pipeline Triggers](#pipeline-triggers)
@@ -27,12 +27,14 @@ The following repository contains source code, IAC and CI/CD pipelines to manage
 ├── .github
 │   └── workflows # CICD pipelines
 ├── acceptance # End-to-end acceptance tests
+├── alembic # PostgreSQL table definitions and migration scripts
 ├── api # source code for API layer
 ├── infrastructure # Infrastructure as Code
-│   ├── alembic # PostgreSQL table definition and migration scripts
 │   ├── manifests # Kubernetes manifests
 │   └── terraform # Terraform configuration
 ├── scripts # Helper scripts for development and deployment
+│   └── seeding # Test data seeding
+│       └── fixtures # JSON domain fixtures and sidecar document content
 ├── web # source code for UI layer
 └── .pre-commit-config.yaml
 ```
@@ -60,18 +62,13 @@ CI/CD workflows and shared actions used for deployments. `tests.yaml` runs on pu
 
 Gherkin feature files and Golang step definitions for end-to-end acceptance tests written in Golang using the Godog BDD framework. These tests run against the deployed environment to verify system functionality.
 
+#### `alembic`
+
+Database table definitions and the `alembic` migrations that provision them. A single revision creates the `base` schema and all of its tables. The container entrypoint is a thin wrapper that drives `alembic` programmatically, and every connection setting, the target revision and the command to run are supplied at run time through environment variables — the image contains none of them. The included `Dockerfile` builds a container that is ran as a Kubernetes job to provision the PostgreSQL database when a new revision is released, and `make -C alembic run-migrations` runs the same image against the database described by the current shell environment. See `alembic/README.md` for the environment-variable contract and `docs/db_schema.md` for the schema itself.
+
 #### `api`
 
 Golang source code for the REST API that serves the main application and manages internal data.
-
-#### `scripts`
-
-Collection of shell scripts used for CI/CD, local development, and other utility tasks, including generation and loading of test data for acceptance tests.
-
-
-#### `infrastructure/alembic`
-
-Database table definitions and migrations managed via `alembic`. The included `Dockerfile` builds a container that is ran as a Kubernetes job to provision the PostgreSQL database when a new revision is released.
 
 #### `infrastructure/manifests`
 
@@ -80,6 +77,10 @@ Additional kubernetes utility manifests, including a job to load seed data into 
 #### `infrastructure/terraform`
 
 IAC to manage the Kubernetes cluster and required AWS resources. All terraform is structured in accordance with the google best practices. Each environment has its own folder in the `terraform/env` directory that invokes `terraform/modules/main`. Currently, a `DEV`, `PROD` and `GLOBAL` environment is maintained.
+
+#### `scripts/seeding`
+
+Python component that seeds an already-migrated database with the test fixtures used by the acceptance suite and by local development. The fixtures are JSON files under `scripts/seeding/fixtures/`, one per domain, whose document content is held in sidecar files under `fixtures/documents/`; they are validated through `pydantic` domain models before any connection is opened. Seeding is atomic — every truncation and insert runs inside a single transaction, so the database is never left partially seeded. As with the migrations, the `Dockerfile` builds a container that is ran as a Kubernetes job, and `make -C scripts/seeding seed` runs the same image against the database described by the current shell environment. See `scripts/seeding/README.md` for the fixture contract and the CLI reference.
 
 #### `web`
 
@@ -105,7 +106,7 @@ All releases to the `PROD` environment require manual approval by admins.
 
 ### Makefiles
 
-`make` is used extensively in all components to automate key functions, such as unittests, linting and image building. It is recommended to use the provided `Makefile` where possible to run pre-configured actions. See the README for each respective component for a full list of available `make` commands.
+`make` is used extensively in all components to automate key functions, such as unittests, linting and image building. It is recommended to use the provided `Makefile` where possible to run pre-configured actions. See the README for each respective component for a full list of available `make` commands. Each component owns its own `Makefile`, and its targets are invoked from the repository root through it — `make -C <COMPONENT> <target>`, the same convention the pre-commit hooks below use. Applying the migrations and seeding the database are therefore `make -C alembic run-migrations` and `make -C scripts/seeding seed`.
 
 ### Precommit Checks
 

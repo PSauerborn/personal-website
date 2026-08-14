@@ -1,0 +1,21 @@
+# Seeding component dependencies.
+#
+# All pins are resolvable on Python 3.14 (cp314 wheels available for every
+# compiled dependency), matching the slim base image used by the seeding
+# Dockerfile.
+#
+# NO-SERVER RULE: pytest-postgresql is pinned because the binding decision in
+# docs/specs/SPEC-001-REVIEW.md names it, but no test may request a
+# pytest-postgresql fixture. Its process fixtures require a `postgres`
+# executable, which exists neither in the image nor in CI. The database is
+# always mocked - see scripts/seeding/tests/conftest.py.
+
+# Runtime
+pydantic==2.13.4
+pydantic-settings==2.15.0
+psycopg[binary]==3.3.4
+structlog==26.1.0
+
+# Test
+pytest==9.1.1
+pytest-postgresql==8.1.0

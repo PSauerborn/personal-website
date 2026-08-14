@@ -1,0 +1,62 @@
+[
+  {
+    "id": "019ffd029b037d48988e16bc0aab8ddf",
+    "name": "Ada Lovelace",
+    "email": "ada.lovelace@example.org",
+    "organization": "Analytical Engines Ltd",
+    "messages": [
+      {
+        "id": "019ffd029b03762fa78d5ca41cc2c2a3",
+        "content": "Hello - I read the piece on connection pooling and had a follow-up question about pool sizing under bursty traffic.",
+        "read": true,
+        "submitted_at": "2025-09-02T09:15:00Z"
+      },
+      {
+        "id": "019ffd029b0374968d32142281f57644",
+        "content": "Following up on my earlier note: we ended up settling on a smaller pool with a shorter idle timeout, which held up nicely.",
+        "read": false,
+        "submitted_at": "2025-09-14T16:42:00Z"
+      },
+      {
+        "id": "019ffd029b0378a194f18cba0dc0cdac",
+        "content": "One last thing - would you be open to a short call about the platform migration we are planning for the new year?",
+        "read": false,
+        "submitted_at": "2025-10-01T11:05:00Z"
+      }
+    ]
+  },
+  {
+    "id": "019ffd029b03749a9bf222ea3d4fa88d",
+    "name": "Grace Hopper",
+    "email": "grace.hopper@example.net",
+    "organization": null,
+    "messages": [
+      {
+        "id": "019ffd029b0374199146b035b17221f0",
+        "content": "Enjoyed the write-up on Terraform module layout. Do you keep the module registry versioned separately from the root modules?",
+        "read": true,
+        "submitted_at": "2025-09-21T08:00:00Z"
+      },
+      {
+        "id": "019ffd029b0371558be77ee22427ba3f",
+        "content": "No organization to speak of here - I am writing in a personal capacity, and just wanted to say the examples were clear.",
+        "read": false,
+        "submitted_at": "2025-10-05T19:30:00Z"
+      }
+    ]
+  },
+  {
+    "id": "019ffd029b03767ea4c34fa3606201f2",
+    "name": "Alan Turing",
+    "email": "alan.turing@example.com",
+    "organization": "Bletchley Park",
+    "messages": [
+      {
+        "id": "019ffd029b03731cb4dd4e61b4410528",
+        "content": "Could you point me at the acceptance suite for the agent catalogue? I would like to see how the specs are exercised end to end.",
+        "read": true,
+        "submitted_at": "2025-10-11T13:20:00Z"
+      }
+    ]
+  }
+]

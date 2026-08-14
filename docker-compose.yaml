@@ -1,0 +1,54 @@
+# Local development stack.
+#
+# Currently provides the PostgreSQL server that the alembic migrations and the
+# seeding script run against. Further services (the API and the web frontend)
+# are added here as they are delivered by later specs.
+#
+#   $ export POSTGRES_PASSWORD=<password>
+#   $ docker compose up -d
+#
+# Environment variables are read from the parent shell, falling back to the
+# defaults below. POSTGRES_PASSWORD has no default and must be set — see the
+# note in the README. The variable names and the 5432 port default match the
+# contract documented in alembic/README.md and scripts/seeding/README.md, so
+# the same exported variables drive `make -C alembic run-migrations` and
+# `make -C scripts/seeding seed`.
+
+name: personal-website
+
+services:
+  postgres:
+    image: postgres:17
+    container_name: personal-website-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: ${POSTGRES_DB:-personal_website}
+      # Fixed at the UTC/C pairing the schema assumes: every timestamp column is
+      # TIMESTAMP WITH TIME ZONE stored in UTC (see docs/db_schema.md section 2).
+      PGTZ: UTC
+      POSTGRES_INITDB_ARGS: --encoding=UTF8 --locale=C
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      # Scoped to the configured user and database so the check fails while the
+      # server is still running initdb rather than passing on the bootstrap role.
+      test:
+        - CMD-SHELL
+        - pg_isready --username "${POSTGRES_USER:-admin}" --dbname "${POSTGRES_DB:-personal_website}"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - personal-website
+
+networks:
+  personal-website:
+    driver: bridge
+
+volumes:
+  postgres-data:

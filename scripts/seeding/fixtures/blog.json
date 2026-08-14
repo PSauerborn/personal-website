@@ -1,0 +1,197 @@
+[
+  {
+    "id": "019ffcf46e307004bf72bb60e0919505",
+    "author": "Pascal Sauerborn",
+    "title": "Sample Post",
+    "description": "A short walk through the Go service and the PostgreSQL schema this site is built on.",
+    "display": true,
+    "authored_at": "2025-01-14T09:30:00Z",
+    "document": {
+      "id": "019ffcf46e317005a87af296dfba0856",
+      "filename": "sample-post.md",
+      "restricted": false,
+      "content": "documents/blog/sample-post.md"
+    },
+    "topics": [
+      {
+        "id": "019ffcf46e327006b4a41b7d787b674a",
+        "topic": {
+          "id": "019ffcf46e2c70008332262d05e1417e",
+          "name": "golang",
+          "description": "The Go programming language, and the services written in it."
+        }
+      },
+      {
+        "id": "019ffcf46e337007946c18b29bf7f4cc",
+        "topic": {
+          "id": "019ffcf46e2d70019ec758d7bf81cd80",
+          "name": "postgres",
+          "description": "PostgreSQL schema design, query tuning and operations."
+        }
+      }
+    ],
+    "comments": [
+      {
+        "id": "019ffcf46e3470089fda4b9ec2ff9eb5",
+        "comment": "The point about dull handlers being the goal is underrated. Looking forward to the connection pooling instalment.",
+        "author": "John Doe",
+        "created_at": "2025-01-15T08:05:00Z"
+      },
+      {
+        "id": "019ffcf46e3570098fa9e8c074e37682",
+        "comment": "Storing document content as bytes rather than text saved us a week of encoding bugs. Good call.",
+        "author": null,
+        "created_at": "2025-01-16T13:42:00Z"
+      },
+      {
+        "id": "019ffcf46e36700aa431867ffd1e078a",
+        "comment": "Curious why the link tables carry their own identifiers rather than a composite primary key.",
+        "author": "Jane Doe",
+        "created_at": "2025-01-18T19:20:00Z"
+      }
+    ]
+  },
+  {
+    "id": "019ffcf46e37700ba20d77db402a99f5",
+    "author": "Pascal Sauerborn",
+    "title": "Scaling Postgres Connections",
+    "description": "Why a connection pool should be smaller than it feels, and what idle in transaction really costs.",
+    "display": true,
+    "authored_at": "2025-02-03T11:15:00Z",
+    "document": {
+      "id": "019ffcf46e38700c8b6c1637f0b167e1",
+      "filename": "scaling-postgres-connections.md",
+      "restricted": false,
+      "content": "documents/blog/scaling-postgres-connections.md"
+    },
+    "topics": [
+      {
+        "id": "019ffcf46e39700d8dcd4c9a16f501f1",
+        "topic": {
+          "id": "019ffcf46e2d70019ec758d7bf81cd80",
+          "name": "postgres",
+          "description": "PostgreSQL schema design, query tuning and operations."
+        }
+      }
+    ],
+    "comments": [
+      {
+        "id": "019ffcf46e3a700ea99c2aa11f21c6ac",
+        "comment": "The idle_in_transaction_session_timeout tip alone fixed a bloat problem we had been chasing for months.",
+        "author": "Grace Hopper",
+        "created_at": "2025-02-04T07:55:00Z"
+      }
+    ]
+  },
+  {
+    "id": "019ffcf46e3b700f8a46c6a71c6f6311",
+    "author": "Pascal Sauerborn",
+    "title": "Terraform Module Layout",
+    "description": "Resource modules, composition modules and root modules, and the rules that keep them apart.",
+    "display": true,
+    "authored_at": "2025-03-22T16:40:00Z",
+    "document": {
+      "id": "019ffcf46e3c7010859a82374f00b2ad",
+      "filename": "terraform-module-layout.md",
+      "restricted": false,
+      "content": "documents/blog/terraform-module-layout.md"
+    },
+    "topics": [
+      {
+        "id": "019ffcf46e3d70118a88758a68639680",
+        "topic": {
+          "id": "019ffcf46e2e7002a415201d34371c23",
+          "name": "terraform",
+          "description": "Infrastructure as code with Terraform, and the layouts that survive contact with a team."
+        }
+      },
+      {
+        "id": "019ffcf46e3e701280d7f2dc8cb6e0f7",
+        "topic": {
+          "id": "019ffcf46e2c70008332262d05e1417e",
+          "name": "golang",
+          "description": "The Go programming language, and the services written in it."
+        }
+      }
+    ],
+    "comments": []
+  },
+  {
+    "id": "019ffcf46e3f7013b4cd5d6d6a31eb56",
+    "author": "Pascal Sauerborn",
+    "title": "Hidden Draft: Kubernetes Operators",
+    "description": "An unfinished draft on reconcile loops, idempotence, and when an operator is the wrong answer.",
+    "display": false,
+    "authored_at": "2025-04-08T10:05:00Z",
+    "document": {
+      "id": "019ffcf46e4070149642a35409e789b4",
+      "filename": "kubernetes-operators.md",
+      "restricted": false,
+      "content": "documents/blog/kubernetes-operators.md"
+    },
+    "topics": [
+      {
+        "id": "019ffcf46e417015a0fef69e35f3c8cf",
+        "topic": {
+          "id": "019ffcf46e2f70039781573e1d339349",
+          "name": "kubernetes",
+          "description": "Running workloads on Kubernetes, and extending it without regretting it."
+        }
+      }
+    ],
+    "comments": []
+  },
+  {
+    "id": "019ffcf46e427016b95952501662069a",
+    "author": "Pascal Sauerborn",
+    "title": "Unpublished Notes",
+    "description": "Working notes on client-go caches, Go generics and observability budgets, kept hidden on purpose.",
+    "display": false,
+    "authored_at": "2025-05-19T18:25:00Z",
+    "document": {
+      "id": "019ffcf46e437017a7d2e30b9205a56a",
+      "filename": "unpublished-notes.md",
+      "restricted": false,
+      "content": "documents/blog/unpublished-notes.md"
+    },
+    "topics": [
+      {
+        "id": "019ffcf46e447018a02f42205c96028a",
+        "topic": {
+          "id": "019ffcf46e2f70039781573e1d339349",
+          "name": "kubernetes",
+          "description": "Running workloads on Kubernetes, and extending it without regretting it."
+        }
+      },
+      {
+        "id": "019ffcf46e4570198c19cf9765560274",
+        "topic": {
+          "id": "019ffcf46e2c70008332262d05e1417e",
+          "name": "golang",
+          "description": "The Go programming language, and the services written in it."
+        }
+      }
+    ],
+    "comments": []
+  },
+  {
+    "id": "019ffcf46e46701a872fdddaa14e2318",
+    "author": "Pascal Sauerborn",
+    "title": "Draft Post",
+    "description": "Metadata for a post whose content has not been uploaded yet, so it is never listed.",
+    "display": true,
+    "authored_at": "2025-06-02T12:00:00Z",
+    "document": null,
+    "topics": [
+      {
+        "id": "019ffcf46e47701b99d4e8d10400b163",
+        "topic": {
+          "id": "019ffcf46e2c70008332262d05e1417e",
+          "name": "golang",
+          "description": "The Go programming language, and the services written in it."
+        }
+      }
+    ],
+    "comments": []
+  }
+]

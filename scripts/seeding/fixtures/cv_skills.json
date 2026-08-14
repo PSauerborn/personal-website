@@ -1,0 +1,36 @@
+[
+  {
+    "id": "019ffd06ba477016b013a8d5fafed4c3",
+    "category": "Languages",
+    "stack_items": [
+      {
+        "id": "019ffd06ba4770179799e87cf48306eb",
+        "stack_item_id": "019ffd06ba4770008eb0f99b5b10a408"
+      },
+      {
+        "id": "019ffd06ba477018b65810b18b228423",
+        "stack_item_id": "019ffd06ba4770018aa25cd9692014e4"
+      }
+    ]
+  },
+  {
+    "id": "019ffd06ba4770198604b4834c360008",
+    "category": "Infrastructure",
+    "stack_items": [
+      {
+        "id": "019ffd06ba47701a8e19c1ed1cd2c05a",
+        "stack_item_id": "019ffd06ba4770029d0ada10e8817bf6"
+      }
+    ]
+  },
+  {
+    "id": "019ffd06ba47701ba85e5eb310c7b58a",
+    "category": "Databases",
+    "stack_items": [
+      {
+        "id": "019ffd06ba47701cbc4d9513f7246ede",
+        "stack_item_id": "019ffd06ba477004a107971fd9791ec1"
+      }
+    ]
+  }
+]

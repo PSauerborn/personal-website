@@ -1,0 +1,34 @@
+[
+  {
+    "id": "019ffcfa065c7885a80dc0d70c14dace",
+    "name": "Sample Project",
+    "description": "The worked example of a project entry: visible on the site, and published without a public source repository.",
+    "primary_link": "https://example.org/projects/sample-project",
+    "github_link": null,
+    "display": true
+  },
+  {
+    "id": "019ffcfa065d70f8baa3cfc3bddb6cca",
+    "name": "Personal Website",
+    "description": "This site: a Go API over a PostgreSQL schema, with the specs, the work plans and the acceptance suite kept in the same repository.",
+    "primary_link": "https://example.org",
+    "github_link": "https://github.com/example/personal-website",
+    "display": true
+  },
+  {
+    "id": "019ffcfa065e71d4a04248c308fc639b",
+    "name": "Homelab Automation",
+    "description": "Terraform and Ansible for a small home cluster: one command from bare metal to a running Kubernetes control plane.",
+    "primary_link": "https://example.org/projects/homelab",
+    "github_link": "https://github.com/example/homelab",
+    "display": false
+  },
+  {
+    "id": "019ffcfa065f7ae8b6ca31f07effe5f7",
+    "name": "Legacy Toolkit",
+    "description": "A retired collection of command line utilities, kept for reference and no longer maintained or published.",
+    "primary_link": "https://example.org/projects/legacy-toolkit",
+    "github_link": null,
+    "display": false
+  }
+]
