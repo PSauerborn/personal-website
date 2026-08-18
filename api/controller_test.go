@@ -3,344 +3,144 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"net/http/httptest"
+	"errors"
+	"fmt"
+	"net/http"
+	"os"
 	"testing"
 
-	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 )
 
+// testConfig returns a configuration carrying a deliberately non-default version
+// string, so that a hard-coded version in VersionHandler fails the tests.
+func testConfig() Config {
+	return Config{Version: "v9.9.9-test"}
+}
+
+// captureLogs redirects the shared logger to an in-memory buffer for the
+// duration of the given function and returns everything that was logged.
+func captureLogs(fn func()) string {
+	var buffer bytes.Buffer
+
+	logger := Logger()
+	logger.SetOutput(&buffer)
+	defer logger.SetOutput(os.Stdout)
+
+	fn()
+
+	return buffer.String()
+}
+
+// TestNewController tests that the controller stores the persistence singleton
+// and the configuration it was constructed with ([GO-API-002]).
+func TestNewController(t *testing.T) {
+	t.Run("stores the persistence layer and configuration", func(t *testing.T) {
+		db := &mockPersistenceLayer{}
+
+		controller := NewController(db, testConfig())
+
+		assert.NotNil(t, controller)
+		assert.Same(t, db, controller.db)
+		assert.Equal(t, testConfig(), controller.config)
+	})
+}
+
+// TestHealthHandler tests both paths through the health endpoint defined by
+// SPEC-002 §6.1.1 (AC-4, AC-6, REQ-1.5).
 func TestHealthHandler(t *testing.T) {
-	t.Run("success", func(t *testing.T) {
+	t.Run("returns 200 and the OK status when the database is healthy", func(t *testing.T) {
+		db := &mockPersistenceLayer{}
+		controller := NewController(db, testConfig())
 
-		db := NewTestPersistence(true)
-		controller := &Controller{
-			db: db,
-		}
+		recorder := serveHandler(controller.HealthHandler)
 
-		response := controller.HealthCheckHandler(nil)
-		assert.Equal(t, 200, response.Code)
+		assert.Equal(t, http.StatusOK, recorder.Code)
+		assert.Equal(t, 1, db.healthCheckCalls)
+
+		var body map[string]string
+		assert.NoError(t, json.Unmarshal(recorder.Body.Bytes(), &body))
+		assert.Equal(t, map[string]string{"status": "OK"}, body)
 	})
 
-	t.Run("unhealthy", func(t *testing.T) {
-		db := NewTestPersistence(false)
-		controller := &Controller{
-			db: db,
-		}
+	t.Run("passes the request context to the health check", func(t *testing.T) {
+		db := &mockPersistenceLayer{}
+		controller := NewController(db, testConfig())
 
-		response := controller.HealthCheckHandler(nil)
-		assert.Equal(t, 500, response.Code)
+		serveHandler(controller.HealthHandler)
+
+		assert.NotNil(t, db.lastHealthContext)
+	})
+
+	t.Run("returns 500 and the generic envelope when the health check fails", func(t *testing.T) {
+		db := &mockPersistenceLayer{healthCheckErr: fmt.Errorf("%w: ping failed", ErrDatabaseUnavailable)}
+		controller := NewController(db, testConfig())
+
+		recorder := serveHandler(controller.HealthHandler)
+
+		assert.Equal(t, http.StatusInternalServerError, recorder.Code)
+		assert.Equal(t, `{"error":"Internal Server Error","details":"Something went wrong."}`,
+			recorder.Body.String())
+	})
+
+	t.Run("does not leak the underlying error to the caller", func(t *testing.T) {
+		db := &mockPersistenceLayer{healthCheckErr: errors.New(
+			`dial tcp db.internal:5432: connect: connection refused (SQLSTATE 08006)`)}
+		controller := NewController(db, testConfig())
+
+		recorder := serveHandler(controller.HealthHandler)
+
+		assert.Equal(t, http.StatusInternalServerError, recorder.Code)
+		for _, leak := range []string{"dial tcp", "db.internal", "5432", "SQLSTATE", "connection refused"} {
+			assert.NotContains(t, recorder.Body.String(), leak)
+		}
+	})
+
+	t.Run("logs the underlying error", func(t *testing.T) {
+		db := &mockPersistenceLayer{healthCheckErr: errors.New("connection refused")}
+		controller := NewController(db, testConfig())
+
+		logs := captureLogs(func() {
+			serveHandler(controller.HealthHandler)
+		})
+
+		assert.Contains(t, logs, "connection refused")
 	})
 }
 
+// TestVersionHandler tests that the version endpoint serves the configured
+// version verbatim, as defined by SPEC-002 §6.1.2 (AC-5).
 func TestVersionHandler(t *testing.T) {
-	t.Run("success", func(t *testing.T) {
-		config := &Config{
-			APIVersion: "v1",
-		}
-		controller := &Controller{
-			config: config,
-		}
+	t.Run("returns 200 and the configured version", func(t *testing.T) {
+		controller := NewController(&mockPersistenceLayer{}, testConfig())
 
-		response := controller.VersionHandler(nil)
-		assert.Equal(t, 200, response.Code)
+		recorder := serveHandler(controller.VersionHandler)
 
-		payload, ok := response.Payload.(gin.H)
-		assert.True(t, ok)
-		assert.Equal(t, "v1", payload["version"])
-	})
-}
+		assert.Equal(t, http.StatusOK, recorder.Code)
 
-func TestResumeHandler(t *testing.T) {
-	t.Run("success default json", func(t *testing.T) {
-		config := &Config{
-			APIVersion:     "v1",
-			ResumePathJSON: "etc/resume.json",
-			ResumePathPDF:  "etc/resume.pdf",
-		}
-		controller := &Controller{
-			config: config,
-		}
-
-		writer := httptest.NewRecorder()
-		ctx, _ := gin.CreateTestContext(writer)
-
-		response := controller.ResumeHandler(ctx)
-		assert.Equal(t, 200, response.Code)
-
-		payload, ok := response.Payload.(gin.H)
-		assert.True(t, ok)
-
-		resume, ok := payload["data"].(map[string]any)
-		assert.True(t, ok)
-		assert.NotEmpty(t, resume)
+		var body map[string]string
+		assert.NoError(t, json.Unmarshal(recorder.Body.Bytes(), &body))
+		assert.Equal(t, map[string]string{"version": "v9.9.9-test"}, body)
 	})
 
-	t.Run("success default", func(t *testing.T) {
-		config := &Config{
-			APIVersion:     "v1",
-			ResumePathJSON: "etc/resume.json",
-			ResumePathPDF:  "etc/resume.pdf",
-		}
-		controller := &Controller{
-			config: config,
-		}
+	t.Run("reads the version from config rather than a literal", func(t *testing.T) {
+		controller := NewController(&mockPersistenceLayer{}, Config{Version: "v2.0.0-rc1"})
 
-		writer := httptest.NewRecorder()
-		ctx, _ := gin.CreateTestContext(writer)
-		ctx.Request = httptest.NewRequest("GET", "/resume?format=json", nil)
+		recorder := serveHandler(controller.VersionHandler)
 
-		response := controller.ResumeHandler(ctx)
-		assert.Equal(t, 200, response.Code)
+		assert.Equal(t, http.StatusOK, recorder.Code)
 
-		payload, ok := response.Payload.(gin.H)
-		assert.True(t, ok)
-
-		resume, ok := payload["data"].(map[string]any)
-		assert.True(t, ok)
-		assert.NotEmpty(t, resume)
+		var body map[string]string
+		assert.NoError(t, json.Unmarshal(recorder.Body.Bytes(), &body))
+		assert.Equal(t, map[string]string{"version": "v2.0.0-rc1"}, body)
 	})
 
-	t.Run("success pdf", func(t *testing.T) {
-		config := &Config{
-			APIVersion:     "v1",
-			ResumePathJSON: "etc/resume.json",
-			ResumePathPDF:  "etc/resume.pdf",
-		}
-		controller := &Controller{
-			config: config,
-		}
+	t.Run("does not query the persistence layer", func(t *testing.T) {
+		db := &mockPersistenceLayer{}
+		controller := NewController(db, testConfig())
 
-		writer := httptest.NewRecorder()
-		ctx, _ := gin.CreateTestContext(writer)
-		ctx.Request = httptest.NewRequest("GET", "/resume?format=pdf", nil)
+		serveHandler(controller.VersionHandler)
 
-		response := controller.ResumeHandler(ctx)
-		assert.Equal(t, 200, response.Code)
-
-		payload, ok := response.Payload.(gin.H)
-		assert.True(t, ok)
-
-		resume, ok := payload["data"].(string)
-		assert.True(t, ok)
-		assert.NotEmpty(t, resume)
-	})
-
-	t.Run("invalid format", func(t *testing.T) {
-		config := &Config{
-			APIVersion:     "v1",
-			ResumePathJSON: "etc/resume.json",
-			ResumePathPDF:  "etc/resume.pdf",
-		}
-		controller := &Controller{
-			config: config,
-		}
-
-		writer := httptest.NewRecorder()
-		ctx, _ := gin.CreateTestContext(writer)
-		ctx.Request = httptest.NewRequest("GET", "/resume?format=xml", nil)
-
-		response := controller.ResumeHandler(ctx)
-		assert.Equal(t, 400, response.Code)
-	})
-}
-
-func TestContactHandler(t *testing.T) {
-	t.Run("success new contact", func(t *testing.T) {
-		db := NewTestPersistence(true)
-		controller := &Controller{
-			db: db,
-		}
-
-		encoded, _ := json.Marshal(NewContactRequestBody{
-			Email:   "test.mclovin@example.com",
-			Name:    "Test McLovin",
-			Message: "Hello",
-		})
-		buffer := bytes.NewBuffer(encoded)
-
-		writer := httptest.NewRecorder()
-		ctx, _ := gin.CreateTestContext(writer)
-		ctx.Request = httptest.NewRequest("POST", "/contact", buffer)
-
-		_, exists := db.ContactsByEmail()["test.mclovin@example.com"]
-		assert.False(t, exists)
-
-		requests, exists := db.ContactRequestsByEmail()["test.mclovin@example.com"]
-		assert.False(t, exists)
-		assert.Empty(t, requests)
-
-		response := controller.ContactHandler(ctx)
-		assert.Equal(t, 201, response.Code)
-
-		_, exists = db.ContactsByEmail()["test.mclovin@example.com"]
-		assert.True(t, exists)
-
-		requests, exists = db.ContactRequestsByEmail()["test.mclovin@example.com"]
-		assert.True(t, exists)
-		assert.Len(t, requests, 1)
-	})
-
-	t.Run("success existing contact", func(t *testing.T) {
-		db := NewTestPersistence(true)
-		controller := &Controller{
-			db: db,
-		}
-
-		encoded, _ := json.Marshal(NewContactRequestBody{
-			Email:   "john.doe@example.com",
-			Name:    "John Doe",
-			Message: "Hello Again (repeat message)",
-		})
-		buffer := bytes.NewBuffer(encoded)
-
-		writer := httptest.NewRecorder()
-		ctx, _ := gin.CreateTestContext(writer)
-		ctx.Request = httptest.NewRequest("POST", "/contact", buffer)
-
-		_, exists := db.ContactsByEmail()["john.doe@example.com"]
-		assert.True(t, exists)
-
-		requests := db.ContactRequestsByEmail()["john.doe@example.com"]
-		assert.Len(t, requests, 2)
-
-		response := controller.ContactHandler(ctx)
-		assert.Equal(t, 201, response.Code)
-
-		_, exists = db.ContactsByEmail()["john.doe@example.com"]
-		assert.True(t, exists)
-
-		requests = db.ContactRequestsByEmail()["john.doe@example.com"]
-		assert.Len(t, requests, 3)
-	})
-
-	t.Run("invalid email address", func(t *testing.T) {
-		db := NewTestPersistence(true)
-		controller := &Controller{
-			db: db,
-		}
-
-		encoded, _ := json.Marshal(NewContactRequestBody{
-			Email:   "invalid-email",
-			Name:    "John Doe",
-			Message: "Hello",
-		})
-		buffer := bytes.NewBuffer(encoded)
-
-		writer := httptest.NewRecorder()
-		ctx, _ := gin.CreateTestContext(writer)
-		ctx.Request = httptest.NewRequest("POST", "/contact", buffer)
-
-		response := controller.ContactHandler(ctx)
-		assert.Equal(t, 400, response.Code)
-	})
-
-	t.Run("empty message", func(t *testing.T) {
-		db := NewTestPersistence(true)
-		controller := &Controller{
-			db: db,
-		}
-
-		encoded, _ := json.Marshal(NewContactRequestBody{
-			Email:   "test.mclovin@example.com",
-			Name:    "John Doe",
-			Message: "",
-		})
-		buffer := bytes.NewBuffer(encoded)
-
-		writer := httptest.NewRecorder()
-		ctx, _ := gin.CreateTestContext(writer)
-		ctx.Request = httptest.NewRequest("POST", "/contact", buffer)
-
-		response := controller.ContactHandler(ctx)
-		assert.Equal(t, 400, response.Code)
-	})
-
-	t.Run("empty name", func(t *testing.T) {
-		db := NewTestPersistence(true)
-		controller := &Controller{
-			db: db,
-		}
-
-		encoded, _ := json.Marshal(NewContactRequestBody{
-			Email:   "test.mclovin@example.com",
-			Name:    "",
-			Message: "Hello",
-		})
-		buffer := bytes.NewBuffer(encoded)
-
-		writer := httptest.NewRecorder()
-		ctx, _ := gin.CreateTestContext(writer)
-		ctx.Request = httptest.NewRequest("POST", "/contact", buffer)
-
-		response := controller.ContactHandler(ctx)
-		assert.Equal(t, 400, response.Code)
-	})
-
-	t.Run("empty email", func(t *testing.T) {
-		db := NewTestPersistence(true)
-		controller := &Controller{
-			db: db,
-		}
-
-		encoded, _ := json.Marshal(NewContactRequestBody{
-			Email:   "",
-			Name:    "John Doe",
-			Message: "Hello",
-		})
-		buffer := bytes.NewBuffer(encoded)
-
-		writer := httptest.NewRecorder()
-		ctx, _ := gin.CreateTestContext(writer)
-		ctx.Request = httptest.NewRequest("POST", "/contact", buffer)
-
-		response := controller.ContactHandler(ctx)
-		assert.Equal(t, 400, response.Code)
-	})
-}
-
-func TestListContactsHandler(t *testing.T) {
-	t.Run("success", func(t *testing.T) {
-		db := NewTestPersistence(true)
-		controller := &Controller{
-			db: db,
-		}
-
-		writer := httptest.NewRecorder()
-		ctx, _ := gin.CreateTestContext(writer)
-		ctx.Request = httptest.NewRequest("GET", "/contacts", nil)
-
-		response := controller.ListContactsHandler(ctx)
-		assert.Equal(t, 200, response.Code)
-
-		payload, ok := response.Payload.(gin.H)
-		assert.True(t, ok)
-
-		contacts, ok := payload["data"].([]Contact)
-		assert.True(t, ok)
-		assert.Len(t, contacts, 5)
-	})
-}
-
-func TestListContactRequestsHandler(t *testing.T) {
-	t.Run("success", func(t *testing.T) {
-		db := NewTestPersistence(true)
-		controller := &Controller{
-			db: db,
-		}
-
-		writer := httptest.NewRecorder()
-		ctx, _ := gin.CreateTestContext(writer)
-		ctx.Request = httptest.NewRequest("GET", "/contact-requests", nil)
-
-		response := controller.ListContactRequestsHandler(ctx)
-		assert.Equal(t, 200, response.Code)
-
-		payload, ok := response.Payload.(gin.H)
-		assert.True(t, ok)
-
-		contacts, ok := payload["data"].([]ContactRequest)
-		assert.True(t, ok)
-		assert.Len(t, contacts, 6)
+		assert.Equal(t, 0, db.healthCheckCalls)
 	})
 }

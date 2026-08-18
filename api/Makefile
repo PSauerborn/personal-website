@@ -1,51 +1,49 @@
-include .build.env
+# Makefile for the api component.
+#
+# Invoked from the repository root via the monorepo convention
+#
+#   $ make -C api <target>
+#
+# Every recipe sets GOTOOLCHAIN=auto so that the toolchain pinned by the `go`
+# directive in go.mod (go1.25.0) is fetched on demand when the locally installed
+# toolchain is older; without it the build fails on hosts shipping go1.24.
+go_bin ?= go
+GOTOOLCHAIN := auto
+export GOTOOLCHAIN
 
-version ?= latest
+# Linter binary. Overridable so the target can be pointed at a version pinned in
+# a local toolchain directory (`make lint golangci_lint_bin=./bin/golangci-lint`).
+golangci_lint_bin ?= golangci-lint
 
-image_name := api
-repository_name := personal-website/api
+.PHONY: help
+help:
+	@echo "Available targets:"
+	@echo "  build  - compile every package in the module"
+	@echo "  test   - run the module test suite"
+	@echo "  fmt    - format every Go file in the module"
+	@echo "  lint   - run golangci-lint over the module"
 
-.PHONY: run-tests
-run-tests:
-	docker build \
-		--pull \
-		--target tests \
-		-t $(image_name)-tests .
+.PHONY: build
+build:
+	GOTOOLCHAIN=auto $(go_bin) build ./...
 
-	docker run --rm $(image_name)-tests
+.PHONY: test
+test:
+	GOTOOLCHAIN=auto $(go_bin) test ./...
 
-.PHONY: build-image
-build-image:
-	docker build \
-		--platform linux/amd64 \
-		--provenance=false \
-		--pull \
-		-t $(image_name) .
+.PHONY: fmt
+fmt:
+	GOTOOLCHAIN=auto $(go_bin) fmt ./...
 
-.PHONY: push-image
-push-image: run-tests build-image
-	docker tag ${image_name} \
-		${aws_account_id}.dkr.ecr.${aws_region}.amazonaws.com/${repository_name}:${version}
-	docker push ${aws_account_id}.dkr.ecr.${aws_region}.amazonaws.com/${repository_name}:${version}
-
-.PHONY: run-server
-run-server: build-image
-	docker run --rm \
-		-p 8080:8080 \
-		-e POSTGRES_HOST \
-		-e POSTGRES_PORT \
-		-e POSTGRES_USER \
-		-e POSTGRES_PASSWORD \
-		-e POSTGRES_DB \
-		$(image_name)
-
+# pre-commit invokes this target. golangci-lint is not vendored, so its absence
+# is reported as an actionable error rather than being skipped, which would let
+# unlinted code through the hook.
 .PHONY: lint
 lint:
-	go fmt ./...
-	go mod tidy
-	go run github.com/golangci/golangci-lint/cmd/golangci-lint@latest run --timeout 5m
-
-.PHONY: ecr-login
-ecr-login:
-	aws ecr get-login-password --region ${aws_region} | \
-		docker login --username AWS --password-stdin ${aws_account_id}.dkr.ecr.${aws_region}.amazonaws.com
+	@command -v $(golangci_lint_bin) >/dev/null 2>&1 || { \
+		echo "error: '$(golangci_lint_bin)' not found on PATH."; \
+		echo "install it with 'go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest'"; \
+		echo "or point the target at an existing binary: 'make -C api lint golangci_lint_bin=<path>'"; \
+		exit 1; \
+	}
+	GOTOOLCHAIN=auto $(golangci_lint_bin) run ./...

@@ -1,4 +1,40 @@
-.vscode
+# Files excluded from the build context of web/Dockerfile ([DOCKER-003],
+# [DOCKER-006]). Everything listed here is either reproduced inside the image by
+# the build itself, irrelevant to it, or must never enter it.
+
+# Installed inside the builder from package-lock.json; a host copy would be the
+# wrong platform and would defeat the cached install layer.
 node_modules
-.quasar
-dist
+
+# Build artefacts of a host-side `next build`. The image builds its own; copying
+# a stale .next in is how a container ends up serving yesterday's bundle.
+.next
+out
+next-env.d.ts
+tsconfig.tsbuildinfo
+
+# Test suite and its harness - run by `make -C web test`, not by the image.
+**/*.test.ts
+**/*.test.tsx
+vitest.config.ts
+vitest.setup.ts
+
+# Local environment files. A real .env would bake developer-machine values (and
+# secrets) into an image layer; .env.example is documentation and the build
+# takes its one build-time value from --build-arg instead.
+.env
+.env.*
+
+# Documentation and editor/VCS metadata.
+*.md
+.git
+.gitignore
+.vscode
+.idea
+.DS_Store
+
+# Tooling that plays no part in `next build`.
+Makefile
+Dockerfile
+.dockerignore
+.prettierrc

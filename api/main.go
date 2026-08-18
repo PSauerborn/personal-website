@@ -1,115 +1,101 @@
 package main
 
 import (
+	"context"
+	"errors"
 	"fmt"
-
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
+	"net"
+	"net/http"
+	"os"
+	"os/signal"
+	"strconv"
+	"syscall"
+	"time"
 )
 
-// NewRouter creates a new Gin router with all routes and middleware configured
-// based on the provided configuration.
-func NewRouter(controller *Controller) *gin.Engine {
-	r := gin.Default()
-	r.Use(cors.Default())
+const (
+	// shutdownTimeout is the time graceful shutdown waits for in-flight requests
+	// to finish before their connections are closed forcibly.
+	shutdownTimeout = 10 * time.Second
+	// readHeaderTimeout bounds the time a client may take to send its request
+	// headers, so that idle connections cannot be held open indefinitely.
+	readHeaderTimeout = 10 * time.Second
+)
 
-	// GET /api/v1/public/version is used by k8s cluster
-	// liveness and readiness probes. do not log to db.
-	loggingExemptions := []LoggingExemption{
-		{
-			PathRegex: "^/" + controller.config.APIVersion + "/public/version$",
-			Method:    "GET",
-		},
-		{
-			PathRegex: "^/" + controller.config.APIVersion + "/public/health$",
-			Method:    "GET",
-		},
+// main is the entrypoint of the API. It loads and validates the configuration,
+// configures the shared logger, creates the persistence layer and the router,
+// and serves requests until a SIGINT or SIGTERM triggers graceful shutdown.
+// It contains wiring only: every piece of behaviour lives in the constructors
+// it calls.
+func main() {
+	cfg, err := LoadConfig()
+	if err != nil {
+		// the logger is still at its default level here, which is sufficient to
+		// report why startup was aborted ([GO-020])
+		Logger().WithError(err).Fatal("unable to load application configuration")
 	}
-	// router group for public routes. public routes
-	// do not require authentication but are logged
-	// for tracing purposes
-	public := r.Group(fmt.Sprintf("/%s/public", controller.config.APIVersion))
-	public.Use(RouteLoggingMiddleware(controller, loggingExemptions))
 
-	// router group for private routes that require
-	// authentication
-	admin := r.Group(fmt.Sprintf("/%s/admin", controller.config.APIVersion))
-	admin.Use(AdminAuthMiddleware(controller))
+	log := ConfigureLogger(*cfg)
 
-	// health check endpoint
-	public.GET("/health", func(c *gin.Context) {
-		log.Info("processing health check request")
-		response := controller.HealthCheckHandler(c)
-		response.Send(c)
-	})
+	db, err := NewPostgresPersistenceLayer(*cfg)
+	if err != nil {
+		log.WithError(err).Fatal("unable to create persistence layer")
+	}
+	// the pool is closed after the HTTP server has stopped accepting
+	// connections, so that no in-flight request loses its database access
+	// ([GO-037])
+	defer db.Close()
 
-	// version endpoint1
-	public.GET("/version", func(c *gin.Context) {
-		log.Info("processing version request")
-		response := controller.VersionHandler(c)
-		response.Send(c)
-	})
+	server := newHTTPServer(*cfg, NewRouter(NewController(db, *cfg)))
 
-	// GET /resume endpoint to return resume PDF
-	public.GET("/resume", func(c *gin.Context) {
-		log.Info("processing resume request")
-		response := controller.ResumeHandler(c)
-		response.Send(c)
-	})
+	signals := make(chan os.Signal, 1)
+	signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM)
 
-	// POST /contacts endpoint to submit a new contact request
-	public.POST("/contacts", func(c *gin.Context) {
-		log.Info("processing contact request")
-		response := controller.ContactHandler(c)
-		response.Send(c)
-	})
+	log.WithField("address", server.Addr).Info("starting api server")
+	if err := serve(server, signals); err != nil {
+		// returning instead of exiting lets the deferred pool close run
+		log.WithError(err).Error("api server terminated unexpectedly")
+		return
+	}
 
-	// GET /stats endpoint to return site statistics
-	admin.GET("/stats", func(c *gin.Context) {
-		log.Info("processing stats request")
-		response := controller.StatsHandler(c)
-		response.Send(c)
-	})
-
-	// GET /contacts endpoint to list all contacts
-	admin.GET("/contacts", func(c *gin.Context) {
-		log.Info("processing contacts request")
-		response := controller.ListContactsHandler(c)
-		response.Send(c)
-	})
-
-	// GET /contacts/requests endpoint to list all contact requests
-	admin.GET("/contacts/requests", func(c *gin.Context) {
-		log.Info("processing contact requests")
-		response := controller.ListContactRequestsHandler(c)
-		response.Send(c)
-	})
-
-	return r
+	log.Info("api server stopped")
 }
 
-func main() {
-	config := LoadConfig()
-	// set log level based on config settings
-	log.SetLevel(ParseLogLevel(config.LogLevel))
-
-	// Create a new database connection
-	dsn := PostgresDSNFromConfig(config)
-	db, err := NewPGPersistence(dsn)
-	if err != nil {
-		log.Fatal(fmt.Sprintf("failed to connect to database: %v", err))
+// newHTTPServer returns the HTTP server of this API. The cfg argument supplies
+// the host and port the server binds to and the handler argument is the router
+// serving every request.
+func newHTTPServer(cfg Config, handler http.Handler) *http.Server {
+	return &http.Server{
+		Addr:              net.JoinHostPort(cfg.ListenHost, strconv.Itoa(cfg.ListenPort)),
+		Handler:           handler,
+		ReadHeaderTimeout: readHeaderTimeout,
 	}
-	defer db.pool.Close()
+}
 
-	controller := &Controller{
-		config: config,
-		db:     db,
+// serve serves requests with the given server until a signal is received on the
+// given channel, and then shuts the server down gracefully. It returns nil once
+// the server has stopped, or an error when the server could not be started or
+// could not be shut down within shutdownTimeout.
+func serve(server *http.Server, signals <-chan os.Signal) error {
+	errs := make(chan error, 1)
+	go func() {
+		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			errs <- err
+		}
+	}()
+
+	select {
+	case err := <-errs:
+		return fmt.Errorf("unable to serve http requests: %w", err)
+	case sig := <-signals:
+		Logger().WithField("signal", sig.String()).Info("received shutdown signal")
 	}
 
-	router := NewRouter(controller)
-	// start server and listen on configured port
-	if err := router.Run(fmt.Sprintf(":%d", config.Port)); err != nil {
-		log.Fatal(fmt.Sprintf("failed to start server: %v", err))
+	ctx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
+	defer cancel()
+
+	if err := server.Shutdown(ctx); err != nil {
+		return fmt.Errorf("unable to shut down http server gracefully: %w", err)
 	}
+	return nil
 }

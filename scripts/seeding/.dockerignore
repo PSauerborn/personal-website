@@ -1,0 +1,51 @@
+# Everything the seeding image build does not need. The build context is the
+# scripts/seeding/ directory.
+#
+# Deliberately NOT excluded:
+#   - fixtures/  - the runtime stage ships the whole corpus, including the
+#                  fixtures/documents/**/*.md sidecars the seeding run reads.
+#   - tests/     - the tests stage runs the pytest suite during the build.
+# Never add a blanket `*.md` rule: it would strip the document sidecars.
+
+# VCS
+.git
+.gitignore
+.github
+
+# Python caches and build artefacts
+**/__pycache__/
+**/*.py[cod]
+**/*.egg-info/
+.eggs/
+build/
+dist/
+
+# Virtualenvs
+.venv/
+venv/
+env/
+
+# Tooling caches
+**/.pytest_cache/
+**/.mypy_cache/
+**/.ruff_cache/
+.coverage
+htmlcov/
+
+# Documentation and automation - not used by either stage
+README.md
+Makefile
+docs/
+acceptance/
+
+# Local environment and editor state
+.env
+.env.*
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# Container definitions themselves
+Dockerfile
+.dockerignore

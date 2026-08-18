@@ -1,0 +1,79 @@
+FROM debian:trixie
+
+ARG AGENTS_VERSION=main
+ARG CODING_STANDARDS_VERSION=main
+ARG CLAUDE_CODE_VERSION=2.1.220
+ARG NODE_VERSION=24
+
+WORKDIR /agent
+
+RUN apt-get update && apt-get install -y curl git \
+        build-essential \
+        golang-go\
+        python3 \
+        python3-pip
+
+# acceptance criteria use tags do organize cross-cutting feature files.
+# agents need to link tagged scenarios to specs using the godog tool
+RUN go install github.com/cucumber/godog/cmd/godog@latest
+
+# clone repositories containing agent definitions and coding
+# standards. stored in /etc as read-only so that agents cannot
+# modify agent or standards definitions
+RUN git clone https://github.com/PSauerborn/agents \
+    --branch "${AGENTS_VERSION}" \
+    /etc/agents
+
+RUN git clone https://github.com/PSauerborn/coding-standards \
+    --branch "${CODING_STANDARDS_VERSION}" \
+    /etc/coding-standards
+
+# create dedicated user for agent
+RUN useradd -m agent
+USER agent
+
+WORKDIR /home/agent/workspace
+
+# the makefile runs this image with an anonymous volume at
+# web/node_modules (to keep the container's deps off the bind-mounted
+# host tree). docker seeds that volume from the image path, so it must
+# exist here and be owned by the agent user — otherwise the volume is
+# created root:root and npm ci fails with EACCES. do not delete: the
+# directory is empty by design and only exists to fix the ownership
+RUN mkdir -p /home/agent/workspace/web/node_modules
+
+# install nvm + node as the agent user so the toolchain lives in a
+# directory the agent can actually read (/root is 0700). the nvm
+# installer only wires up interactive shells via ~/.bashrc, so source
+# nvm.sh explicitly here and symlink the resolved version directory to
+# a stable path that ENV PATH below can reference.
+ENV NVM_DIR=/home/agent/.nvm
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash \
+    && bash -c '. "${NVM_DIR}/nvm.sh" \
+        && nvm install "${NODE_VERSION}" \
+        && nvm alias default "${NODE_VERSION}" \
+        && ln -s "${NVM_DIR}/versions/node/$(nvm version default)" "${NVM_DIR}/current"'
+
+ENV PATH="${NVM_DIR}/current/bin:${PATH}"
+
+RUN npm install -g yarn
+
+# install claude as the agent user so the binary lands in this
+# user's own ~/.local/bin (/root/.local/bin is unreachable: /root is 0700)
+RUN curl -fsSL https://claude.ai/install.sh | bash -s -- "${CLAUDE_CODE_VERSION}"
+
+# write claude config: bypass permission prompts (safe here — non-root user in sandbox)
+COPY --chown=agent:agent .claude.docker.json /home/agent/.claude/settings.json
+
+# podman's image storage cannot live on the image's own overlayfs
+# (nested overlay breaks container exec), so declare it as a volume;
+# pre-creating the directory as the agent user makes docker carry
+# its ownership into the auto-provisioned volume. NOTE: nested
+# containers require running this image with --privileged
+RUN mkdir -p /home/agent/.local/share/containers
+VOLUME /home/agent/.local/share/containers
+
+ENV PATH="/home/agent/.local/bin:${PATH}"
+ENV CODING_STANDARDS_DIR=/etc/coding-standards
+
+CMD [ "claude", "--plugin-dir", "/etc/agents" ]

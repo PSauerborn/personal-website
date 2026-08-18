@@ -1,0 +1,495 @@
+[
+  {
+    "id": "01a002b7e0257ee4b5286444ed97b875",
+    "organization": "S31 Software & Co",
+    "job_title": "Founder & Developer",
+    "start_date": "2026-03-01",
+    "end_date": null,
+    "description": "Founder and engineer, managing the business, contract and client acquisition, and engineering. Focused on developing and delivering agentic, spec-driven delivery pipelines.",
+    "responsibilities": [
+      {
+        "id": "01a002b7e0267d8db098c46dfd864022",
+        "description": "Designed and built an agentic, spec-driven delivery pipeline, combining a Claude Code plugin that orchestrates 13 specialist AI subagents, from spec intake, to TDD implementation, and five-stage review (validation, standards, correctness, security, risk), all governed by a typed JSON agent contract and bounded remediation loops."
+      },
+      {
+        "id": "01a002b7e027734d9d218a8e0cdfdc4f",
+        "description": "Developed a machine-readable, indexed coding-standards archive for agents to guide and control code quality and architecture decisions — 18 documents and 180 normative statements across six languages and domains."
+      },
+      {
+        "id": "01a002b7e02879c7883d6c23a881de4f",
+        "description": "Day-to-day business management, including finances, client acquisition, and contract negotiation."
+      }
+    ],
+    "stack_items": [
+      {
+        "id": "01a002b7e02979bc8995d0a3b245e000",
+        "stack_item": {
+          "id": "01a002b7e00076609daf44e8e0ca7532",
+          "name": "Python"
+        }
+      },
+      {
+        "id": "01a002b7e02a77aebbc5ec777fd79873",
+        "stack_item": {
+          "id": "01a002b7e00175138e341ddc7646a4b3",
+          "name": "Golang"
+        }
+      },
+      {
+        "id": "01a002b7e02b7924af62e29f29a2bdea",
+        "stack_item": {
+          "id": "01a002b7e00c7cf99cffa3f3a604d775",
+          "name": "GitHub"
+        }
+      },
+      {
+        "id": "01a002b7e02c7198a80d026edbe77edf",
+        "stack_item": {
+          "id": "01a002b7e006747da3170f03510e900d",
+          "name": "Terraform"
+        }
+      },
+      {
+        "id": "01a002b7e02d70d48857289a01ba5683",
+        "stack_item": {
+          "id": "01a002b7e0087b0281f4045e57ef7fb4",
+          "name": "Docker"
+        }
+      },
+      {
+        "id": "01a002b7e02e73daa0df71d4c547d890",
+        "stack_item": {
+          "id": "01a002b7e0097106a44d803d3ab4aaf5",
+          "name": "PostgreSQL"
+        }
+      },
+      {
+        "id": "01a002b7e02f7a098440b592984ac840",
+        "stack_item": {
+          "id": "01a002b7e005798798a5a48e464c3411",
+          "name": "AWS"
+        }
+      },
+      {
+        "id": "01a002b7e0307e34a5a72a13a31cc661",
+        "stack_item": {
+          "id": "01a002b7e0077ee58aa2875ff8fd89ce",
+          "name": "Kubernetes"
+        }
+      },
+      {
+        "id": "01a002b7e031710eb605501d91affbc0",
+        "stack_item": {
+          "id": "01a002b7e00278da8c6c1390b2c3118c",
+          "name": "Claude Code"
+        }
+      },
+      {
+        "id": "01a002b7e032792bb08514ff84249396",
+        "stack_item": {
+          "id": "01a002b7e00379b28111ce2bcf6854ce",
+          "name": "Spec Driven Development"
+        }
+      },
+      {
+        "id": "01a002b7e03377db9ce5523e12fbae48",
+        "stack_item": {
+          "id": "01a002b7e00473a89c0269c883b006bd",
+          "name": "Agent Sandboxing"
+        }
+      }
+    ]
+  },
+  {
+    "id": "01a002b7e0347a3c8a4246f4199d4a38",
+    "organization": "Omnigen Biodata",
+    "job_title": "Lead Backend Consultant & Developer",
+    "start_date": "2022-10-01",
+    "end_date": null,
+    "description": "Sole backend engineer responsible for the architecture, development, and operation of the backend systems for the DiscoverMe Study, providing 3M+ health records and ancestry to 200k+ users across the UK and South Africa.",
+    "responsibilities": [
+      {
+        "id": "01a002b7e03571b08991dcfb43926814",
+        "description": "Designed and implemented GraphQL and REST APIs (Python, Go) for participant consent, access to EHR (3M+ records), dispatch and storage of biological sample kits (100k+ samples processed), and linking of sequenced genomic data via an ancestry inference pipeline."
+      },
+      {
+        "id": "01a002b7e03677389371238994141abe",
+        "description": "Designed and implemented ETL pipelines processing 4TB+ of health and ancestry data from multiple third-party data providers for 200k+ study participants."
+      },
+      {
+        "id": "01a002b7e0377332a03f693e75b20fea",
+        "description": "Built and maintained GDPR-compliant data storage in DynamoDB (single table design) and PostgreSQL containing enrolment, EHR and ancestry data."
+      },
+      {
+        "id": "01a002b7e0387db4a4d5c86f1e7227c4",
+        "description": "Delivered CI/CD pipelines deploying containerised applications via Terraform Cloud to AWS."
+      },
+      {
+        "id": "01a002b7e039762ea67b03de3e30a6c6",
+        "description": "Delivered a datalake for unified reporting and analytics across applications via AWS S3, Glue and Athena."
+      }
+    ],
+    "stack_items": [
+      {
+        "id": "01a002b7e03a71dcba3cdb68dfb108ac",
+        "stack_item": {
+          "id": "01a002b7e00076609daf44e8e0ca7532",
+          "name": "Python"
+        }
+      },
+      {
+        "id": "01a002b7e03b7badb76c9a808fc828f9",
+        "stack_item": {
+          "id": "01a002b7e00175138e341ddc7646a4b3",
+          "name": "Golang"
+        }
+      },
+      {
+        "id": "01a002b7e03c7ea3bead9870f1cbe8d0",
+        "stack_item": {
+          "id": "01a002b7e00e77b78d6afd0d1427fc03",
+          "name": "GitLab"
+        }
+      },
+      {
+        "id": "01a002b7e03d7a048954a1070526bf7a",
+        "stack_item": {
+          "id": "01a002b7e006747da3170f03510e900d",
+          "name": "Terraform"
+        }
+      },
+      {
+        "id": "01a002b7e03e7ff994d77cf3b35b6e30",
+        "stack_item": {
+          "id": "01a002b7e0087b0281f4045e57ef7fb4",
+          "name": "Docker"
+        }
+      },
+      {
+        "id": "01a002b7e03f71c4ac6088b108692f3e",
+        "stack_item": {
+          "id": "01a002b7e0097106a44d803d3ab4aaf5",
+          "name": "PostgreSQL"
+        }
+      },
+      {
+        "id": "01a002b7e04078948211f192d88701cd",
+        "stack_item": {
+          "id": "01a002b7e005798798a5a48e464c3411",
+          "name": "AWS"
+        }
+      },
+      {
+        "id": "01a002b7e04177d7b82ac16fa234358c",
+        "stack_item": {
+          "id": "01a002b7e00a70a695e39e245b10d0bf",
+          "name": "DynamoDB"
+        }
+      },
+      {
+        "id": "01a002b7e0427329a802094488801c13",
+        "stack_item": {
+          "id": "01a002b7e01979debbb5594ec3964125",
+          "name": "S3"
+        }
+      },
+      {
+        "id": "01a002b7e04375719109b2d2bc2c0d01",
+        "stack_item": {
+          "id": "01a002b7e01a739fa2310f1fd5f02f93",
+          "name": "Lambda"
+        }
+      },
+      {
+        "id": "01a002b7e0447ba4bf820f87a4b2f238",
+        "stack_item": {
+          "id": "01a002b7e01b750ab0abc64b4ddf4643",
+          "name": "ECS"
+        }
+      },
+      {
+        "id": "01a002b7e0457ec9bb96e3fb9ef798a6",
+        "stack_item": {
+          "id": "01a002b7e01c72188eea8172b3f424c1",
+          "name": "AppSync"
+        }
+      },
+      {
+        "id": "01a002b7e0467136a322355081cb1ccc",
+        "stack_item": {
+          "id": "01a002b7e01d7adea1ff8d82e37a862c",
+          "name": "API Gateway"
+        }
+      },
+      {
+        "id": "01a002b7e0477bf98ca48841175689a0",
+        "stack_item": {
+          "id": "01a002b7e01e7d369eefce7d82e147a0",
+          "name": "Step Functions"
+        }
+      },
+      {
+        "id": "01a002b7e04873d690c2d46a42709ec7",
+        "stack_item": {
+          "id": "01a002b7e01f7e95a929b56b75dfbd91",
+          "name": "SNS"
+        }
+      },
+      {
+        "id": "01a002b7e0497faeaf313b19f0e1aac6",
+        "stack_item": {
+          "id": "01a002b7e0207e46a22c2cb3cf9b14f2",
+          "name": "SQS"
+        }
+      },
+      {
+        "id": "01a002b7e04a7b76b29a1ce518982e3b",
+        "stack_item": {
+          "id": "01a002b7e02178a39f70621622a680d0",
+          "name": "Athena"
+        }
+      },
+      {
+        "id": "01a002b7e04b70f7908d98b3326ee5c5",
+        "stack_item": {
+          "id": "01a002b7e02271c8ad3ca4e1491923aa",
+          "name": "Glue"
+        }
+      },
+      {
+        "id": "01a002b7e04c7a3a96079e1cf0010ea8",
+        "stack_item": {
+          "id": "01a002b7e0117a3ebee1811894b959ea",
+          "name": "REST"
+        }
+      },
+      {
+        "id": "01a002b7e04d72ebb58133458a88bec1",
+        "stack_item": {
+          "id": "01a002b7e01275c986880671fc87863d",
+          "name": "GraphQL"
+        }
+      },
+      {
+        "id": "01a002b7e04e7736ae25bb3fe4f59abf",
+        "stack_item": {
+          "id": "01a002b7e014794b8c77e716df1d28a9",
+          "name": "ETL Pipelines"
+        }
+      },
+      {
+        "id": "01a002b7e04f7187887e2daad8e067cc",
+        "stack_item": {
+          "id": "01a002b7e0107f78a36145792510f976",
+          "name": "IaC Pipelines"
+        }
+      }
+    ]
+  },
+  {
+    "id": "01a002b7e0507495977cfeb14e3e79b0",
+    "organization": "ZenithAI",
+    "job_title": "Senior MLOps Engineer",
+    "start_date": "2022-02-01",
+    "end_date": "2022-10-01",
+    "description": "Delivered infrastructure and tooling to accelerate ML model deployment across AWS environments.",
+    "responsibilities": [
+      {
+        "id": "01a002b7e0517156981678ea72b90699",
+        "description": "Built a Python web framework converting trained ML models into deployable web apps, cutting delivery time from days to hours."
+      },
+      {
+        "id": "01a002b7e05270298a011d2df168b692",
+        "description": "Delivered a self-service AWS portal for ML researchers to publish and share applications securely."
+      },
+      {
+        "id": "01a002b7e05374d0bb7df68c29bc6d04",
+        "description": "Automated provisioning of cloud resources using Terraform and integrated CI/CD via GitHub Actions."
+      }
+    ],
+    "stack_items": [
+      {
+        "id": "01a002b7e054780eb8d2c4230e8d8eed",
+        "stack_item": {
+          "id": "01a002b7e00076609daf44e8e0ca7532",
+          "name": "Python"
+        }
+      },
+      {
+        "id": "01a002b7e0557db09c4e97e67e320162",
+        "stack_item": {
+          "id": "01a002b7e006747da3170f03510e900d",
+          "name": "Terraform"
+        }
+      },
+      {
+        "id": "01a002b7e0567b1b90666ee378c419fc",
+        "stack_item": {
+          "id": "01a002b7e0087b0281f4045e57ef7fb4",
+          "name": "Docker"
+        }
+      },
+      {
+        "id": "01a002b7e0577d0f85770776d0fbd811",
+        "stack_item": {
+          "id": "01a002b7e005798798a5a48e464c3411",
+          "name": "AWS"
+        }
+      },
+      {
+        "id": "01a002b7e058788b8af4b093ed20b3b6",
+        "stack_item": {
+          "id": "01a002b7e00a70a695e39e245b10d0bf",
+          "name": "DynamoDB"
+        }
+      },
+      {
+        "id": "01a002b7e059775480689eb564b3c8d3",
+        "stack_item": {
+          "id": "01a002b7e01979debbb5594ec3964125",
+          "name": "S3"
+        }
+      },
+      {
+        "id": "01a002b7e05a7870b3abc1c1bc06d310",
+        "stack_item": {
+          "id": "01a002b7e01a739fa2310f1fd5f02f93",
+          "name": "Lambda"
+        }
+      },
+      {
+        "id": "01a002b7e05b738b9a513801881a243f",
+        "stack_item": {
+          "id": "01a002b7e01d7adea1ff8d82e37a862c",
+          "name": "API Gateway"
+        }
+      },
+      {
+        "id": "01a002b7e05c7eca9a7e96218c6ab82a",
+        "stack_item": {
+          "id": "01a002b7e02378cdbf6c9be527bbb46f",
+          "name": "Security Hub"
+        }
+      },
+      {
+        "id": "01a002b7e05d7f00a4c6bdcbe5579447",
+        "stack_item": {
+          "id": "01a002b7e00d76ff8a4c2db6bf33649a",
+          "name": "GitHub Actions"
+        }
+      }
+    ]
+  },
+  {
+    "id": "01a002b7e05e77e7b54be9f53d49e03f",
+    "organization": "Uniper Technologies",
+    "job_title": "Technical Lead",
+    "start_date": "2019-06-01",
+    "end_date": "2022-02-01",
+    "description": "Led the core backend team delivering Enerlytics, a global data analytics platform for power generation sites.",
+    "responsibilities": [
+      {
+        "id": "01a002b7e05f7e8f96bb3394aa7f7231",
+        "description": "Architected and implemented a Python microservice mesh for ingestion, analysis, and visualisation of power plant data for major UK energy providers."
+      },
+      {
+        "id": "01a002b7e0607336b43bf62afa124e64",
+        "description": "Migrated the platform from Docker Swarm to Azure Kubernetes, improving scalability and reliability."
+      },
+      {
+        "id": "01a002b7e06171adbaf8e9fd680a3b84",
+        "description": "Delivered on-premise deployments for clients under strict data-governance requirements."
+      },
+      {
+        "id": "01a002b7e062757295b9c691fde1b443",
+        "description": "Managed CI/CD, Kubernetes clusters, and Apache Cassandra clusters."
+      }
+    ],
+    "stack_items": [
+      {
+        "id": "01a002b7e06374419a85cf1d573b9b9c",
+        "stack_item": {
+          "id": "01a002b7e00076609daf44e8e0ca7532",
+          "name": "Python"
+        }
+      },
+      {
+        "id": "01a002b7e06478c4889a4bc47c1a014b",
+        "stack_item": {
+          "id": "01a002b7e00175138e341ddc7646a4b3",
+          "name": "Golang"
+        }
+      },
+      {
+        "id": "01a002b7e0657303aa3519504011d56a",
+        "stack_item": {
+          "id": "01a002b7e0087b0281f4045e57ef7fb4",
+          "name": "Docker"
+        }
+      },
+      {
+        "id": "01a002b7e066718e874b513d614a84aa",
+        "stack_item": {
+          "id": "01a002b7e0077ee58aa2875ff8fd89ce",
+          "name": "Kubernetes"
+        }
+      },
+      {
+        "id": "01a002b7e0677f6f865c66bb410a28da",
+        "stack_item": {
+          "id": "01a002b7e00b7997bd5837f39163e0a5",
+          "name": "Apache Cassandra"
+        }
+      },
+      {
+        "id": "01a002b7e0687f1692c3496d7ace1ab2",
+        "stack_item": {
+          "id": "01a002b7e0247373bdab75ddeee15e70",
+          "name": "Azure AKS"
+        }
+      },
+      {
+        "id": "01a002b7e0697668827d08b9c6aceb80",
+        "stack_item": {
+          "id": "01a002b7e0157740b28c8fd9a8ef077c",
+          "name": "RabbitMQ"
+        }
+      },
+      {
+        "id": "01a002b7e06a7bc4b68b93f08114f914",
+        "stack_item": {
+          "id": "01a002b7e016779a8a312438af3f06a1",
+          "name": "Grafana"
+        }
+      },
+      {
+        "id": "01a002b7e06b7170ab7329bf09404adc",
+        "stack_item": {
+          "id": "01a002b7e0177b12a3ac7a76e702f1f3",
+          "name": "Prometheus"
+        }
+      },
+      {
+        "id": "01a002b7e06c71f49b537f8a666e4138",
+        "stack_item": {
+          "id": "01a002b7e00f70aeb222c273dfd83f4d",
+          "name": "Azure DevOps"
+        }
+      },
+      {
+        "id": "01a002b7e06d74c78d702f27a45473b7",
+        "stack_item": {
+          "id": "01a002b7e0137890be7a0db386e98df6",
+          "name": "gRPC"
+        }
+      },
+      {
+        "id": "01a002b7e06e7fb0b42ec16fe6e3a8c4",
+        "stack_item": {
+          "id": "01a002b7e01874feb3c7d4bfaa964ad4",
+          "name": "Agile"
+        }
+      }
+    ]
+  }
+]

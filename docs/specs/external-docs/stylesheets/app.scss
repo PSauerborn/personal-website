@@ -1,0 +1,1058 @@
+// ============================================================================
+// app.scss — Linear-inspired design system for a personal website
+// ----------------------------------------------------------------------------
+// Design language modeled on linear.app: near-black canvas, Inter typography
+// with tight letter-spacing, hairline white-alpha borders, muted indigo
+// accent, gradient headlines, glassy nav, restrained radii and shadows.
+//
+// Every value is drawn from the scales defined in §1 — no one-off values.
+// Compile: sass app.scss app.css
+// ============================================================================
+
+@use "sass:map";
+@use "sass:math";
+
+// ============================================================================
+// §1 DESIGN TOKENS
+// ============================================================================
+
+// ---- Color (HSL only) ------------------------------------------------------
+// Greys: cool (slightly blue-shifted), near-black canvas, no pure black/white.
+$grey-950: hsl(220, 7%, 4%);    // page canvas (Linear's #08090a)
+$grey-900: hsl(220, 6%, 7%);    // raised surface (cards, panels)
+$grey-850: hsl(220, 6%, 10%);   // hover surface / inset wells
+$grey-800: hsl(220, 5%, 13%);   // active surface, code blocks
+$grey-600: hsl(220, 5%, 32%);   // disabled text, subtle icons
+$grey-500: hsl(220, 5%, 50%);   // tertiary text (4.6:1 on $grey-950 — WCAG AA)
+$grey-400: hsl(219, 6%, 57%);   // secondary text (Linear's #8a8f98)
+$grey-200: hsl(220, 12%, 85%);  // strong secondary on dark
+$grey-50:  hsl(220, 27%, 97%);  // primary text (Linear's #f7f8f8)
+
+// Primary accent: Linear indigo (#5e6ad2 ≈ hsl(234, 56%, 60%))
+$indigo-700: hsl(234, 46%, 40%);
+$indigo-600: hsl(234, 52%, 52%);
+$indigo-500: hsl(234, 56%, 60%);  // button background, brand marks
+$indigo-400: hsl(234, 68%, 70%);  // links, focus rings on dark
+$indigo-300: hsl(234, 80%, 80%);  // accent text on dark tints
+
+// Semantic accents (used sparingly — status dots, alerts)
+$green-400:  hsl(152, 50%, 60%);
+$yellow-400: hsl(42, 74%, 62%);
+$red-400:    hsl(0, 68%, 66%);
+
+// Alpha tints — the borders and glass Linear leans on instead of solid lines
+$white-alpha-04: hsla(0, 0%, 100%, 0.04);
+$white-alpha-06: hsla(0, 0%, 100%, 0.06);
+$white-alpha-08: hsla(0, 0%, 100%, 0.08);  // default hairline border
+$white-alpha-12: hsla(0, 0%, 100%, 0.12);  // hover border
+$white-alpha-20: hsla(0, 0%, 100%, 0.20);  // active border / kbd edges
+$black-alpha-40: hsla(0, 0%, 0%, 0.40);
+$black-alpha-60: hsla(0, 0%, 0%, 0.60);
+
+// ---- Typography ------------------------------------------------------------
+// Inter carries the entire personality. Self-host or load from rsms.me/inter.
+$font-sans: "Inter", "Inter Variable", -apple-system, "Segoe UI", "Helvetica Neue",
+  sans-serif;
+$font-mono: "Berkeley Mono", "SF Mono", "JetBrains Mono", ui-monospace, monospace;
+
+// Type scale (px values, used via rem())
+$text-xs:   12px;   // caps labels, footnotes
+$text-sm:   14px;   // UI text, nav, buttons
+$text-base: 16px;   // body
+$text-lg:   18px;   // lede on small screens
+$text-xl:   21px;   // lede, card titles
+$text-2xl:  24px;   // section headings (small)
+$text-3xl:  32px;   // section headings
+$text-4xl:  40px;   // page headings
+$text-5xl:  56px;   // hero (desktop)
+$text-6xl:  64px;   // hero (large desktop)
+
+// Weights — Linear never goes below 400; headings sit at 500–600, not 700+
+$weight-normal:   400;
+$weight-medium:   500;
+$weight-semibold: 600;
+
+// Tracking — tighter as size grows (the signature Linear look)
+$tracking-tight-lg: -0.022em;  // hero
+$tracking-tight:    -0.012em;  // headings
+$tracking-normal:   0;
+$tracking-wide:     0.08em;    // all-caps labels
+
+$leading-tight:  1.1;   // hero
+$leading-snug:   1.25;  // headings
+$leading-normal: 1.5;   // UI text
+$leading-loose:  1.6;   // long-form body
+
+// ---- Spacing scale (non-linear, ≥25% steps) --------------------------------
+$space: (
+  1: 4px,
+  2: 8px,
+  3: 12px,
+  4: 16px,
+  5: 24px,
+  6: 32px,
+  7: 48px,
+  8: 64px,
+  9: 96px,
+  10: 128px,
+  11: 160px,
+);
+
+@function space($step) {
+  @return map.get($space, $step);
+}
+
+// ---- Radii -----------------------------------------------------------------
+$radius-sm:   6px;    // kbd, tags
+$radius-md:   8px;    // buttons, inputs
+$radius-lg:   12px;   // cards
+$radius-xl:   16px;   // large media panels
+$radius-full: 9999px; // pills, avatars
+
+// ---- Elevation (light from above: lighter top edge + shadow below) ---------
+// Each level pairs an ambient shadow with a tighter contact shadow.
+$shadow-raised:
+  inset 0 1px 0 $white-alpha-06,
+  0 1px 2px $black-alpha-40;
+$shadow-overlay:
+  inset 0 1px 0 $white-alpha-06,
+  0 4px 12px $black-alpha-40,
+  0 1px 3px $black-alpha-60;
+$shadow-modal:
+  inset 0 1px 0 $white-alpha-08,
+  0 16px 48px $black-alpha-60,
+  0 4px 12px $black-alpha-60;
+$shadow-glow:
+  0 0 48px hsla(234, 56%, 60%, 0.25);
+
+// ---- Motion ----------------------------------------------------------------
+$ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+$duration-fast: 120ms;
+$duration-base: 200ms;
+$duration-slow: 400ms;
+
+// ---- Layout ----------------------------------------------------------------
+$container-max: 1024px;   // Linear's page column is narrow and centered
+$container-wide: 1200px;  // full-bleed media sections
+$prose-max: 65ch;
+$header-height: 64px;
+
+$breakpoint-sm: 640px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 1024px;
+
+@mixin from($bp) {
+  @media (min-width: $bp) {
+    @content;
+  }
+}
+
+// ---- Functions -------------------------------------------------------------
+@function rem($px) {
+  @return math.div($px, 16px) * 1rem;
+}
+
+// ============================================================================
+// §2 CSS CUSTOM PROPERTIES
+// ============================================================================
+// Exposed for runtime use (JS theming, inline overrides in one-off pages).
+
+:root {
+  --color-bg: #{$grey-950};
+  --color-surface: #{$grey-900};
+  --color-surface-hover: #{$grey-850};
+  --color-border: #{$white-alpha-08};
+  --color-border-hover: #{$white-alpha-12};
+  --color-text-primary: #{$grey-50};
+  --color-text-secondary: #{$grey-400};
+  --color-text-tertiary: #{$grey-500};
+  --color-accent: #{$indigo-500};
+  --color-accent-text: #{$indigo-400};
+  --header-height: #{$header-height};
+}
+
+// ============================================================================
+// §3 MIXINS
+// ============================================================================
+
+// Gradient headline — Linear's signature white→faded text fill
+@mixin gradient-text($from: $grey-50, $to: hsla(220, 27%, 97%, 0.55)) {
+  background: linear-gradient(to bottom, $from, $to);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: $from; // fallback when clip unsupported
+}
+
+// Glass panel — blurred translucent chrome for the sticky header
+@mixin glass {
+  background: hsla(220, 7%, 4%, 0.8);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+}
+
+// Hairline border via shadow (avoids layout shift, reads cleaner than border)
+@mixin hairline($color: $white-alpha-08) {
+  box-shadow: inset 0 0 0 1px $color;
+}
+
+@mixin focus-ring {
+  outline: none;
+
+  &:focus-visible {
+    outline: 2px solid $indigo-400;
+    outline-offset: 2px;
+  }
+}
+
+@mixin caps-label {
+  font-size: rem($text-xs);
+  font-weight: $weight-semibold;
+  letter-spacing: $tracking-wide;
+  text-transform: uppercase;
+  color: $grey-500;
+}
+
+@mixin container($max: $container-max) {
+  width: 100%;
+  max-width: $max;
+  margin-inline: auto;
+  // scales space(5) → space(6) across viewports without a nested media query
+  padding-inline: clamp(#{space(5)}, 4vw, #{space(6)});
+}
+
+// ============================================================================
+// §4 RESET & BASE
+// ============================================================================
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+html {
+  color-scheme: dark;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: $font-sans;
+  font-size: rem($text-base);
+  font-weight: $weight-normal;
+  line-height: $leading-normal;
+  letter-spacing: $tracking-normal;
+  color: var(--color-text-primary);
+  background-color: var(--color-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "cv01", "cv03", "cv04"; // Inter alternates, Linear-style
+}
+
+img,
+video,
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+::selection {
+  background: hsla(234, 56%, 60%, 0.35);
+  color: $grey-50;
+}
+
+// ============================================================================
+// §5 TYPOGRAPHY
+// ============================================================================
+
+.text-hero {
+  font-size: rem($text-4xl);
+  font-weight: $weight-medium;
+  line-height: $leading-tight;
+  letter-spacing: $tracking-tight-lg;
+  @include gradient-text;
+
+  @include from($breakpoint-md) {
+    font-size: rem($text-5xl);
+  }
+
+  @include from($breakpoint-lg) {
+    font-size: rem($text-6xl);
+  }
+}
+
+.text-heading {
+  font-size: rem($text-2xl);
+  font-weight: $weight-medium;
+  line-height: $leading-snug;
+  letter-spacing: $tracking-tight;
+  color: var(--color-text-primary);
+
+  @include from($breakpoint-md) {
+    font-size: rem($text-3xl);
+  }
+}
+
+.text-subheading {
+  font-size: rem($text-lg);
+  font-weight: $weight-medium;
+  line-height: $leading-snug;
+  letter-spacing: $tracking-tight;
+  color: var(--color-text-primary);
+
+  @include from($breakpoint-md) {
+    font-size: rem($text-xl);
+  }
+}
+
+// Lede — the muted paragraph under a hero or section heading
+.text-lede {
+  font-size: rem($text-lg);
+  line-height: $leading-normal;
+  color: var(--color-text-secondary);
+  max-width: $prose-max;
+
+  @include from($breakpoint-md) {
+    font-size: rem($text-xl);
+  }
+}
+
+.text-body {
+  font-size: rem($text-base);
+  line-height: $leading-loose;
+  color: var(--color-text-secondary);
+  max-width: $prose-max;
+
+  strong {
+    font-weight: $weight-medium;
+    color: var(--color-text-primary);
+  }
+}
+
+.text-label {
+  @include caps-label;
+}
+
+.text-mono {
+  font-family: $font-mono;
+  font-size: rem($text-sm);
+}
+
+// Inline link inside prose — quiet until hovered
+.link {
+  color: var(--color-text-primary);
+  border-bottom: 1px solid $white-alpha-20;
+  transition: border-color $duration-fast $ease-out;
+
+  &:hover {
+    border-color: $grey-400;
+  }
+}
+
+// Arrow link — "Learn more →" pattern
+.link-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: space(1);
+  font-size: rem($text-sm);
+  font-weight: $weight-medium;
+  color: var(--color-text-secondary);
+  transition: color $duration-fast $ease-out;
+
+  &::after {
+    content: "→";
+    transition: transform $duration-fast $ease-out;
+  }
+
+  &:hover {
+    color: var(--color-text-primary);
+
+    &::after {
+      transform: translateX(2px);
+    }
+  }
+}
+
+// ============================================================================
+// §6 BUTTONS
+// ============================================================================
+// One primary action per view. Primary = solid indigo; secondary = raised
+// grey surface; ghost = text-only for tertiary actions.
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: space(2);
+  height: 40px;
+  padding-inline: space(4);
+  font-size: rem($text-sm);
+  font-weight: $weight-medium;
+  letter-spacing: $tracking-normal;
+  white-space: nowrap;
+  border-radius: $radius-md;
+  transition:
+    background-color $duration-fast $ease-out,
+    box-shadow $duration-fast $ease-out,
+    color $duration-fast $ease-out;
+  @include focus-ring;
+
+  &--primary {
+    color: $grey-50;
+    background-color: $indigo-500;
+    box-shadow: $shadow-raised;
+
+    &:hover {
+      background-color: $indigo-400;
+    }
+
+    &:active {
+      background-color: $indigo-600;
+    }
+  }
+
+  &--secondary {
+    color: var(--color-text-primary);
+    background-color: $grey-850;
+    box-shadow: $shadow-raised, inset 0 0 0 1px $white-alpha-08;
+
+    &:hover {
+      background-color: $grey-800;
+      box-shadow: $shadow-raised, inset 0 0 0 1px $white-alpha-12;
+    }
+  }
+
+  &--ghost {
+    color: var(--color-text-secondary);
+
+    &:hover {
+      color: var(--color-text-primary);
+      background-color: $white-alpha-06;
+    }
+  }
+
+  &--sm {
+    height: 32px;
+    padding-inline: space(3);
+  }
+
+  &--lg {
+    height: 48px;
+    padding-inline: space(5);
+    font-size: rem($text-base);
+    border-radius: $radius-md + 2px; // proportionally larger, not scaled
+  }
+}
+
+// ============================================================================
+// §7 HEADER / NAV
+// ============================================================================
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  height: $header-height;
+  @include glass;
+  border-bottom: 1px solid $white-alpha-06;
+
+  &__inner {
+    @include container($container-wide);
+    display: flex;
+    align-items: center;
+    gap: space(6);
+    height: 100%;
+  }
+
+  &__logo {
+    display: flex;
+    align-items: center;
+    gap: space(2);
+    font-size: rem($text-base);
+    font-weight: $weight-semibold;
+    letter-spacing: $tracking-tight;
+    color: var(--color-text-primary);
+  }
+
+  &__nav {
+    display: none;
+    align-items: center;
+    gap: space(1);
+
+    @include from($breakpoint-md) {
+      display: flex;
+    }
+  }
+
+  &__link {
+    padding: space(2) space(3);
+    font-size: rem($text-sm);
+    font-weight: $weight-medium;
+    color: var(--color-text-secondary);
+    border-radius: $radius-md;
+    transition:
+      color $duration-fast $ease-out,
+      background-color $duration-fast $ease-out;
+
+    &:hover {
+      color: var(--color-text-primary);
+      background-color: $white-alpha-06;
+    }
+
+    &.is-active {
+      color: var(--color-text-primary);
+    }
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: space(3);
+    margin-left: auto;
+  }
+}
+
+// ============================================================================
+// §8 HERO
+// ============================================================================
+
+.hero {
+  position: relative;
+  padding-block: space(9) space(8);
+  text-align: left;
+  overflow: hidden;
+
+  @include from($breakpoint-md) {
+    padding-block: space(10) space(9);
+  }
+
+  &__inner {
+    @include container;
+    position: relative;
+  }
+
+  &__title {
+    @extend .text-hero;
+    max-width: 16ch;
+    margin-bottom: space(5);
+  }
+
+  &__lede {
+    @extend .text-lede;
+    margin-bottom: space(6);
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: space(3);
+  }
+
+  // Ambient radial glow behind the headline — very low intensity
+  &::before {
+    content: "";
+    position: absolute;
+    top: -40%;
+    left: 50%;
+    width: 900px;
+    height: 600px;
+    transform: translateX(-50%);
+    background: radial-gradient(
+      ellipse at center,
+      hsla(234, 56%, 60%, 0.12),
+      transparent 65%
+    );
+    pointer-events: none;
+  }
+}
+
+// Announcement pill above the hero title
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: space(2);
+  height: 28px;
+  padding-inline: space(3);
+  margin-bottom: space(5);
+  font-size: rem($text-xs);
+  font-weight: $weight-medium;
+  color: var(--color-text-secondary);
+  border-radius: $radius-full;
+  @include hairline;
+  transition:
+    color $duration-fast $ease-out,
+    box-shadow $duration-fast $ease-out;
+
+  &:hover {
+    color: var(--color-text-primary);
+    @include hairline($white-alpha-12);
+  }
+
+  &__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: $radius-full;
+    background-color: $green-400;
+  }
+}
+
+// ============================================================================
+// §9 SECTIONS
+// ============================================================================
+
+.section {
+  padding-block: space(9);
+
+  @include from($breakpoint-md) {
+    padding-block: space(10);
+  }
+
+  &__inner {
+    @include container;
+  }
+
+  &__label {
+    @include caps-label;
+    margin-bottom: space(3);
+  }
+
+  &__title {
+    @extend .text-heading;
+    max-width: 24ch;
+    margin-bottom: space(4);
+  }
+
+  &__lede {
+    @extend .text-lede;
+    margin-bottom: space(7);
+  }
+
+  // Subtle top rule separating major sections — gradient, not solid
+  &--ruled {
+    border-top: 1px solid transparent;
+    border-image: linear-gradient(
+        to right,
+        transparent,
+        $white-alpha-08 20%,
+        $white-alpha-08 80%,
+        transparent
+      )
+      1;
+  }
+}
+
+// ============================================================================
+// §10 CARDS & GRIDS
+// ============================================================================
+
+.grid {
+  display: grid;
+  gap: space(4);
+
+  @include from($breakpoint-sm) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include from($breakpoint-lg) {
+    &--3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: space(3);
+  padding: space(5);
+  background-color: var(--color-surface);
+  border-radius: $radius-lg;
+  @include hairline;
+  transition:
+    box-shadow $duration-base $ease-out,
+    background-color $duration-base $ease-out;
+
+  &:hover {
+    background-color: var(--color-surface-hover);
+    @include hairline($white-alpha-12);
+  }
+
+  &__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    margin-bottom: space(1);
+    color: $indigo-300;
+    background-color: hsla(234, 56%, 60%, 0.12);
+    border-radius: $radius-md;
+
+    svg {
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  &__title {
+    font-size: rem($text-base);
+    font-weight: $weight-medium;
+    letter-spacing: $tracking-tight;
+    color: var(--color-text-primary);
+  }
+
+  &__body {
+    font-size: rem($text-sm);
+    line-height: $leading-normal;
+    color: var(--color-text-secondary);
+  }
+
+  &__footer {
+    margin-top: auto;
+    padding-top: space(3);
+  }
+
+  // Featured card spans full width with a soft accent glow
+  &--feature {
+    @include from($breakpoint-sm) {
+      grid-column: 1 / -1;
+    }
+
+    &:hover {
+      box-shadow: $shadow-glow, inset 0 0 0 1px $white-alpha-12;
+    }
+  }
+}
+
+// Large framed media panel (screenshots, project previews)
+.media-frame {
+  overflow: hidden;
+  background-color: var(--color-surface);
+  border-radius: $radius-xl;
+  @include hairline;
+  box-shadow: $shadow-overlay;
+
+  img,
+  video {
+    width: 100%;
+  }
+}
+
+// ============================================================================
+// §11 LISTS, TAGS, KBD
+// ============================================================================
+
+// Checklist — upgraded bullets
+.list-check {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: space(3);
+
+  li {
+    display: flex;
+    align-items: baseline;
+    gap: space(3);
+    font-size: rem($text-sm);
+    color: var(--color-text-secondary);
+
+    &::before {
+      content: "✓";
+      flex-shrink: 0;
+      font-weight: $weight-semibold;
+      color: $indigo-400;
+    }
+  }
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding-inline: space(2);
+  font-size: rem($text-xs);
+  font-weight: $weight-medium;
+  color: var(--color-text-secondary);
+  background-color: $grey-850;
+  border-radius: $radius-sm;
+  @include hairline($white-alpha-06);
+}
+
+// Keyboard shortcut key — a Linear staple
+.kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding-inline: space(1);
+  font-family: $font-mono;
+  font-size: rem($text-xs);
+  color: var(--color-text-secondary);
+  background-color: $grey-800;
+  border-radius: $radius-sm;
+  box-shadow:
+    inset 0 -1px 0 $black-alpha-40,
+    inset 0 1px 0 $white-alpha-08,
+    inset 0 0 0 1px $white-alpha-08;
+}
+
+// ============================================================================
+// §12 QUOTE / TESTIMONIAL
+// ============================================================================
+
+.quote {
+  max-width: $prose-max;
+  margin-inline: auto;
+  text-align: center;
+
+  &__text {
+    font-size: rem($text-xl);
+    font-weight: $weight-medium;
+    line-height: $leading-snug;
+    letter-spacing: $tracking-tight;
+    @include gradient-text;
+    margin-bottom: space(5);
+
+    @include from($breakpoint-md) {
+      font-size: rem($text-2xl);
+    }
+  }
+
+  &__attribution {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: space(3);
+    font-size: rem($text-sm);
+    color: var(--color-text-tertiary);
+  }
+
+  &__avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: $radius-full;
+    object-fit: cover;
+    @include hairline;
+  }
+}
+
+// ============================================================================
+// §13 FORMS (contact / newsletter)
+// ============================================================================
+
+.input {
+  width: 100%;
+  height: 40px;
+  padding-inline: space(3);
+  font-family: inherit;
+  font-size: rem($text-sm);
+  color: var(--color-text-primary);
+  background-color: $grey-900;
+  border: none;
+  border-radius: $radius-md;
+  box-shadow:
+    inset 0 1px 2px $black-alpha-40,
+    inset 0 0 0 1px $white-alpha-08;
+  transition: box-shadow $duration-fast $ease-out;
+  @include focus-ring;
+
+  &::placeholder {
+    color: var(--color-text-tertiary);
+  }
+
+  &:hover {
+    box-shadow:
+      inset 0 1px 2px $black-alpha-40,
+      inset 0 0 0 1px $white-alpha-12;
+  }
+
+  &--textarea {
+    height: auto;
+    min-height: space(9);
+    padding-block: space(3);
+    resize: vertical;
+    line-height: $leading-normal;
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: space(2);
+
+  &__label {
+    font-size: rem($text-sm);
+    font-weight: $weight-medium;
+    color: var(--color-text-primary);
+  }
+
+  &__hint {
+    font-size: rem($text-xs);
+    color: var(--color-text-tertiary);
+  }
+}
+
+// ============================================================================
+// §14 EMPTY STATE
+// ============================================================================
+// For any zero-data view (no posts yet, no projects yet).
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: space(3);
+  padding: space(8) space(5);
+  text-align: center;
+  border-radius: $radius-lg;
+  @include hairline($white-alpha-06);
+
+  &__title {
+    font-size: rem($text-base);
+    font-weight: $weight-medium;
+    color: var(--color-text-primary);
+  }
+
+  &__body {
+    font-size: rem($text-sm);
+    color: var(--color-text-tertiary);
+    max-width: 40ch;
+  }
+
+  &__action {
+    margin-top: space(2);
+  }
+}
+
+// ============================================================================
+// §15 FOOTER
+// ============================================================================
+
+.footer {
+  padding-block: space(8) space(7);
+  border-top: 1px solid $white-alpha-06;
+
+  &__inner {
+    @include container($container-wide);
+    display: flex;
+    flex-direction: column;
+    gap: space(7);
+  }
+
+  &__grid {
+    display: grid;
+    gap: space(6);
+    grid-template-columns: repeat(2, 1fr);
+
+    @include from($breakpoint-md) {
+      grid-template-columns: 2fr repeat(3, 1fr);
+    }
+  }
+
+  &__heading {
+    @include caps-label;
+    margin-bottom: space(4);
+  }
+
+  &__links {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: space(3);
+  }
+
+  &__link {
+    font-size: rem($text-sm);
+    color: var(--color-text-secondary);
+    transition: color $duration-fast $ease-out;
+
+    &:hover {
+      color: var(--color-text-primary);
+    }
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: space(4);
+    padding-top: space(5);
+    border-top: 1px solid $white-alpha-06;
+    font-size: rem($text-xs);
+    color: var(--color-text-tertiary);
+  }
+}
+
+// ============================================================================
+// §16 UTILITIES & MOTION
+// ============================================================================
+
+.u-container {
+  @include container;
+}
+
+.u-container-wide {
+  @include container($container-wide);
+}
+
+.u-stack > * + * {
+  margin-top: space(4);
+}
+
+.u-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+// Scroll-reveal helper — pair with a tiny IntersectionObserver
+.reveal {
+  opacity: 0;
+  transform: translateY(space(2));
+  transition:
+    opacity $duration-slow $ease-out,
+    transform $duration-slow $ease-out;
+
+  &.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}

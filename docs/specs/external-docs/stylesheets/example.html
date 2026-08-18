@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pascal Sauerborn — Software Engineer</title>
+  <!-- Inter via rsms.me (or self-host); the stylesheet assumes it -->
+  <link rel="preconnect" href="https://rsms.me/">
+  <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+  <!-- compiled from app.scss: sass app.scss app.css -->
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+
+  <!-- ===================== Header ===================== -->
+  <header class="header">
+    <div class="header__inner">
+      <a class="header__logo" href="#">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+          <rect width="18" height="18" rx="5" fill="hsl(234, 56%, 60%)"/>
+          <path d="M5 12.5 9 5l4 7.5" stroke="hsl(220, 27%, 97%)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Pascal Sauerborn
+      </a>
+      <nav class="header__nav" aria-label="Primary">
+        <a class="header__link is-active" href="#work">Work</a>
+        <a class="header__link" href="#writing">Writing</a>
+        <a class="header__link" href="#about">About</a>
+      </nav>
+      <div class="header__actions">
+        <a class="btn btn--ghost btn--sm" href="#">GitHub</a>
+        <a class="btn btn--secondary btn--sm" href="#contact">Get in touch</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- ===================== Hero ===================== -->
+    <section class="hero">
+      <div class="hero__inner">
+        <a class="pill" href="#writing">
+          <span class="pill__dot" aria-hidden="true"></span>
+          New post: Designing resilient event pipelines
+          <span aria-hidden="true">→</span>
+        </a>
+        <h1 class="hero__title">Software engineer building calm, reliable systems</h1>
+        <p class="hero__lede">
+          I design and ship backend platforms, data infrastructure, and the
+          occasional frontend. Currently focused on distributed systems and
+          developer tooling.
+        </p>
+        <div class="hero__actions">
+          <a class="btn btn--primary btn--lg" href="#work">View my work</a>
+          <a class="btn btn--secondary btn--lg" href="#contact">Contact me</a>
+          <span class="text-mono" style="color: hsl(220, 5%, 42%);">
+            or press <kbd class="kbd">⌘</kbd> <kbd class="kbd">K</kbd>
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== Work ===================== -->
+    <section class="section section--ruled" id="work">
+      <div class="section__inner">
+        <p class="section__label">Selected work</p>
+        <h2 class="section__title">Projects that shipped and stayed shipped</h2>
+        <p class="section__lede">
+          A few things I've built recently — from event-driven platforms to
+          small tools that remove daily friction.
+        </p>
+
+        <div class="grid grid--3">
+          <article class="card card--feature">
+            <div class="card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 17V7l8-4 8 4v10l-8 4-8-4Z"/><path d="M4 7l8 4 8-4M12 11v10"/></svg>
+            </div>
+            <h3 class="card__title">Event streaming platform</h3>
+            <p class="card__body">
+              A multi-tenant event pipeline processing millions of messages a
+              day — schema registry, dead-letter handling, and replay built in.
+              Go, Kafka, and Postgres underneath.
+            </p>
+            <div class="card__footer">
+              <a class="link-arrow" href="#">Read the case study</a>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 9l-4 3 4 3M16 9l4 3-4 3M13 5l-2 14"/></svg>
+            </div>
+            <h3 class="card__title">API gateway toolkit</h3>
+            <p class="card__body">
+              Declarative routing, auth, and rate-limiting for internal
+              services, configured in a few lines of YAML.
+            </p>
+            <div class="card__footer">
+              <a class="link-arrow" href="#">View on GitHub</a>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>
+            </div>
+            <h3 class="card__title">Metrics collector</h3>
+            <p class="card__body">
+              Lightweight agent shipping application metrics with almost zero
+              overhead. Rust, of course.
+            </p>
+            <div class="card__footer">
+              <a class="link-arrow" href="#">View on GitHub</a>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 9h18M8 18v2h8v-2"/></svg>
+            </div>
+            <h3 class="card__title">This website</h3>
+            <p class="card__body">
+              Hand-rolled SCSS design system, no framework. You're looking
+              at it.
+            </p>
+            <div class="card__footer">
+              <a class="link-arrow" href="#">Browse the source</a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== About ===================== -->
+    <section class="section section--ruled" id="about">
+      <div class="section__inner">
+        <p class="section__label">About</p>
+        <h2 class="section__title">Principles I work by</h2>
+        <div class="u-stack" style="max-width: 65ch;">
+          <p class="text-body">
+            Ten years of building and operating production systems has left me
+            with a short list of convictions: <strong>boring technology wins</strong>,
+            observability is a feature, and the best abstraction is the one you
+            didn't need. I write about these on the <a class="link" href="#writing">blog</a>.
+          </p>
+          <ul class="list-check">
+            <li>Design for the failure case first — the happy path takes care of itself</li>
+            <li>Small, reversible deployments beat big-bang releases</li>
+            <li>Documentation is part of the deliverable, not an afterthought</li>
+            <li>If it isn't monitored, it's already broken</li>
+          </ul>
+          <p>
+            <span class="tag">Go</span>
+            <span class="tag">Python</span>
+            <span class="tag">Rust</span>
+            <span class="tag">Kafka</span>
+            <span class="tag">Postgres</span>
+            <span class="tag">Kubernetes</span>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== Quote ===================== -->
+    <section class="section section--ruled">
+      <div class="section__inner">
+        <figure class="quote">
+          <blockquote class="quote__text">
+            “Pascal is the engineer you want in the room when the system is on
+            fire — and the one who makes sure it rarely is.”
+          </blockquote>
+          <figcaption class="quote__attribution">
+            <span>Former colleague · Principal Engineer</span>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ===================== Writing (empty state demo) ===================== -->
+    <section class="section section--ruled" id="writing">
+      <div class="section__inner">
+        <p class="section__label">Writing</p>
+        <h2 class="section__title">Notes on systems and software</h2>
+        <div class="empty-state">
+          <p class="empty-state__title">No posts published yet</p>
+          <p class="empty-state__body">
+            The first essay is in draft. Subscribe below and it will land in
+            your inbox when it ships.
+          </p>
+          <a class="btn btn--secondary btn--sm empty-state__action" href="#contact">Get notified</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== Contact ===================== -->
+    <section class="section section--ruled" id="contact">
+      <div class="section__inner">
+        <p class="section__label">Contact</p>
+        <h2 class="section__title">Let's build something</h2>
+        <form class="u-stack" style="max-width: 480px;" action="#" method="post">
+          <div class="field">
+            <label class="field__label" for="email">Email</label>
+            <input class="input" type="email" id="email" name="email" placeholder="you@example.com" required>
+          </div>
+          <div class="field">
+            <label class="field__label" for="message">Message</label>
+            <textarea class="input input--textarea" id="message" name="message" placeholder="What are you working on?"></textarea>
+            <p class="field__hint">I usually reply within a day or two.</p>
+          </div>
+          <button class="btn btn--primary" type="submit">Send message</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===================== Footer ===================== -->
+  <footer class="footer">
+    <div class="footer__inner">
+      <div class="footer__grid">
+        <div>
+          <a class="header__logo" href="#" style="margin-bottom: 16px;">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+              <rect width="18" height="18" rx="5" fill="hsl(234, 56%, 60%)"/>
+              <path d="M5 12.5 9 5l4 7.5" stroke="hsl(220, 27%, 97%)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Pascal Sauerborn
+          </a>
+        </div>
+        <div>
+          <p class="footer__heading">Site</p>
+          <ul class="footer__links">
+            <li><a class="footer__link" href="#work">Work</a></li>
+            <li><a class="footer__link" href="#writing">Writing</a></li>
+            <li><a class="footer__link" href="#about">About</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer__heading">Elsewhere</p>
+          <ul class="footer__links">
+            <li><a class="footer__link" href="#">GitHub</a></li>
+            <li><a class="footer__link" href="#">LinkedIn</a></li>
+            <li><a class="footer__link" href="#">RSS</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer__heading">Contact</p>
+          <ul class="footer__links">
+            <li><a class="footer__link" href="#contact">Email</a></li>
+            <li><a class="footer__link" href="#">Book a call</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer__meta">
+        <span>© 2026 Pascal Sauerborn</span>
+        <span>Built with a hand-rolled SCSS system</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Optional: scroll-reveal for elements carrying the .reveal class -->
+  <script>
+    const io = new IntersectionObserver(
+      entries => entries.forEach(e => e.isIntersecting && e.target.classList.add("is-visible")),
+      { threshold: 0.15 }
+    );
+    document.querySelectorAll(".reveal").forEach(el => io.observe(el));
+  </script>
+</body>
+</html>

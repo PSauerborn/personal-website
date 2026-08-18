@@ -1,35 +1,62 @@
-include .build.env
+# Makefile for the web component.
+#
+# Invoked from the repository root via the monorepo convention
+#
+#   $ make -C web <target>
+#
+# Every recipe shells out to npm, so `npm ci` (or `npm install`) must have been
+# run once in this directory beforehand.
 
-version ?= latest
+# Package manager binary. Overridable so the targets can be pointed at a Node
+# toolchain that is not on PATH (`make -C web test npm_bin=/opt/node/bin/npm`).
+npm_bin ?= npm
 
-image_name := web
-repository_name := personal-website/web
+.PHONY: help
+help:
+	@echo "Available targets:"
+	@echo "  build  - produce a production build of the application"
+	@echo "  test   - run the application test suite"
+	@echo "  format - format every source file with prettier"
+	@echo "  format-check - report unformatted files without rewriting them"
+	@echo "  lint   - run eslint over the application"
+	@echo "  audit  - report advisories against the dependency tree"
 
-.PHONY: build-image
-build-image:
-	docker build \
-		--platform linux/amd64 \
-		--provenance=false \
-		--pull \
-		-t $(image_name) .
+.PHONY: build
+build:
+	$(npm_bin) run build
 
-.PHONY: push-image
-push-image: build-image
-	docker tag ${image_name} \
-		${aws_account_id}.dkr.ecr.${aws_region}.amazonaws.com/${repository_name}:${version}
-	docker push ${aws_account_id}.dkr.ecr.${aws_region}.amazonaws.com/${repository_name}:${version}
+.PHONY: test
+test:
+	$(npm_bin) run test
 
-.PHONY: run-server
-run-server: build-image
-	docker run --rm \
-		-p 8080:8080 \
-		$(image_name)
+.PHONY: format
+format:
+	$(npm_bin) run format
+
+# The pre-commit half of `format`, over the same glob. It reports and fails
+# rather than rewriting: a hook that reformats files under the committer stages
+# nothing and leaves the working tree differing from the commit that was just
+# made, which is a worse failure mode than one that stops and says what to run.
+# `eslint-config-prettier` switches every formatting rule off, so the web-lint
+# hook enforces none of [JS-005]; this target is what does.
+.PHONY: format-check
+format-check:
+	$(npm_bin) run format:check
 
 .PHONY: lint
 lint:
-	prettier --write "**/*.{js,jsx,ts,tsx,json,css,scss,md,vue}"
+	$(npm_bin) run lint
 
-.PHONY: ecr-login
-ecr-login:
-	aws ecr get-login-password --region ${aws_region} | \
-		docker login --username AWS --password-stdin ${aws_account_id}.dkr.ecr.${aws_region}.amazonaws.com
+# Deliberately not wired into .pre-commit-config.yaml: it needs the registry and
+# would break every offline commit. It is for CI and for a manual run before a
+# dependency bump.
+#
+# The WP-003 risk plan names this countermeasure as `npm audit --omit=dev` "or
+# equivalent". `--audit-level=high` is the equivalent chosen: the toolchain that
+# runs against this repository's source (Next, TypeScript, ESLint, Vitest) is
+# almost entirely devDependencies, so omitting them would hide the advisories
+# that matter most. The whole tree is audited; only high and critical advisories
+# fail the target. See the Make targets section of README.md.
+.PHONY: audit
+audit:
+	$(npm_bin) audit --audit-level=high
